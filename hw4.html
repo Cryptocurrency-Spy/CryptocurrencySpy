@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Visualization – Homework 4</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+</head>
+
+<body>
+    <div class="header">
+        <h1>Cryptocurrency Spy</h1>
+        <p>Name: Yintong Shang; E-Mail: u1431623@utah.edu; UID: u1431623</p>
+    </div>
+
+    <div class="split left" id="div_left">
+
+        <div id="tree-map">
+
+        </div>
+        <div id="something">
+
+        </div>
+    </div>
+
+    <div class="split right" id="div_right">
+        <div>
+            <svg id="line-chart">
+                <g id="x-axis"></g>
+                <g id="y-axis"></g>
+                <g id="lines"></g>
+                <g id="overlay"><line></line></g>
+            </svg>
+            <g id="button_group">
+                <button id="preset_1">preset 1</button>
+                <button id="preset_2">preset 2</button>
+            </g>
+        </div>
+        <div id="name-select">
+            <g id="checkbox_group"></g>
+
+            <button id="clear_names">unselect cryptocurrency</button>
+        </div>
+        <div id="grid-brush">
+            <svg>
+                <g id="rect_group"></g>
+                <g id="brush_group"></g>
+            </svg>
+            <button id="clear_time">unselect time</button>
+        </div>
+    </div>
+
+    <script src="js/line-chart.js"></script>
+    <script src="js/name-select.js"></script>
+    <script src="js/grid-brush.js" ></script>
+    <script src="js/script.js"></script>
+</body>
+
+</html>
