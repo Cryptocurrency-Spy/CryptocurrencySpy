@@ -12,7 +12,10 @@
     //  to all the nodes:
     let simulation = d3.forceSimulation()
         // forceLink creates tension along each link, keeping connected nodes together
-        .force("link", d3.forceLink().id(d => d.id))
+        .force("link", d3.forceLink().
+            id(d => d.id)
+            .strength(d => Math.sqrt(d.value))
+            )
         // forceManyBody creates a repulsive force between nodes, 
         //  keeping them away from each other
         .force("charge", d3.forceManyBody())
@@ -22,7 +25,23 @@
 
     // This part triggers an asynchronous call to go grab the data in another file...
     //  stuff inside this function might not actually happen for a while!
-    d3.json("data/miserables.json").then( graph => {
+    d3.csv("data/small_sample.csv").then( graph => {
+        // timestamp,input_key,output_key,satoshis
+
+        let outputs = [...d3.group(graph, d => d.output_key).keys()]; 
+        let inputs = [...d3.group(graph, d => d.input_key).keys()];
+        let network_links = graph.map(d => {
+            d.source = d.input_key;
+            d.target = d.output_key;
+            d.value = d.satoshis / 1e12;
+            return d;
+        });
+
+        outputs.push(inputs[0]);
+        outputs = outputs.map(d => {
+            return {id: d};
+        });
+        console.log(outputs)
 
         // First we create the links in their own group that comes before the node 
         //  group (so the circles will always be on top of the lines)
@@ -30,19 +49,20 @@
             .attr("class", "links");
         // Now let's create the lines
         let links = linkLayer.selectAll("line")
-            .data(graph.links)
+            .data(network_links)
             .enter().append("line")
-            .attr("stroke-width", d => Math.sqrt(d.value));
+            .attr("stroke-width", d => Math.sqrt(d.value * 1e2));
 
         // Now we create the node group, and the nodes inside it
         let nodeLayer = svg.append("g")
             .attr("class", "nodes");
         let nodes = nodeLayer
             .selectAll("circle")
-            .data(graph.nodes)
+            .data(outputs)
             .enter().append("circle")
             .attr("r", 5)
-            .attr("fill", d => color(d.group))
+            .attr("fill", d => "black")
+
             // This part adds event listeners to each of the nodes; when you click,
             //  move, and release the mouse on a node, each of these functions gets 
             //  called (we've defined them at the end of the file)
@@ -57,12 +77,12 @@
             .text( d => d.id );
 
         // Now that we have the data, let's give it to the simulation...
-        simulation.nodes(graph.nodes);
+        simulation.nodes(outputs);
         // The tension force (the forceLink that we named "link" above) also needs
         //  to know about the link data that we finally have - we couldn't give it 
         //  earlier, because it hadn't been loaded yet!
         simulation.force("link")
-            .links(graph.links);
+            .links(network_links);
 
         // Finally, let's tell the simulation how to update the graphics
         simulation.on("tick", function () {
