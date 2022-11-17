@@ -12,51 +12,7 @@
         .round(true)
         .padding(1);
 
-    // let version = {
-    //     "d3-array": "1.0.2",
-    //     "d3-axis": "1.0.4",
-    //     "d3-brush": "1.0.3",
-    //     "d3-chord": "1.0.3",
-    //     "d3-collection": "1.0.2",
-    //     "d3-color": "1.0.2",
-    //     "d3-dispatch": "1.0.2",
-    //     "d3-drag": "1.0.2",
-    //     "d3-dsv": "1.0.3",
-    //     "d3-ease": "1.0.2",
-    //     "d3-force": "1.0.4",
-    //     "d3-format": "1.0.2",
-    //     "d3-geo": "1.4.0",
-    //     "d3-hierarchy": "1.0.3",
-    //     "d3-interpolate": "1.1.2",
-    //     "d3-path": "1.0.3",
-    //     "d3-polygon": "1.0.2",
-    //     "d3-quadtree": "1.0.2",
-    //     "d3-queue": "3.0.3",
-    //     "d3-random": "1.0.2",
-    //     "d3-request": "1.0.3",
-    //     "d3-scale": "1.0.4",
-    //     "d3-selection": "1.0.3",
-    //     "d3-shape": "1.0.4",
-    //     "d3-time": "1.0.4",
-    //     "d3-time-format": "2.0.3",
-    //     "d3-timer": "1.0.3",
-    //     "d3-transition": "1.0.3",
-    //     "d3-voronoi": "1.1.0",
-    //     "d3-zoom": "1.1.0"
-    // };
     
-    // d3.csv("data/d3.csv").then(data => {
-
-    //     let root = d3.stratify()
-    //         .id(d => d.path)
-    //         .parentId(d => {
-    //             return d.path.substring(0, d.path.lastIndexOf("/"));
-    //         })
-    //         (data)
-    //         .sum(d => d.size)
-    //         .sort((a, b) => b.height - a.height || b.value - a.value);
-
-    //     treemap(root);
 
     d3.csv("data/consolidated_coin_data.csv").then(data => {
         // data = [...d3.group(data, d => d.Date)
@@ -111,24 +67,6 @@
                 let a = d.ancestors();
                 return color(a[0].id);
             });
-
-        // cell.append("clipPath")
-        //     .attr("id", d => "clip-" + d.id)
-        //     .append("use")
-        //     .attr("xlink:href", d => "#" + d.id);
-
-        // let label = cell.append("text")
-        //     .attr("clip-path", d => "url(#clip-" + d.id + ")");
-
-        // label.append("tspan")
-        //     .attr("x", 4)
-        //     .attr("y", 13)
-        //     .text(d => d.id);
-
-        // label.append("tspan")
-        //     .attr("x", 4)
-        //     .attr("y", 25)
-        //     .text(d => format(d.value));
 
         cell.append("text")
             // .attr("x", d => 0.5 * (d.x1 -d.x0))
