@@ -1,22 +1,27 @@
 class Treemap {
 
     constructor() {
-        let svg = d3.select("#treemap"),
-            width = svg.attr("width"),
-            height = svg.attr("height");
+    let svg = d3.select("#treemap"),
+        width = svg.attr("width"),
+        height = svg.attr("height");
+    this.color = d3.scaleOrdinal(d3.schemeGnBu[9]);
 
-        let color = d3.scaleOrdinal(d3.schemeGnBu[9]);
+        this.format = d3.format(",d");
 
-        let format = d3.format(",d");
-
-        let treemap = d3.treemap()
+        this.treemap = d3.treemap()
             .size([width, height])
             .round(true)
             .padding(1);
 
         this.parsedData = globalObj.parsedData;
+        this.draw_treemap();
+    }
 
-        let _data = this.parsedData.filter(d => d.date === "2019/04/24");
+    draw_treemap(){
+        let svg = d3.select("#treemap");
+        let date = d3.max(globalObj.selectedTime)
+        console.log(date)
+        let _data = this.parsedData.filter(d => d.date === `${date}/24`);
         _data.push({
             name: "a",
             cap: "",
@@ -41,11 +46,15 @@ class Treemap {
             .sort((a, b) => b.height - a.height || b.value - a.value)
         ;
 
-        treemap(root);
+        this.treemap(root);
 
         this.cell = svg.selectAll("a")
             .data(root.leaves())
-            .enter().append("g")
+            .join("a")
+            // .enter()
+            .selectAll("g")
+            .data(d => [d])
+            .join("g")
             .attr("target", "_blank")
             // .attr("xlink:href", d => {
             //     let p = d.data.path.split("/");
@@ -67,8 +76,9 @@ class Treemap {
             .attr("width", d => d.x1 - d.x0)
             .attr("height", d => d.y1 - d.y0)
             .attr("fill", d => {
-                let a = d.ancestors();
-                return color(a[0].id);
+                return globalObj.colorScale(d.id);
+                // let a = d.ancestors();
+                // return this.color(a[0].id);
             })
             .style("stroke-width", "5px")
             .attr('checked', false)
@@ -82,13 +92,16 @@ class Treemap {
                 else {
                     rect.style("stroke", "none");
                 }
-                this.updateNameSelectionByTreemap(e);
+                globalObj.name_select.updateName(d);
+                // this.updateNameSelectionByTreemap(e);
             })
 
-        this.texts = this.cell.append("text")
+        this.texts = this.cell.selectAll("text")
+            .data(d => [d])
+            .join("text")
             // .attr("x", d => 0.5 * (d.x1 -d.x0))
             .attr("y", d => 0.5 * (d.y1 - d.y0))
-            .text(d => d.id + "\n" + format(d.value));
+            .text(d => d.id + "\n" + this.format(d.value));
 
         // let checkbox = globalObj.name_select.labels.selectAll('input')
         //     .node()
@@ -103,6 +116,7 @@ class Treemap {
             .filter(d => (d === name))
             .node()
         checkbox.click()
+        
 
         // this.triggerMouseEvent(checkbox, "click");
 

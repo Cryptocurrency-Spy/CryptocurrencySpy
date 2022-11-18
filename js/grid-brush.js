@@ -226,6 +226,7 @@ class GridBrush {//Bubble
             })
 
         // console.log(globalObj.selectedTime)
+        globalObj.treemap.draw_treemap()
         globalObj.line_chart.updateRange(e)
     }
 
