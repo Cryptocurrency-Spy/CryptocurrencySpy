@@ -25,42 +25,43 @@ class NameSelect {
 
 
         // checkboxes
-        this.labels = this.div.select("#checkbox_group").selectAll('label')
-            .data(this.allNames)
-            .join('label')
-            .on('click', e => this.updateNameSelection(e))
+        // this.labels = this.div.select("#checkbox_group").selectAll('label')
+        //     .data(this.allNames.map(d => {
+        //         return {id: d, selected: false};
+        //     }))
+        //     .join('label')
+        //     .on('click', (e, d) => this.updateName(d))
 
-        this.checkboxes = this.labels.append('input')
-            .data(this.allNames)
-            .attr('type', 'checkbox')
-            .attr('class', 'myCheckbox')
-            .attr('id', d => d)
+        // this.checkboxes = this.labels.append('input')
+        //     .datum(d => d.id)
+        //     .attr('type', 'checkbox')
+        //     .attr('class', 'myCheckbox')
+        //     .attr('id', d => `${d}`)
 
-        this.texts = this.labels.append('text')
-            .data(this.allNames)
-            .text(d => d)
-            .attr('id', d => d)
-            .style('color', d => this.colorScale(d))
+        // this.texts = this.labels.append('text')
+        //     .datum(d => d)
+        //     .text(d => d.id)
+        //     .attr('id', d => d.id)
+        //     .style('color', d => this.colorScale(d.id))
 
-        // button
-        this.clearButton = this.div.select('#clear_names')
-            .on('click', e => this.clearNameSelection(e))
+        // // button
+        // this.clearButton = this.div.select('#clear_names')
+        //     .on('click', e => this.clearNameSelection(e))
 
 
     }
 
-    updateNameSelection(e) {
-        let et = e.target
-        // console.log(et)
-        // console.log(et.checked)
+    // updateNameSelection(e) {
+    //     let et = e.target
+    //     // console.log(et)
+    //     // console.log(et.checked)
+    //     this.updateName(et)
+    // }
 
-        this.updateName(et)
-    }
-
-    updateName(et) {
-        let name = et.getAttribute('id')
-
-        if (!et.checked) {
+    updateName(d) {
+        // let name = et.getAttribute('id')
+        const name = d.id;
+        if (!d.selected) {
             let index = globalObj.selectedNames.indexOf(name);
             if (index !== -1) {  // if found
                 globalObj.selectedNames.splice(index, 1);  // delete name
@@ -81,9 +82,9 @@ class NameSelect {
     clearNameSelection() {
         globalObj.selectedNames = []
 
-        for (let box of this.checkboxes){
-            box.checked = false;
-        }
+        // for (let box of this.checkboxes){
+        //     box.checked = false;
+        // }
 
         for (let rect of globalObj.treemap.rectangles){
             // rect.attr('checked', false)

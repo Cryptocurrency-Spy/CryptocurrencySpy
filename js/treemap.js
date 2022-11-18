@@ -82,7 +82,8 @@ class Treemap {
                 else {
                     rect.style("stroke", "none");
                 }
-                this.updateNameSelectionByTreemap(e);
+                globalObj.name_select.updateName(d);
+                // this.updateNameSelectionByTreemap(e);
             })
 
         this.texts = this.cell.append("text")
@@ -103,6 +104,7 @@ class Treemap {
             .filter(d => (d === name))
             .node()
         checkbox.click()
+        
 
         // this.triggerMouseEvent(checkbox, "click");
 
