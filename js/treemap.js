@@ -67,8 +67,9 @@ class Treemap {
             .attr("width", d => d.x1 - d.x0)
             .attr("height", d => d.y1 - d.y0)
             .attr("fill", d => {
-                let a = d.ancestors();
-                return color(a[0].id);
+                return globalObj.colorScale(d.id);
+                // let a = d.ancestors();
+                // return color(a[0].id);
             })
             .style("stroke-width", "5px")
             .attr('checked', false)
