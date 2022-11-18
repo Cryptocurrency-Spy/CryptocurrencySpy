@@ -55,7 +55,14 @@ class Treemap {
             .attr("transform", d => "translate(" + d.x0 + "," + d.y0 + ")");
         //Notice that the fill is dependent on the hierarchy (2 levels up)
 
-        this.rectangles = this.cell.append("rect")
+        this.rectangles = this.cell
+            .selectAll("rect")
+            .data(d => {
+                let _d = d;
+                _d.selected = false;
+                return [_d];
+            })
+            .join("rect")
             .attr("id", d => d.id)
             .attr("width", d => d.x1 - d.x0)
             .attr("height", d => d.y1 - d.y0)
@@ -63,8 +70,20 @@ class Treemap {
                 let a = d.ancestors();
                 return color(a[0].id);
             })
+            .style("stroke-width", "5px")
             .attr('checked', false)
-            .on('click', e => this.updateNameSelectionByTreemap(e))
+            .on('click', (e, d) => {
+                let rect = d3.select(`#${d.id}`);
+                d.selected = !d.selected
+                rect.datum(d)
+                if (d.selected) {
+                    rect.style("stroke", "black");
+                }
+                else {
+                    rect.style("stroke", "none");
+                }
+                this.updateNameSelectionByTreemap(e);
+            })
 
         this.texts = this.cell.append("text")
             // .attr("x", d => 0.5 * (d.x1 -d.x0))
