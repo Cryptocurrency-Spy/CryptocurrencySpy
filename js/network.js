@@ -1,55 +1,47 @@
-{
-    let width = 800;
-    let height = 600;
+class Network {
 
-    let svg = d3.select("#network")
-        .attr('width', width)
-        .attr('height', height);
+    constructor() {
+        let width = 800;
+        let height = 600;
 
-    let color = d3.scaleOrdinal(d3.schemePaired);
+        let svg = d3.select("#network")
+            .attr('width', width)
+            .attr('height', height);
 
-    // Here we create our simulation, and give it some forces to apply 
-    //  to all the nodes:
-    let simulation = d3.forceSimulation()
-        // forceLink creates tension along each link, keeping connected nodes together
-        .force("link", d3.forceLink().
-            id(d => d.id)
-            .strength(d => Math.sqrt(d.value))
+        let color = d3.scaleOrdinal(d3.schemePaired);
+
+        // Here we create our simulation, and give it some forces to apply
+        //  to all the nodes:
+        let simulation = d3.forceSimulation()
+            // forceLink creates tension along each link, keeping connected nodes together
+            .force("link", d3.forceLink().id(d => d.id)
+                .strength(d => Math.sqrt(d.value))
             )
-        // forceManyBody creates a repulsive force between nodes, 
-        //  keeping them away from each other
-        .force("charge", d3.forceManyBody())
-        // forceCenter acts like gravity, keeping the whole visualization in the 
-        //  middle of the screen
-        .force("center", d3.forceCenter(width / 2, height / 2));
+            // forceManyBody creates a repulsive force between nodes,
+            //  keeping them away from each other
+            .force("charge", d3.forceManyBody())
+            // forceCenter acts like gravity, keeping the whole visualization in the
+            //  middle of the screen
+            .force("center", d3.forceCenter(width / 2, height / 2));
 
-    // This part triggers an asynchronous call to go grab the data in another file...
-    //  stuff inside this function might not actually happen for a while!
-    d3.csv("data/small_sample.csv").then( graph => {
-        // timestamp,input_key,output_key,satoshis
 
-        let outputs = [...d3.group(graph, d => d.output_key).keys()]; 
-        let inputs = [...d3.group(graph, d => d.input_key).keys()];
-        let network_links = graph.map(d => {
-            d.source = d.input_key;
-            d.target = d.output_key;
-            d.value = d.satoshis / 1e12;
-            return d;
-        });
+        let data = globalObj.parsedTransData
+        let outputs = [...d3.group(data, d => d.target).keys()];
+        let inputs = [...d3.group(data, d => d.source).keys()];
+
 
         outputs.push(inputs[0]);
         outputs = outputs.map(d => {
             return {id: d};
         });
-        console.log(outputs)
 
-        // First we create the links in their own group that comes before the node 
+        // First we create the links in their own group that comes before the node
         //  group (so the circles will always be on top of the lines)
         let linkLayer = svg.append("g")
             .attr("class", "links");
         // Now let's create the lines
         let links = linkLayer.selectAll("line")
-            .data(network_links)
+            .data(data)
             .enter().append("line")
             .attr("stroke-width", d => Math.sqrt(d.value * 1e2));
 
@@ -64,29 +56,29 @@
             .attr("fill", d => "black")
 
             // This part adds event listeners to each of the nodes; when you click,
-            //  move, and release the mouse on a node, each of these functions gets 
+            //  move, and release the mouse on a node, each of these functions gets
             //  called (we've defined them at the end of the file)
             .call(d3.drag()
                 .on("start", dragstarted)
                 .on("drag", dragged)
                 .on("end", dragended));
 
-        // We can add a tooltip to each node, so when you hover over a circle, you 
+        // We can add a tooltip to each node, so when you hover over a circle, you
         //  see the node's id
         nodes.append("title")
-            .text( d => d.id );
+            .text(d => d.id);
 
         // Now that we have the data, let's give it to the simulation...
         simulation.nodes(outputs);
         // The tension force (the forceLink that we named "link" above) also needs
-        //  to know about the link data that we finally have - we couldn't give it 
+        //  to know about the link data that we finally have - we couldn't give it
         //  earlier, because it hadn't been loaded yet!
         simulation.force("link")
-            .links(network_links);
+            .links(data);
 
         // Finally, let's tell the simulation how to update the graphics
         simulation.on("tick", function () {
-            // Every "tick" of the simulation will create / update each node's 
+            // Every "tick" of the simulation will create / update each node's
             //  coordinates; we need to use those coordinates to move the lines
             //  and circles into place
             links
@@ -111,22 +103,24 @@
                     return d.y;
                 });
         });
-    }).catch(error => console.log(error));
 
-    function dragstarted(event, d) {
-        if (!event.active) simulation.alphaTarget(0.3).restart();
-        d.fx = d.x;
-        d.fy = d.y;
-    }
 
-    function dragged(event, d) {
-        d.fx = event.x;
-        d.fy = event.y;
-    }
+        function dragstarted(event, d) {
+            if (!event.active) simulation.alphaTarget(0.3).restart();
+            d.fx = d.x;
+            d.fy = d.y;
+        }
 
-    function dragended(event, d) {
-        if (!event.active) simulation.alphaTarget(0);
-        d.fx = null;
-        d.fy = null;
+        function dragged(event, d) {
+            d.fx = event.x;
+            d.fy = event.y;
+        }
+
+        function dragended(event, d) {
+            if (!event.active) simulation.alphaTarget(0);
+            d.fx = null;
+            d.fy = null;
+        }
+
     }
 }

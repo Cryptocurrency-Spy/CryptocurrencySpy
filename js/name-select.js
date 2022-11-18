@@ -18,7 +18,7 @@ class NameSelect {
 
         this.allNames = globalObj.allNames
 
-        this.num = this.allNames.length
+        this.name_num = this.allNames.length
 
 
         this.colorScale = globalObj.colorScale;
@@ -28,7 +28,7 @@ class NameSelect {
         this.labels = this.div.select("#checkbox_group").selectAll('label')
             .data(this.allNames)
             .join('label')
-            .on('mousedown', e => this.updateNameSelection(e))
+            .on('click', e => this.updateNameSelection(e))
 
         this.checkboxes = this.labels.append('input')
             .data(this.allNames)
@@ -51,17 +51,22 @@ class NameSelect {
 
     updateNameSelection(e) {
         let et = e.target
-        console.log(et)
+        // console.log(et)
         // console.log(et.checked)
 
+        this.updateName(et)
+    }
+
+    updateName(et) {
         let name = et.getAttribute('id')
-        if (et.checked) {
+
+        if (!et.checked) {
             let index = globalObj.selectedNames.indexOf(name);
             if (index !== -1) {  // if found
                 globalObj.selectedNames.splice(index, 1);  // delete name
             }
         } else {
-            if(globalObj.selectedNames.length===this.num){
+            if(globalObj.selectedNames.length===this.name_num){
                 this.clearNameSelection()
             }
             let index = globalObj.selectedNames.indexOf(name);
@@ -69,25 +74,21 @@ class NameSelect {
                 globalObj.selectedNames.push(name)
             }
         }
-
-        globalObj.line_chart.updateRange(e)
-
-
-        // if(d3.select("#myCheckbox").property("checked")){
-        //     newData = data.filter(function(d,i){return d % 2 == 0;});
-        // } else {
-        //     newData = data;
-        // }
+        console.log(globalObj.selectedNames)
+        globalObj.line_chart.updateRange()
     }
 
-    clearNameSelection(e) {
+    clearNameSelection() {
         globalObj.selectedNames = []
 
         for (let box of this.checkboxes){
             box.checked = false;
         }
 
-        globalObj.line_chart.updateRange(e)
+        for (let rect of globalObj.treemap.rectangles){
+            // rect.attr('checked', false)
+            rect.checked = false
+        }
     }
 
 

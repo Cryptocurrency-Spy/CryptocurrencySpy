@@ -4,28 +4,42 @@ class GridBrush {//Bubble
     constructor() {
         this.parsedData = globalObj.parsedData;
 
-        this.groupedTimeData = d3.group(this.parsedData, d => d.month);
+        this.groupedTimeData = globalObj.groupedTimeData
         this.allTime = Array.from(this.groupedTimeData.keys())
-        globalObj.selectedTime = this.allTime
+        globalObj.selectedTime = this.allTime  // ["2019/04", "2019/03", ...]
+        this.allTimeStart = 2013
+        this.year_count = 7
+
+        this.capital_by_time = {}
+        for (let time of this.allTime) {
+            let data = this.groupedTimeData.get(time)
+            let capital_sum = data.reduce((acc, obj) => {  // accumulator, object
+                let add = parseFloat(obj.cap)
+                return acc + (isNaN(add)? 0: add);
+            }, 0);
+            this.capital_by_time[time] = capital_sum
+        }
+        let cmax = 0
+        let cmin = Infinity
+        Object.entries(this.capital_by_time).forEach(([key, value]) => {
+            // console.log(key, value);
+            if (value > cmax) {
+                cmax = value
+            }
+            if (value < cmin) {
+                cmin = value
+            }
+        });
+        // console.log(this.capital_max)
 
         this.divWidth = 900;
         this.divHeight = 900;
-        this.svgHeight = 450;
+        this.svgHeight = 270;
         this.margin = 10;
         this.dx = 70
         this.dy = 50
         this.w = 50
         this.h = 30
-        this.year_count = 13
-
-
-        // this.scaleX = d3.scaleLinear()
-        //     .domain([-50, 50])
-        //     .range([20, this.vizWidth-40]);
-        //
-        // this.axisX = d3.axisTop(this.scaleX)
-        //     .tickValues([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12])
-        //     .tickFormat((d, i) => ["Jan", "Feb", "March", "Apr", "May", "June", "July", "Aug", "Sept", "Oct", "Nov", "Dec"][i]);
 
         this.div = d3.select('#grid-brush')
             .style('width', this.divWidth + 'px')
@@ -42,20 +56,36 @@ class GridBrush {//Bubble
         this.rectGroup = this.svg.select('#rect_group')
             .attr('transform', 'translate('+ this.dx + ','+ this.dy +')')////
             .attr('id', 'grid_rectangles')
-        this.rect_data = []
+        this.rect_indices = []
         for(let j of [...Array(this.year_count).keys()]) {
             for (let i of [...Array(12).keys()]) {
-                this.rect_data.push([i, j]);
+                this.rect_indices.push([i, j]);
             }
         }
+        let capital_by_time = this.capital_by_time
         this.rects = this.rectGroup.selectAll('rect')
-            .data(this.rect_data)
+            .data(this.rect_indices)
             .join('rect')
             .attr('width', this.w)
             .attr('height', this.h)
             .attr('x', d => this.w * d[0])
             .attr('y', d => this.h * d[1])
-            .attr('class', 'gridRect')
+            // .attr('class', 'gridRect')
+        //
+            .attr('fill', function(d){
+                // d[0]: month (0-11), d[1]: year (0-12)
+                let year_str = (d[1]+2013).toString()
+                let month_str = (d[0]+1).toString()
+                if (month_str.length < 2)
+                    month_str = "0" + month_str;
+                let time_str = year_str + "/" + month_str
+                let color = "gray"
+                if (time_str in capital_by_time) {
+                    color = d3.interpolateReds(Math.log(capital_by_time[time_str]/cmin)/Math.log(cmax/cmin))
+                }
+                return color
+            })
+
 
         // texts of years
         this.yearTextGroup = this.svg.append('g')
@@ -63,7 +93,7 @@ class GridBrush {//Bubble
             .attr('transform', 'translate('+ 30 + ','+ 68 +')')
         let years = []
         for (let i of [...Array(this.year_count).keys()]) {
-            years.push(i + 2010)
+            years.push(i + this.allTimeStart)
         }
         this.yearText = this.yearTextGroup.selectAll('text')
             .data(years)
@@ -85,12 +115,8 @@ class GridBrush {//Bubble
         // brushes
         this.attachBrushes()
 
-        // this.div.select('svg').remove()
-
         // button
         this.clearButton = this.div.select('#clear_time')
-            .attr('transform', 'translate(0,' + 400 + ')')
-            // .attr('top', 400)
             .on('click', e => this.clearTimeSelection(e))
 
     }
@@ -111,6 +137,7 @@ class GridBrush {//Bubble
 
         this.brushg = this.brushGroup.append('g')
             .call(this.brush)
+
     }
 
     brushstart(e) {
@@ -178,8 +205,7 @@ class GridBrush {//Bubble
                 d[1] >= connerRectIndices[0][1] && d[1] <= connerRectIndices[1][1]
             ))
             .attr('class', 'gridRect' + ' selected')
-
-            // .attr('aaa', d => (console.log(d[0],d[1])))
+            // .attr("")
 
     }
 
@@ -187,16 +213,19 @@ class GridBrush {//Bubble
         // console.log('brushend called')
         // globalObj.grid_brush.updateLineChart();
 
-        globalObj.selectedTime = []  // "month/year", such as "03/2020"
+        globalObj.selectedTime = []  // "year/month", such as "2020/03"
         this.selectedRects
             .attr('time', function(d){
                 // d[0]: month (0-11), d[1]: year (0-12)
-                let year_str = (d[1]+2010).toString()
+                let year_str = (d[1]+2013).toString()
                 let month_str = (d[0]+1).toString()
+                if (month_str.length < 2)
+                    month_str = "0" + month_str;
                 globalObj.selectedTime.push(year_str + "/" + month_str)
                 return year_str + "/" + month_str
             })
 
+        // console.log(globalObj.selectedTime)
         globalObj.line_chart.updateRange(e)
     }
 
@@ -214,7 +243,7 @@ class GridBrush {//Bubble
 
         this.rects.attr('class', 'gridRect')
 
-        globalObj.line_chart.updateRange(e)
+        globalObj.line_chart.updateRange()
     }
 
 }
