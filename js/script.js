@@ -53,12 +53,13 @@ Promise.all([pricesFile, transFile]).then(data =>
         globalObj.treemap = new Treemap();
 
         let transData = data[1];
+        let parse = d3.timeParse("%Q");
         globalObj.parsedTransData = transData.map(d => ({
             // timestamp,input_key,output_key,satoshis
-            time: d["timestamp"],
+            time: parse(d["timestamp"]),
             source: d["input_key"],
             target: d["output_key"],
-            value: d["satoshis"] / 1e12,
+            value: d["satoshis"] / 1e8,
         }));
         globalObj.network = new Network();
 

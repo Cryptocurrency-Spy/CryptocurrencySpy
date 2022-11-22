@@ -15,7 +15,7 @@ class Network {
         let simulation = d3.forceSimulation()
             // forceLink creates tension along each link, keeping connected nodes together
             .force("link", d3.forceLink().id(d => d.id)
-                .strength(d => Math.sqrt(d.value))
+                .strength(d => Math.sqrt(d.value / 1e4))
             )
             // forceManyBody creates a repulsive force between nodes,
             //  keeping them away from each other
@@ -24,17 +24,21 @@ class Network {
             //  middle of the screen
             .force("center", d3.forceCenter(width / 2, height / 2));
 
+            
+        let data = globalObj.parsedTransData;
+        let map = d3.group(data, d => d.target);
+        let targets = [...map.keys()]
+        // let targets = [...d3.group(data, d => d.target).keys()];
+        let sources = [...d3.group(data, d => d.source).keys()];
 
-        let data = globalObj.parsedTransData
-        let outputs = [...d3.group(data, d => d.target).keys()];
-        let inputs = [...d3.group(data, d => d.source).keys()];
+        // targets.push(sources[0]);
+        let all_nodes = targets.concat(sources);
 
-
-        outputs.push(inputs[0]);
-        outputs = outputs.map(d => {
-            return {id: d};
-        });
-
+        let values = data.map(d => d.value)
+        let min_value = d3.min(values), max_value = d3.max(values)
+        let scale = d3.scaleLog()
+            .domain([min_value, max_value])
+            .range([1.0, 15.0])
         // First we create the links in their own group that comes before the node
         //  group (so the circles will always be on top of the lines)
         let linkLayer = svg.append("g")
@@ -43,17 +47,36 @@ class Network {
         let links = linkLayer.selectAll("line")
             .data(data)
             .enter().append("line")
-            .attr("stroke-width", d => Math.sqrt(d.value * 1e2));
+            // .attr("stroke-width", d => scale(d.value));
+            .attr("stroke-width", d => Math.sqrt(d.value/ 49) + 0.5);
+        
+        links.append("title")
+            .text(d => `${d.time}, ${d.value} bitcoins`)
+
+        let t = d3.group(links, d => d.__data__.source);
+        // d3.selectAll(t.get('1XPTgDRhN8RFnzniWCddobD9iKZatrvH4'))
+        //     .style("stroke", "black")
+            
+        console.log(t)
+        targets = targets.map(d => {
+            let obj = {
+                id: d, 
+                adjacents: t.get(d)
+            };
+            console.log(obj.adjacents)
+            return obj;
+        });
 
         // Now we create the node group, and the nodes inside it
         let nodeLayer = svg.append("g")
             .attr("class", "nodes");
         let nodes = nodeLayer
             .selectAll("circle")
-            .data(outputs)
+            .data(targets)
             .enter().append("circle")
+            .classed("nodes", true)
             .attr("r", 5)
-            .attr("fill", d => "black")
+            .attr("fill", d => "#888")
 
             // This part adds event listeners to each of the nodes; when you click,
             //  move, and release the mouse on a node, each of these functions gets
@@ -62,6 +85,23 @@ class Network {
                 .on("start", dragstarted)
                 .on("drag", dragged)
                 .on("end", dragended));
+        
+        var mouseover = function(event, d) {
+            let adjacents = d3.selectAll(d.adjacents)
+            // adjacents.classed("links line:hover", true)
+            adjacents
+                .style('opacity', 1.0)
+                .style('stroke', "firebrick")
+                // FIXME: stop tampering with style and use class
+        }
+        var mouseleave = function(event, d) {
+            let adjacents = d3.selectAll(d.adjacents)
+            adjacents
+                .style('opacity', 0.6)
+                .style('stroke', "#999")
+        }        
+        nodes.on("mouseover", mouseover)
+            .on("mouseleave", mouseleave)
 
         // We can add a tooltip to each node, so when you hover over a circle, you
         //  see the node's id
@@ -69,7 +109,7 @@ class Network {
             .text(d => d.id);
 
         // Now that we have the data, let's give it to the simulation...
-        simulation.nodes(outputs);
+        simulation.nodes(targets);
         // The tension force (the forceLink that we named "link" above) also needs
         //  to know about the link data that we finally have - we couldn't give it
         //  earlier, because it hadn't been loaded yet!

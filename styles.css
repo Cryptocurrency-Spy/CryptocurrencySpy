@@ -271,7 +271,14 @@ input:checked + .slider:before {
     stroke: #999;
     stroke-opacity: 0.6;
 }
-.nodes circle {
-    stroke: #fff;
+.links line:hover {
+    stroke: #000;
+    stroke-opacity: 1.0;
+}
+.nodes {
+    stroke: #666;
     stroke-width: 1.5px;
+}
+.nodes:hover {
+    fill: #000;
 }
