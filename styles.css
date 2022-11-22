@@ -272,7 +272,7 @@ input:checked + .slider:before {
     stroke-opacity: 0.6;
 }
 .links line:hover {
-    stroke: #000;
+    /* stroke: #000; */
     stroke-opacity: 1.0;
 }
 .nodes {

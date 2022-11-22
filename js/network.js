@@ -33,7 +33,9 @@ class Network {
 
         // targets.push(sources[0]);
         let all_nodes = targets.concat(sources);
-
+        let node_set = new Set()
+        all_nodes.forEach(d => node_set.add(d))
+        all_nodes = [...node_set.values()]
         let values = data.map(d => d.value)
         let min_value = d3.min(values), max_value = d3.max(values)
         let scale = d3.scaleLog()
@@ -53,17 +55,16 @@ class Network {
         links.append("title")
             .text(d => `${d.time}, ${d.value} bitcoins`)
 
-        let t = d3.group(links, d => d.__data__.source);
+        let out_links = d3.group(links, d => d.__data__.source);
+        let in_links = d3.group(links, d => d.__data__.target)
         // d3.selectAll(t.get('1XPTgDRhN8RFnzniWCddobD9iKZatrvH4'))
         //     .style("stroke", "black")
-            
-        console.log(t)
-        targets = targets.map(d => {
+        all_nodes = all_nodes.map(d => {
             let obj = {
                 id: d, 
-                adjacents: t.get(d)
+                outs: out_links.get(d),
+                ins: in_links.get(d)
             };
-            console.log(obj.adjacents)
             return obj;
         });
 
@@ -72,7 +73,7 @@ class Network {
             .attr("class", "nodes");
         let nodes = nodeLayer
             .selectAll("circle")
-            .data(targets)
+            .data(all_nodes)
             .enter().append("circle")
             .classed("nodes", true)
             .attr("r", 5)
@@ -87,16 +88,23 @@ class Network {
                 .on("end", dragended));
         
         var mouseover = function(event, d) {
-            let adjacents = d3.selectAll(d.adjacents)
-            // adjacents.classed("links line:hover", true)
-            adjacents
+            let outs = d3.selectAll(d.outs)
+            let ins = d3.selectAll(d.ins)
+            ins
+                .style('opacity', 1.0)
+                .style('stroke', "green")
+            outs
                 .style('opacity', 1.0)
                 .style('stroke', "firebrick")
                 // FIXME: stop tampering with style and use class
         }
         var mouseleave = function(event, d) {
-            let adjacents = d3.selectAll(d.adjacents)
-            adjacents
+            let outs = d3.selectAll(d.outs)
+            let ins = d3.selectAll(d.ins)
+            outs //.merge(ins) // nothing happens
+                .style('opacity', 0.6)
+                .style('stroke', "#999")
+            ins
                 .style('opacity', 0.6)
                 .style('stroke', "#999")
         }        
@@ -106,10 +114,10 @@ class Network {
         // We can add a tooltip to each node, so when you hover over a circle, you
         //  see the node's id
         nodes.append("title")
-            .text(d => d.id);
+            .text(d => `Account signature ${d.id}`);
 
         // Now that we have the data, let's give it to the simulation...
-        simulation.nodes(targets);
+        simulation.nodes(all_nodes);
         // The tension force (the forceLink that we named "link" above) also needs
         //  to know about the link data that we finally have - we couldn't give it
         //  earlier, because it hadn't been loaded yet!
