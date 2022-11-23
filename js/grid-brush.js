@@ -38,7 +38,7 @@ class GridBrush {//Bubble
         this.margin = 10;
         this.dx = 70
         this.dy = 50
-        this.w = 50
+        this.w = 40
         this.h = 30
 
         this.div = d3.select('#grid-brush')

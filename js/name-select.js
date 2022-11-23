@@ -12,7 +12,7 @@ class NameSelect {
         this.div = d3.select("#name-select")
             .style('width', this.divWidth)
             .style('height', this.divHeight)
-            .style('background-color', 'black')
+            // .style('background-color', 'black')
 
         this.parsedData = globalObj.parsedData;
 
