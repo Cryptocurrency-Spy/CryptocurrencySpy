@@ -9,32 +9,33 @@
  - [x] oapcity to show the time of transaction 
  - [x] zoom and pan 
 
-
 [ ] zoomable-treemap
   https://observablehq.com/@d3/zoomable-treemap
 [X] overall organization
 [X] green and red treemap
-[ ] line chart: highlight the whole line on hover 
+[X] line chart: highlight the whole line on hover 
     [ ] and pop out the treemap section, probably with a linking line 
     see this for fancy hovering https://observablehq.com/@d3/voronoi-labels
     or just use mouseover
 
 #### Story telling 
-[ ] line-chart & brush: 
-    [ ] which season is hotter
-    [ ] what fueled the rapid growth and falls   
+- [ ] line-chart & brush: 
 
-[ ] Force-directed Tree
-  [ ] what happend to the 100,000 bitcoin pizza?
-  [ ] group by time, how are people's paying pattern different 
-  [ ] show the value by bitcoin price now 
+  - [ ] which season is hotter
+  - [ ] what fueled the rapid growth and falls   
+
+- [ ] Force-directed Tree
+- [ ] what happend to the 100,000 bitcoin pizza?
+- [ ] group by time, how are people's paying pattern different 
+- [ ] show the value by bitcoin price now 
 
 #### Bugs
-[ ] line chart: FIX linear interploation 
-[ ] treemap: FIX root node
-[ ] treemap: FIX slim slice 
+- [ ] line chart: FIX linear interploation 
+
+- [ ] treemap: FIX root node
+- [ ] treemap: FIX slim slice 
 
 
 #### Optional - Low priority
 
-[ ] linked scatter plot
+- [ ] linked scatter plot
