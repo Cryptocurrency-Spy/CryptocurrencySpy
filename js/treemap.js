@@ -66,7 +66,7 @@ class Treemap {
                 return [_d];
             })
             .join("rect")
-            .attr("id", d => d.id)
+            .attr("id", d => `${d.id}1`)
             .attr("width", d => d.x1 - d.x0)
             .attr("height", d => d.y1 - d.y0)
             .attr("fill", d => {
@@ -77,7 +77,7 @@ class Treemap {
             .style("stroke-width", "5px")
             .attr('checked', false)
             .on('click', (e, d) => {
-                let rect = d3.select(`#${d.id}`);
+                let rect = d3.select(`#${d.id}1`);
                 d.selected = !d.selected
                 rect.datum(d)
                 if (d.selected) {
