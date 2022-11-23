@@ -74,10 +74,10 @@ class LineChart {
 
     updatePaths(){
         let names = globalObj.selectedNames;
-        if (names.length===0) {
-            // console.log("names = globalObj.allNames!!!")
-            names = globalObj.allNames;
-        }
+        // if (names.length===0) {
+        //     // console.log("names = globalObj.allNames!!!")
+        //     names = globalObj.allNames;
+        // }
         // console.log(names)
         for (let name of names){
             let data = this.groupedData.get(name)
@@ -97,8 +97,6 @@ class LineChart {
                 .attr('fill', this.colorScale(name))
                 .attr('opacity', 0.5)
 
-
-
         }
     }
 
@@ -110,13 +108,13 @@ class LineChart {
             .filter(d => globalObj.selectedTime.length === 0 ? false : globalObj.selectedTime.includes(d.month))
             .filter(d => globalObj.selectedNames.length === 0 ? false : globalObj.selectedNames.includes(d.name))//
 
-        if (this.selectedData.length === 0) {  // if no data is selected, select all
-        // if (globalObj.selectedTime.length === 0 && globalObj.selectedNames.length === 0) {
-        //     console.log("selecting all")
-            this.selectedData = this.parsedData;
-            globalObj.selectedTime = this.allTime;
-            globalObj.selectedNames = this.allNames;
-        }
+        // if (this.selectedData.length === 0) {  // if no data is selected, select all
+        // // if (globalObj.selectedTime.length === 0 && globalObj.selectedNames.length === 0) {
+        // //     console.log("selecting all")
+        //     this.selectedData = this.parsedData;
+        //     globalObj.selectedTime = this.allTime;
+        //     globalObj.selectedNames = this.allNames;
+        // }
 
         this.updateAxes()
         this.updatePaths()
@@ -155,19 +153,19 @@ class LineChart {
                 // console.log(dataFetched)
             }
 
-            // set the overlay labels---------------------------------------------------------------------------------
-            const f = d3.format(".2");
-            this.svg.select('#overlay')
-                .selectAll('text')
-                .data(dataFetched)
-                .join('text')
-                .text(d => `${d[0].name}, ${f(d[0].price)}`)
-                .attr('x', d => (d3.timeParse("%Y/%m/%d")(d[0].date)) > (0.5 * this.start_time + 0.5 * this.final_time) ?
-                    mouseX - 170 : mouseX + 10)
-                .attr('y', (d, i) => 20 * i + 20)
-                .attr('alignment-baseline', 'hanging')
-                .attr('fill', d => d[1]);
-
+            if(dataFetched.length) {
+                const f = d3.format(".2");
+                this.svg.select('#overlay')
+                    .selectAll('text')
+                    .data(dataFetched)
+                    .join('text')
+                    .text(d => `${d[0].name}, ${f(d[0].price)}`)
+                    .attr('x', d => (d3.timeParse("%Y/%m/%d")(d[0].date)) > (0.5 * this.start_time + 0.5 * this.final_time) ?
+                        mouseX - 170 : mouseX + 10)
+                    .attr('y', (d, i) => 20 * i + 20)
+                    .attr('alignment-baseline', 'hanging')
+                    .attr('fill', d => d[1]);
+            }
         }
 
 

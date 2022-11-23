@@ -12,6 +12,31 @@ const globalObj = {
     name_select: null,
     treemap: null,
     network: null,
+    updateGlobalNameSelection(e) {
+        if(e.type!=="end"){  // eliminate the call from grid-brush
+
+            // both name-select and treemap call this
+            let et = e.target
+            let name = et.getAttribute('id')
+
+            let index = globalObj.selectedNames.indexOf(name);
+            if (index !== -1) {  // if found
+                globalObj.selectedNames.splice(index, 1);  // delete name
+            }
+            else{
+                if(globalObj.selectedNames.length===this.name_num){
+                    globalObj.selectedNames = []
+                }
+                globalObj.selectedNames.push(name)
+            }
+        }
+
+        console.log(globalObj.selectedNames)
+
+        globalObj.line_chart.updateRange()
+        globalObj.name_select.updateCheckboxStatus()
+        globalObj.treemap.updateTreeRectStatus()
+    }
 };
 
 pricesFile = d3.csv('./data/consolidated_coin_data.csv');
@@ -51,6 +76,9 @@ Promise.all([pricesFile, transFile]).then(data =>
         globalObj.line_chart = new LineChart();
         globalObj.treemap = new Treemap();
         globalObj.name_select = new NameSelect();
+
+        globalObj.name_select.updateCheckboxStatus()
+        globalObj.treemap.updateTreeRectStatus()
 
         let transData = data[1];
         let parse = d3.timeParse("%Q");
