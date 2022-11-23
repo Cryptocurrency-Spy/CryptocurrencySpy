@@ -3,8 +3,9 @@
 #### Force-directed Tree
 - [ ] responsively load transaction data,
  - [ ] pressure test, load data on the fly
+  - [ ] add slide bars, buttons for filter & debug
+ - [ ] add grouping (parallel lines layout?)
  - [ ] unfold on selection
- - [ ] add grouping
  - [x] oapcity to show the time of transaction 
  - [x] zoom and pan 
 
@@ -15,6 +16,8 @@
 [X] green and red treemap
 [ ] line chart: highlight the whole line on hover 
     [ ] and pop out the treemap section, probably with a linking line 
+    see this for fancy hovering https://observablehq.com/@d3/voronoi-labels
+    or just use mouseover
 
 #### Story telling 
 [ ] line-chart & brush: 
