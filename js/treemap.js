@@ -1,10 +1,10 @@
 class Treemap {
 
     constructor() {
-    let svg = d3.select("#treemap"),
-        width = svg.attr("width"),
-        height = svg.attr("height");
-    this.color = d3.scaleOrdinal(d3.schemeGnBu[9]);
+        let svg = d3.select("#treemap"),
+            width = svg.attr("width"),
+            height = svg.attr("height");
+        // this.color = d3.scaleOrdinal(d3.schemeGnBu[9]);
 
         this.format = d3.format(",d");
 
@@ -66,13 +66,11 @@ class Treemap {
         this.cell = svg.selectAll("a")
             .data(root.leaves())
             .join("a")
-            // .enter()
             .selectAll("g")
             .data(d => [d])
             .join("g")
             .attr("target", "_blank")
             .attr("transform", d => "translate(" + d.x0 + "," + d.y0 + ")");
-        //Notice that the fill is dependent on the hierarchy (2 levels up)
 
         let changes = _data.map(d => d.change)
         let max_changes = d3.max(changes), min_changes = d3.min(changes)
@@ -94,9 +92,9 @@ class Treemap {
             .attr("width", d => d.x1 - d.x0)
             .attr("height", d => d.y1 - d.y0)
             .attr("fill", d => {
-                // return globalObj.colorScale(d.id);
-                let t = map_from_name.get(d.id)[0]
-                return scale_change(t.change);
+                return globalObj.colorScale(d.id);
+                // let t = map_from_name.get(d.id)[0]
+                // return scale_change(t.change);
                 // let a = d.ancestors();
                 // return this.color(a[0].id);
             })
