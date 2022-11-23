@@ -41,7 +41,7 @@ const globalObj = {
 };
 
 pricesFile = d3.csv('./data/consolidated_coin_data.csv');
-transFile = d3.csv('./data/small_sample.csv');
+transFile = d3.csv('./data/chunk0.csv');
 
 Promise.all([pricesFile, transFile]).then(data =>
     {
