@@ -48,9 +48,9 @@ Promise.all([pricesFile, transFile]).then(data =>
         globalObj.allTime = Array.from(globalObj.groupedTimeData.keys())
 
         globalObj.grid_brush = new GridBrush();
-        globalObj.name_select = new NameSelect();
         globalObj.line_chart = new LineChart();
         globalObj.treemap = new Treemap();
+        globalObj.name_select = new NameSelect();
 
         let transData = data[1];
         let parse = d3.timeParse("%Q");
