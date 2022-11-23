@@ -9,6 +9,9 @@
  - [ ] load data on the fly
  - [ ] zoom and pan 
 
+
+[ ] zoomable-treemap
+  https://observablehq.com/@d3/zoomable-treemap
 [X] overall organization
 [X] green and red treemap
 [ ] line chart: highlight the whole line on hover 
