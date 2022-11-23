@@ -2,12 +2,11 @@
 
 #### Force-directed Tree
 - [ ] responsively load transaction data,
- - [ ] pressure test
+ - [ ] pressure test, load data on the fly
  - [ ] unfold on selection
  - [ ] add grouping
- - [ ] oapcity to show the time of transaction 
- - [ ] load data on the fly
- - [ ] zoom and pan 
+ - [x] oapcity to show the time of transaction 
+ - [x] zoom and pan 
 
 [ ] zoomable-treemap
   https://observablehq.com/@d3/zoomable-treemap
