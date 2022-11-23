@@ -86,7 +86,17 @@ class Network {
                 .on("start", dragstarted)
                 .on("drag", dragged)
                 .on("end", dragended));
-        
+        const times = data.map( d => d.time)
+        let max_opa = 0.8, min_opa = 0.2,
+            max_time = d3.max(times), min_time = d3.min(times)
+            
+        let time_scale = d3.scaleTime()
+            .domain([min_time, max_time])
+            .range([min_opa, max_opa])
+
+        links
+            .style("opacity", d => time_scale(d.time))
+
         var mouseover = function(event, d) {
             let outs = d3.selectAll(d.outs)
             let ins = d3.selectAll(d.ins)
@@ -102,10 +112,10 @@ class Network {
             let outs = d3.selectAll(d.outs)
             let ins = d3.selectAll(d.ins)
             outs //.merge(ins) // nothing happens
-                .style('opacity', 0.6)
+                .style('opacity', d => time_scale(d.time))
                 .style('stroke', "#999")
             ins
-                .style('opacity', 0.6)
+                .style('opacity', d => time_scale(d.time))
                 .style('stroke', "#999")
         }        
         nodes.on("mouseover", mouseover)

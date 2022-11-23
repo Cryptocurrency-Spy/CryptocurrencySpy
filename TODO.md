@@ -5,7 +5,7 @@
  - [ ] pressure test, load data on the fly
  - [ ] unfold on selection
  - [ ] add grouping
- - [ ] oapcity to show the time of transaction 
+ - [x] oapcity to show the time of transaction 
  - [x] zoom and pan 
 
 
