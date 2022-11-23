@@ -12,8 +12,13 @@
   https://observablehq.com/@d3/zoomable-treemap
 [X] overall organization
 [X] green and red treemap
-[X] line chart: highlight the whole line on hover 
-    [ ] and pop out the treemap section, probably with a linking line 
+
+- [x] line chart: highlight the whole line on hover 
+
+- [x] and fade other lines
+- [ ] and pop out the treemap section, probably with a linking line 
+
+- [ ] line chart: linear/log scale y-axis switch button
 
 #### Story telling 
 - [ ] line-chart & brush: 
