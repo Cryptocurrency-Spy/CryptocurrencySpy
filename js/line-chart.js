@@ -49,7 +49,7 @@ class LineChart {
         // update x-axis
         this.start_time = d3.min(this.selectedData, d => Date.parse(d.date));//
         this.final_time = d3.max(this.selectedData, d => Date.parse(d.date));//
-        console.log(d3.timeFormat("%Y/%m%/%d")(this.start_time), d3.timeFormat("%Y/%m%/%d")(this.final_time))
+        // console.log(d3.timeFormat("%Y/%m%/%d")(this.start_time), d3.timeFormat("%Y/%m%/%d")(this.final_time))
         this.xScale = d3.scaleTime()
             .domain([this.start_time, this.final_time])
             .range([0, this.vizWidth - this.margin.left - this.margin.right])
@@ -112,7 +112,7 @@ class LineChart {
 
         if (this.selectedData.length === 0) {  // if no data is selected, select all
         // if (globalObj.selectedTime.length === 0 && globalObj.selectedNames.length === 0) {
-            console.log("selecting all")
+        //     console.log("selecting all")
             this.selectedData = this.parsedData;
             globalObj.selectedTime = this.allTime;
             globalObj.selectedNames = this.allNames;

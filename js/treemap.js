@@ -20,7 +20,7 @@ class Treemap {
     draw_treemap(){
         let svg = d3.select("#treemap");
         let date = d3.max(globalObj.selectedTime)
-        console.log(date)
+        // console.log(date)
         let _data = this.parsedData.filter(d => d.date === `${date}/24`);
         _data.push({
             name: "a",
@@ -28,7 +28,6 @@ class Treemap {
         })
         _data = _data.map(d => {
             let t = d.cap;
-
             d.cap = t * 1.0;
             return d;
         })
@@ -66,7 +65,7 @@ class Treemap {
                 return [_d];
             })
             .join("rect")
-            .attr("id", d => `${d.id}1`)
+            .attr("id", d => d.id)
             .attr("width", d => d.x1 - d.x0)
             .attr("height", d => d.y1 - d.y0)
             .attr("fill", d => {
@@ -77,11 +76,12 @@ class Treemap {
             .style("stroke-width", "5px")
             .attr('checked', false)
             .on('click', (e, d) => {
-                let rect = d3.select(`#${d.id}1`);
+                let rect = this.cell.select(`#${d.id}`);
                 d.selected = !d.selected
                 rect.datum(d)
                 if (d.selected) {
                     rect.style("stroke", "black");
+                    console.log("been here")
                 }
                 else {
                     rect.style("stroke", "none");
@@ -99,16 +99,13 @@ class Treemap {
     }
 
     updateNameSelectionByTreemap(e) {
-
         let et = e.target;
         let name = et.getAttribute('id')
         let checkbox = globalObj.name_select.checkboxes
-            .filter(d => (d.id === name))
+            .filter(d => (d === name))
             .node()
         checkbox.click()
-
         // this.triggerMouseEvent(checkbox, "click");
-
     }
 
     triggerMouseEvent (node, eventType) {
