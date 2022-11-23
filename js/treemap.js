@@ -56,13 +56,7 @@ class Treemap {
             .data(d => [d])
             .join("g")
             .attr("target", "_blank")
-            // .attr("xlink:href", d => {
-            //     let p = d.data.path.split("/");
-            //     return "https://github.com/" + p.slice(0, 2).join("/") + "/blob/v"
-            //             + version[p[1]] + "/src/" + p.slice(2).join("/");
-            // })
             .attr("transform", d => "translate(" + d.x0 + "," + d.y0 + ")");
-        //Notice that the fill is dependent on the hierarchy (2 levels up)
 
         this.rectangles = this.cell
             .selectAll("rect")
@@ -102,17 +96,14 @@ class Treemap {
             .attr("y", d => 0.5 * (d.y1 - d.y0))
             .text(d => d.id + "\n" + this.format(d.value));
 
-        // let checkbox = globalObj.name_select.labels.selectAll('input')
-        //     .node()
-        // checkbox.click()
     }
 
     updateNameSelectionByTreemap(e) {
 
         let et = e.target;
         let name = et.getAttribute('id')
-        let checkbox = globalObj.name_select.labels.selectAll('input')
-            .filter(d => (d === name))
+        let checkbox = globalObj.name_select.checkboxes
+            .filter(d => (d.id === name))
             .node()
         checkbox.click()
 

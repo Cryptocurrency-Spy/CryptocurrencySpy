@@ -30,7 +30,6 @@ class GridBrush {//Bubble
                 cmin = value
             }
         });
-        // console.log(this.capital_max)
 
         this.divWidth = 900;
         this.divHeight = 900;
@@ -121,8 +120,6 @@ class GridBrush {//Bubble
 
     }
 
-
-
     attachBrushes() {
         this.brushGroup = d3.select('#brush_group')  // g
             .attr('transform', 'translate(' + this.dx + ',' + this.dy + ')')
@@ -166,11 +163,9 @@ class GridBrush {//Bubble
                 y = y_max;
             }
         }
-
         this.rects.attr('class', 'gridRect');
 
         let connerRectIndices = []
-
         for (let j of [...Array(this.year_count).keys()]) {
             for (let i of [...Array(12).keys()]) {
                 if (x0 >= i * this.w && x0 <= (i + 1) * this.w && y0 >= j * this.h && y0 <= (j + 1) * this.h) {
@@ -197,22 +192,15 @@ class GridBrush {//Bubble
             connerRectIndices[1][1] = tmp;
         }
 
-        // console.log(connerRectIndices)
-
         this.selectedRects = this.rects
             .filter(d => (
                 d[0] >= connerRectIndices[0][0] && d[0] <= connerRectIndices[1][0] &&
                 d[1] >= connerRectIndices[0][1] && d[1] <= connerRectIndices[1][1]
             ))
             .attr('class', 'gridRect' + ' selected')
-            // .attr("")
-
     }
 
     brushend(e) {
-        // console.log('brushend called')
-        // globalObj.grid_brush.updateLineChart();
-
         globalObj.selectedTime = []  // "year/month", such as "2020/03"
         this.selectedRects
             .attr('time', function(d){
@@ -245,6 +233,7 @@ class GridBrush {//Bubble
         this.rects.attr('class', 'gridRect')
 
         globalObj.line_chart.updateRange()
+        globalObj.treemap.draw_treemap()
     }
 
 }

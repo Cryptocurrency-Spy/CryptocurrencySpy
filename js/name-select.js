@@ -1,13 +1,9 @@
 
-
 class NameSelect {
 
     constructor() {
         this.divWidth = 900;
         this.divHeight = 200;
-        this.boxWidth = 80;
-        this.boxHeight = 40;
-        this.margin = 10;
 
         this.div = d3.select("#name-select")
             .style('width', this.divWidth)
@@ -15,14 +11,9 @@ class NameSelect {
             // .style('background-color', 'black')
 
         this.parsedData = globalObj.parsedData;
-
         this.allNames = globalObj.allNames
-
         this.name_num = this.allNames.length
-
-
         this.colorScale = globalObj.colorScale;
-
 
         // checkboxes
         this.labels = this.div.select("#checkbox_group").selectAll('label')
@@ -42,18 +33,12 @@ class NameSelect {
             .attr('id', d => d)
             .style('color', d => this.colorScale(d))
 
-        // button
-        this.clearButton = this.div.select('#clear_names')
-            .on('click', e => this.clearNameSelection(e))
-
-
     }
 
     updateNameSelection(e) {
         let et = e.target
         // console.log(et)
         // console.log(et.checked)
-
         this.updateName(et)
     }
 
@@ -67,28 +52,24 @@ class NameSelect {
             }
         } else {
             if(globalObj.selectedNames.length===this.name_num){
-                this.clearNameSelection()
+                globalObj.selectedNames = []
             }
             let index = globalObj.selectedNames.indexOf(name);
             if (index === -1) {  // if not found
                 globalObj.selectedNames.push(name)
             }
         }
-        console.log(globalObj.selectedNames)
+        // console.log(globalObj.selectedNames)
         globalObj.line_chart.updateRange()
     }
 
     clearNameSelection() {
-        globalObj.selectedNames = []
-
-        for (let box of this.checkboxes){
-            box.checked = false;
-        }
-
-        for (let rect of globalObj.treemap.rectangles){
-            // rect.attr('checked', false)
-            rect.checked = false
-        }
+        // for (let box of this.checkboxes){
+        //     box.checked = false;
+        // }
+        // for (let rect of globalObj.treemap.rectangles){
+        //     rect.checked = false
+        // }
     }
 
 

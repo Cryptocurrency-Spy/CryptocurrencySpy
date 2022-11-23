@@ -35,13 +35,13 @@ class LineChart {
 
         this.updatePaths()
 
-        // add y-axis label
         this.svg.append('text')
             .attr('id', 'y-text')
             .text('market price')
             .attr('x', -140)
             .attr('y', 12)
             .attr('transform', 'rotate(-90)');
+
 
     }
 
@@ -127,7 +127,7 @@ class LineChart {
         if (mouseX > this.margin.left && mouseX < this.vizWidth - this.margin.right) {
             this.svg.select('#overlay').style("visibility", 'visible')
 
-            this.svg.select('#overlay').select('line')
+            this.svg.select('#overlay').select('#overlay_line')
                 .attr('stroke', 'black')
                 .attr('x1', mouseX)
                 .attr('x2', mouseX)
@@ -154,29 +154,6 @@ class LineChart {
                 dataFetched.sort((d1, d2) => parseFloat(d2[0].price) - parseFloat(d1[0].price))
                 console.log(dataFetched)
             }
-
-
-
-            // else{
-            //     dataFetched = [];
-            //     for (let cData of this.contData) {  // iterate each continent
-            //         // find the relevant data
-            //         let dateHovered = new Date(Math.floor(this.xScale.invert(mouseX - MARGIN.left)));  // get the date by x-coordinate
-            //
-            //         let tmp = cData[1]
-            //             .filter(d => Math.abs(d3.timeDay.count(d3.timeParse("%b %d %Y")(d.date), dateHovered)) < 1.1);  // time difference less than 1 day
-            //         if (tmp.length === 0) console.log('fetch error!')
-            //
-            //         let color = get_color_by_continent_code(cData[0]);
-            //         let color_rgb = 'rgb(' + color[0] + ',' + color[1] + ',' + color[2] + ')';
-            //
-            //         dataFetched.push([tmp[Math.floor(tmp.length / 2.0)], color_rgb])
-            //     }
-            //     // dataFetched: (example)
-            //     // d[0]: {"code": "OWID_AFR", "loca": "Africa", "date": "Apr 29 2022", "case": "8379.02"}
-            //     // d[1]: rgb(0,49,167)
-            //     dataFetched.sort((d1, d2) => d2[0].case - d1[0].case);
-            // }
 
             // set the overlay labels---------------------------------------------------------------------------------
             const f = d3.format(".2");
