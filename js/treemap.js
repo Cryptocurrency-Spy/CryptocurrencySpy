@@ -20,17 +20,30 @@ class Treemap {
     draw_treemap(){
         let svg = d3.select("#treemap");
         let date = d3.max(globalObj.selectedTime)
-        // console.log(date)
+        let start_date = d3.min(globalObj.selectedTime)
+        console.log(date)
         let _data = this.parsedData.filter(d => d.date === `${date}/24`);
+        let start_data = this.parsedData.filter(d => d.date === `${start_date}/24`)
         _data.push({
             name: "a",
             cap: "",
         })
         _data = _data.map(d => {
             let t = d.cap;
+            let name = d.name;
             d.cap = t * 1.0;
+            d.cap0 = 0.0;
+            let section = d3.filter(start_data, d => d.name === name)
+
+            
+            if (section.length > 0) {
+                d.cap0 = section[0].cap * 1.0;
+            }
+            d.change = d.cap - d.cap0
             return d;
         })
+
+        let map_from_name = d3.group(_data, d=> d.name);
 
         let root = d3.stratify()
             .id(d => {
@@ -56,6 +69,15 @@ class Treemap {
             .join("g")
             .attr("target", "_blank")
             .attr("transform", d => "translate(" + d.x0 + "," + d.y0 + ")");
+        //Notice that the fill is dependent on the hierarchy (2 levels up)
+        
+        let changes = _data.map(d => d.change)
+        let max_changes = d3.max(changes), min_changes = d3.min(changes)
+        console.log(min_changes, max_changes)
+        
+        let scale_change = d3.scaleDiverging()
+            .domain([min_changes, 0, max_changes])
+            .interpolator(d3.interpolateRdYlGn)
 
         this.rectangles = this.cell
             .selectAll("rect")
@@ -69,7 +91,9 @@ class Treemap {
             .attr("width", d => d.x1 - d.x0)
             .attr("height", d => d.y1 - d.y0)
             .attr("fill", d => {
-                return globalObj.colorScale(d.id);
+                // return globalObj.colorScale(d.id);
+                let t = map_from_name.get(d.id)[0]
+                return scale_change(t.change);
                 // let a = d.ancestors();
                 // return this.color(a[0].id);
             })
