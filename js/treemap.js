@@ -39,7 +39,6 @@ class Treemap {
             d.cap0 = 0.0;
             let section = d3.filter(start_data, d => d.name === name)
 
-
             if (section.length > 0) {
                 d.cap0 = section[0].cap * 1.0;
             }
