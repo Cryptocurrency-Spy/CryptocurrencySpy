@@ -19,13 +19,17 @@ class NameSelect {
         this.labels = this.div.select("#checkbox_group").selectAll('label')
             .data(this.allNames)
             .join('label')
-            .on('click', e => this.updateNameSelection(e))
+            .on('click', e => {
+                globalObj.updateGlobalNameSelection(e)
+            })
 
         this.checkboxes = this.labels.append('input')
             .data(this.allNames)
             .attr('type', 'checkbox')
             .attr('class', 'myCheckbox')
             .attr('id', d => d)
+            .attr("checked", true)
+
 
         this.texts = this.labels.append('text')
             .data(this.allNames)
@@ -35,48 +39,15 @@ class NameSelect {
 
     }
 
-    updateNameSelection(e) {
-        let et = e.target
-        // console.log(et)
-        // console.log(et.checked)
 
-        let name = et.getAttribute('id')
-        let rect = globalObj.treemap.cell.select(`#${name}`)
-            .attr('aaa', d => (d.selected = !d.selected))
-            .style("stroke", d => d.selected? "black": "none")
 
-        this.updateName(et)
+    updateCheckboxStatus() {
+        // this.checkboxes
+        //     .attr("checked", false)
+        this.checkboxes
+            .attr("checked", d => (globalObj.selectedNames.includes(d)))
     }
 
-    updateName(et) {
-        let name = et.getAttribute('id')
-
-        if (!et.checked) {
-            let index = globalObj.selectedNames.indexOf(name);
-            if (index !== -1) {  // if found
-                globalObj.selectedNames.splice(index, 1);  // delete name
-            }
-        } else {
-            if(globalObj.selectedNames.length===this.name_num){
-                globalObj.selectedNames = []
-            }
-            let index = globalObj.selectedNames.indexOf(name);
-            if (index === -1) {  // if not found
-                globalObj.selectedNames.push(name)
-            }
-        }
-        // console.log(globalObj.selectedNames)
-        globalObj.line_chart.updateRange()
-    }
-
-    clearNameSelection() {
-        // for (let box of this.checkboxes){
-        //     box.checked = false;
-        // }
-        // for (let rect of globalObj.treemap.rectangles){
-        //     rect.checked = false
-        // }
-    }
 
 
 

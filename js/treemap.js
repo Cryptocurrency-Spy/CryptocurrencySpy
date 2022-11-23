@@ -17,7 +17,7 @@ class Treemap {
         this.draw_treemap();
     }
 
-    draw_treemap(){
+    draw_treemap() {
         let svg = d3.select("#treemap");
         let date = d3.max(globalObj.selectedTime)
         let start_date = d3.min(globalObj.selectedTime)
@@ -35,7 +35,7 @@ class Treemap {
             d.cap0 = 0.0;
             let section = d3.filter(start_data, d => d.name === name)
 
-            
+
             if (section.length > 0) {
                 d.cap0 = section[0].cap * 1.0;
             }
@@ -43,7 +43,7 @@ class Treemap {
             return d;
         })
 
-        let map_from_name = d3.group(_data, d=> d.name);
+        let map_from_name = d3.group(_data, d => d.name);
 
         let root = d3.stratify()
             .id(d => {
@@ -70,11 +70,11 @@ class Treemap {
             .attr("target", "_blank")
             .attr("transform", d => "translate(" + d.x0 + "," + d.y0 + ")");
         //Notice that the fill is dependent on the hierarchy (2 levels up)
-        
+
         let changes = _data.map(d => d.change)
         let max_changes = d3.max(changes), min_changes = d3.min(changes)
         console.log(min_changes, max_changes)
-        
+
         let scale_change = d3.scaleDiverging()
             .domain([min_changes, 0, max_changes])
             .interpolator(d3.interpolateRdYlGn)
@@ -99,9 +99,9 @@ class Treemap {
             })
             .style("stroke-width", "5px")
             .attr('checked', false)
-            .on('click', (e, d) => {
-                this.switchRectStatus(d)
-                this.updateNameSelectionByTreemap(e)
+            .on('click', e => {
+                globalObj.updateGlobalNameSelection(e)
+                // globalObj.name_select.checkboxes.attr("checked", false)
             })
 
         this.texts = this.cell.selectAll("text")
@@ -113,31 +113,23 @@ class Treemap {
 
     }
 
-    switchRectStatus(d){
-        let rect = this.cell.select(`#${d.id}`);
-        // d.selected = !d.selected
-        rect.datum(d)
-        if (d.selected) {
-            rect.style("stroke", "black");
-            console.log("been here")
-        }
-        else {
-            rect.style("stroke", "none");
-        }
+    updateTreeRectStatus() {
+        this.rectangles
+            .style("stroke", d => (globalObj.selectedNames.includes(d.id))? "black": "none")
     }
 
-    updateNameSelectionByTreemap(e) {
-        let et = e.target;
-        let name = et.getAttribute('id')
-        let checkbox = globalObj.name_select.checkboxes
-            .filter(d => (d === name))
-            .node()
-        checkbox.click()
-        // this.triggerMouseEvent(checkbox, "click");
-    }
-
-    triggerMouseEvent (node, eventType) {
-        let event = new Event(eventType, {bubbles : true, cancelable: true});
-        node.dispatchEvent(event);
-    }
+    // updateNameSelectionByTreemap(e) {
+    //     let et = e.target;
+    //     let name = et.getAttribute('id')
+    //     let checkbox = globalObj.name_select.checkboxes
+    //         .filter(d => (d === name))
+    //         .node()
+    //     checkbox.click()
+    //     // this.triggerMouseEvent(checkbox, "click");
+    // }
+    //
+    // triggerMouseEvent (node, eventType) {
+    //     let event = new Event(eventType, {bubbles : true, cancelable: true});
+    //     node.dispatchEvent(event);
+    // }
 }
