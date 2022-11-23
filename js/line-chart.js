@@ -84,25 +84,44 @@ class LineChart {
                 .filter(d => globalObj.selectedTime.length === 0 ? false : globalObj.selectedTime.includes(d.month))
 
             this.svg.append('path')
-                .attr('id', 'lines')
+                .attr('id', name)
                 .attr('transform', 'translate(' + this.margin.left + ',' + this.margin.top + ')')
                 .attr('d', this.pathGenerator(data))
                 .attr('fill', 'none')
                 .attr('stroke', this.colorScale(name))
+                .on('mouseover', e => this.highlightPath(e))
 
             this.svg.append('path')
-                .attr('id', 'areas')
                 .attr('transform', 'translate(' + this.margin.left + ',' + this.margin.top + ')')
+                .attr('id', name)
                 .attr('d', this.areaGenerator(data))
                 .attr('fill', this.colorScale(name))
                 .attr('opacity', 0.5)
 
+            this.svg.append("path")
+                .attr('transform', 'translate(' + this.margin.left + ',' + this.margin.top + ')')
+                .attr('id', name)
+                .attr('d', this.pathGenerator(data))
+                .attr("class", "fatpath")
+                .on("mouseover", e => {
+                    this.svg.select("#"+(e.target).id).attr("stroke-width", 3)
+                })
+                .on("mouseout", e => {
+                    this.svg.select("#"+(e.target).id).attr("stroke-width", 1)
+                })
+
         }
     }
 
+    highlightPath(e) {
+        let et = e.target
+        console.log(et)
+        et.attr('stroke', '#ffff00')
+            .attr('stroke-width', 10)
+    }
+
     updateRange() {
-        this.svg.selectAll('#lines').remove();
-        this.svg.selectAll('#areas').remove();
+        this.svg.selectAll('path').remove();
 
         this.selectedData = this.parsedData//
             .filter(d => globalObj.selectedTime.length === 0 ? false : globalObj.selectedTime.includes(d.month))
@@ -144,9 +163,6 @@ class LineChart {
                         .filter(d => Math.abs(d3.timeDay.count(d3.timeParse("%Y/%m/%d")(d.date), dateHovered)) < 1.1);
                     if (tmp.length !== 0) {
                         dataFetched.push([tmp[Math.floor(tmp.length * 0.5)], this.colorScale(name)])
-                    }
-                    else {
-                        // console.log('fetch error!')
                     }
                 }
                 dataFetched.sort((d1, d2) => parseFloat(d2[0].price) - parseFloat(d1[0].price))

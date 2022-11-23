@@ -1,3 +1,10 @@
+.fatpath {
+    stroke: gray;
+    stroke-width: 15;
+    fill: none;
+    opacity:0;
+}
+
 .wrapper {
     display: grid;
     grid-template-columns: 2fr 2fr 1fr;
