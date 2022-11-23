@@ -1,13 +1,17 @@
 class Network {
 
     constructor() {
-        let width = 800;
-        let height = 600;
-
+        let width = 1200;
+        let height = 1200;
+        let data = globalObj.parsedTransData;
         let svg = d3.select("#network")
             .attr('width', width)
             .attr('height', height);
-
+        let values = data.map(d => d.value)
+        let min_value = d3.min(values), max_value = d3.max(values)
+        let scale = d3.scaleLog()
+            .domain([min_value, max_value])
+            .range([1.0, 15.0])
         let color = d3.scaleOrdinal(d3.schemePaired);
 
         // Here we create our simulation, and give it some forces to apply
@@ -15,7 +19,8 @@ class Network {
         let simulation = d3.forceSimulation()
             // forceLink creates tension along each link, keeping connected nodes together
             .force("link", d3.forceLink().id(d => d.id)
-                .strength(d => Math.sqrt(d.value / 1e4))
+                // .strength(d => Math.sqrt(d.value / 2e3))
+                .strength(d => scale(d.value) / 1e2)
             )
             // forceManyBody creates a repulsive force between nodes,
             //  keeping them away from each other
@@ -25,7 +30,6 @@ class Network {
             .force("center", d3.forceCenter(width / 2, height / 2));
 
             
-        let data = globalObj.parsedTransData;
         let map = d3.group(data, d => d.target);
         let targets = [...map.keys()]
         // let targets = [...d3.group(data, d => d.target).keys()];
@@ -36,11 +40,6 @@ class Network {
         let node_set = new Set()
         all_nodes.forEach(d => node_set.add(d))
         all_nodes = [...node_set.values()]
-        let values = data.map(d => d.value)
-        let min_value = d3.min(values), max_value = d3.max(values)
-        let scale = d3.scaleLog()
-            .domain([min_value, max_value])
-            .range([1.0, 15.0])
         // First we create the links in their own group that comes before the node
         //  group (so the circles will always be on top of the lines)
         let linkLayer = svg.append("g")
@@ -185,12 +184,13 @@ class Network {
 
 
     let k = height / width
+    let scale_bound = 30
     const y = d3.scaleLinear()
-        .domain([-4.5 * k, 4.5 * k])
+        .domain([- scale_bound * k, scale_bound * k])
         .range([height, 0])
         ;
     const x = d3.scaleLinear()
-        .domain([-4.5, 4.5])
+        .domain([-scale_bound, scale_bound])
         .range([0, width])
         ;
     let grid = (g, x, y) => g
