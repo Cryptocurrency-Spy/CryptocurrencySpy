@@ -152,7 +152,7 @@ class LineChart {
                     }
                 }
                 dataFetched.sort((d1, d2) => parseFloat(d2[0].price) - parseFloat(d1[0].price))
-                console.log(dataFetched)
+                // console.log(dataFetched)
             }
 
             // set the overlay labels---------------------------------------------------------------------------------

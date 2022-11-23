@@ -76,17 +76,8 @@ class Treemap {
             .style("stroke-width", "5px")
             .attr('checked', false)
             .on('click', (e, d) => {
-                let rect = this.cell.select(`#${d.id}`);
-                d.selected = !d.selected
-                rect.datum(d)
-                if (d.selected) {
-                    rect.style("stroke", "black");
-                    console.log("been here")
-                }
-                else {
-                    rect.style("stroke", "none");
-                }
-                this.updateNameSelectionByTreemap(e);
+                this.switchRectStatus(d)
+                this.updateNameSelectionByTreemap(e)
             })
 
         this.texts = this.cell.selectAll("text")
@@ -94,8 +85,21 @@ class Treemap {
             .join("text")
             // .attr("x", d => 0.5 * (d.x1 -d.x0))
             .attr("y", d => 0.5 * (d.y1 - d.y0))
-            .text(d => d.id + "\n" + this.format(d.value));
+            .text(d => d.id + "\n" + this.format(d.value))
 
+    }
+
+    switchRectStatus(d){
+        let rect = this.cell.select(`#${d.id}`);
+        // d.selected = !d.selected
+        rect.datum(d)
+        if (d.selected) {
+            rect.style("stroke", "black");
+            console.log("been here")
+        }
+        else {
+            rect.style("stroke", "none");
+        }
     }
 
     updateNameSelectionByTreemap(e) {

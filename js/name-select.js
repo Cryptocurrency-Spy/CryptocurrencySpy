@@ -39,6 +39,12 @@ class NameSelect {
         let et = e.target
         // console.log(et)
         // console.log(et.checked)
+
+        let name = et.getAttribute('id')
+        let rect = globalObj.treemap.cell.select(`#${name}`)
+            .attr('aaa', d => (d.selected = !d.selected))
+            .style("stroke", d => d.selected? "black": "none")
+
         this.updateName(et)
     }
 
