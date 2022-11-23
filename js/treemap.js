@@ -74,9 +74,9 @@ class Treemap {
 
         let changes = _data.map(d => d.change)
         let max_changes = d3.max(changes), min_changes = d3.min(changes)
-        console.log(min_changes, max_changes)
+        // console.log(min_changes, max_changes)
 
-        let scale_change = d3.scaleDiverging()
+        this.scale_change = d3.scaleDiverging()
             .domain([min_changes, 0, max_changes])
             .interpolator(d3.interpolateRdYlGn)
 
@@ -95,6 +95,7 @@ class Treemap {
                 return globalObj.colorScale(d.id);
                 // let t = map_from_name.get(d.id)[0]
                 // return scale_change(t.change);
+
                 // let a = d.ancestors();
                 // return this.color(a[0].id);
             })
@@ -105,12 +106,19 @@ class Treemap {
                 // globalObj.name_select.checkboxes.attr("checked", false)
             })
 
-        this.texts = this.cell.selectAll("text")
+        this.texts = this.cell.selectAll('text')
             .data(d => [d])
             .join("text")
-            // .attr("x", d => 0.5 * (d.x1 -d.x0))
+            .attr("x", d => 0.05 * (d.x1 -d.x0))
             .attr("y", d => 0.5 * (d.y1 - d.y0))
             .text(d => d.id + "\n" + this.format(d.value))
+            .style("font-size", "20px")
+            .style('fill', d => {
+                let t = map_from_name.get(d.id)[0]
+                return this.scale_change(t.change);
+            })
+
+
 
     }
 

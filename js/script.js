@@ -32,7 +32,7 @@ const globalObj = {
             }
         }
 
-        console.log(globalObj.selectedNames)
+        // console.log(globalObj.selectedNames)
 
         globalObj.line_chart.update()
         globalObj.name_select.updateCheckboxStatus()
