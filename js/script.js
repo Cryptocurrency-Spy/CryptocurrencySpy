@@ -3,6 +3,7 @@ const globalObj = {
     parsedData: null,
     parsedTransData: null,
     colorScale: null,
+    colorScaleFade: null,
     groupedData: null,
     groupedTimeData: null,
     selectedNames: [],  // a list of selected currency names
@@ -67,6 +68,22 @@ Promise.all([pricesFile, transFile]).then(data =>
             .domain(globalObj.allNames)
             .range(d3.schemeCategory10)
         let a_color = globalObj.colorScale('Bitcoin');
+
+        function blendColors(colorA, colorB, amount) {
+            const [rA, gA, bA] = colorA.match(/\w\w/g).map((c) => parseInt(c, 16));
+            const [rB, gB, bB] = colorB.match(/\w\w/g).map((c) => parseInt(c, 16));
+            const r = Math.round(rA + (rB - rA) * amount).toString(16).padStart(2, '0');
+            const g = Math.round(gA + (gB - gA) * amount).toString(16).padStart(2, '0');
+            const b = Math.round(bA + (bB - bA) * amount).toString(16).padStart(2, '0');
+            return '#' + r + g + b;
+        }
+        let fadeColors = []
+        for (let color of d3.schemeCategory10) {
+            fadeColors.push(blendColors(color, '#ffffff', 0.5))
+        }
+        globalObj.colorScaleFade = d3.scaleOrdinal()
+            .domain(globalObj.allNames)
+            .range(fadeColors)
 
         // group by time
         globalObj.groupedTimeData = d3.group(globalObj.parsedData, d => d.month);

@@ -32,6 +32,7 @@ class LineChart {
             .y0(d => this.yScale(d.low));
 
         this.colorScale = globalObj.colorScale;
+        this.colorScaleFade = globalObj.colorScaleFade;
 
         this.updatePaths()
 
@@ -77,13 +78,14 @@ class LineChart {
         // if (names.length===0) {
         //     // console.log("names = globalObj.allNames!!!")
         //     names = globalObj.allNames;
-        // }
-        // console.log(names)
+
         for (let name of names){
             let data = this.groupedData.get(name)
                 .filter(d => globalObj.selectedTime.length === 0 ? false : globalObj.selectedTime.includes(d.month))
 
             this.svg.append('path')
+                .datum(name)
+                .attr('class', 'lines')
                 .attr('id', name)
                 .attr('transform', 'translate(' + this.margin.left + ',' + this.margin.top + ')')
                 .attr('d', this.pathGenerator(data))
@@ -91,23 +93,40 @@ class LineChart {
                 .attr('stroke', this.colorScale(name))
                 .on('mouseover', e => this.highlightPath(e))
 
-            this.svg.append('path')
+            this.svg.append('path')// price range area
+                .datum(name)
+                .attr('class', 'areas')
                 .attr('transform', 'translate(' + this.margin.left + ',' + this.margin.top + ')')
                 .attr('id', name)
                 .attr('d', this.areaGenerator(data))
                 .attr('fill', this.colorScale(name))
                 .attr('opacity', 0.5)
 
-            this.svg.append("path")
+            this.svg.append("path")// draw a wider path for easier hovering
                 .attr('transform', 'translate(' + this.margin.left + ',' + this.margin.top + ')')
                 .attr('id', name)
                 .attr('d', this.pathGenerator(data))
                 .attr("class", "fatpath")
                 .on("mouseover", e => {
-                    this.svg.select("#"+(e.target).id).attr("stroke-width", 3)
+                    this.svg.selectAll(".lines")
+                        .attr("stroke", d => this.colorScaleFade(d))//fade
+                        .filter(d => d===name)
+                        .attr("stroke", this.colorScale(name))
+                    this.svg.selectAll(".areas")
+                        .attr("fill", d => this.colorScaleFade(d))//fade
+                        .filter(d => d===name)
+                        .attr("fill", this.colorScale(name))
+                    this.svg.select("#"+(e.target).id)
+                        .attr("stroke-width", 3)//highlight
+
                 })
                 .on("mouseout", e => {
-                    this.svg.select("#"+(e.target).id).attr("stroke-width", 1)
+                    this.svg.selectAll(".lines")
+                        .attr("stroke", d => this.colorScale(d))
+                    this.svg.selectAll(".areas")
+                        .attr("fill", d => this.colorScale(d))
+                    this.svg.select("#"+(e.target).id)
+                        .attr("stroke-width", 1)
                 })
 
         }
