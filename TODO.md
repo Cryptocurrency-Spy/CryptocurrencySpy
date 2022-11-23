@@ -9,10 +9,14 @@
    - [x] oapcity to show the time of transaction 
    - [x] zoom and pan 
 
+  #### Treemap
+  
   [ ] zoomable-treemap
     https://observablehq.com/@d3/zoomable-treemap
   [X] overall organization
   [X] green and red treemap    
+  
+  #### Line Chart
   
   see this for fancy hovering https://observablehq.com/@d3/voronoi-labels
   ​    or just use mouseover
@@ -24,6 +28,7 @@
   
   
   - [ ] and pop out the treemap section, probably with a linking line 
+  - [ ] log scale of y-axis
   
   #### Story telling 
   - [ ] line-chart & brush: 
