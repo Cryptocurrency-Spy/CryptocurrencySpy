@@ -19,10 +19,14 @@ class Treemap {
 
     draw_treemap() {
         let svg = d3.select("#treemap");
-        let date = d3.max(globalObj.selectedTime)
+        let end_date = d3.max(globalObj.selectedTime)
         let start_date = d3.min(globalObj.selectedTime)
-        console.log(date)
-        let _data = this.parsedData.filter(d => d.date === `${date}/24`);
+        let lower = '2013/04', upper = '2019/04'
+        end_date = d3.min([d3.max([end_date, lower]), upper])
+        start_date = d3.min([d3.max([start_date, lower]), upper])
+
+        // console.log(date)
+        let _data = this.parsedData.filter(d => d.date === `${end_date}/24`);
         let start_data = this.parsedData.filter(d => d.date === `${start_date}/24`)
         _data.push({
             name: "a",
