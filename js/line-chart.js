@@ -5,6 +5,7 @@ class LineChart {
         this.vizWidth = 900;
         this.vizHeight = 500;
         this.margin = { left: 70, bottom: 20, top: 20, right: 20 };
+        this.logOn = false;
 
         this.svg = d3.select("#line-chart")
             .attr('width', this.vizWidth)
@@ -43,7 +44,12 @@ class LineChart {
             .attr('y', 12)
             .attr('transform', 'rotate(-90)');
 
-
+        this.logButton = d3.select("#logButton")
+            .on('change', e => {
+                this.logOn = e.target.checked
+                console.log(this.logOn)
+                this.update()
+            })
     }
 
     updateAxes() {
@@ -62,23 +68,32 @@ class LineChart {
 
         // update y-axis
         this.max_price = d3.max(this.selectedData, d => parseFloat(d.price))
-        // console.log(this.max_price)
+        this.min_price = d3.min(this.selectedData, d => parseFloat(d.price))
         this.yScale = d3.scaleLinear()  // change it to scaleLog
-            .domain([0, this.max_price])
+            .domain([this.min_price, this.max_price])
             .range([this.vizHeight - this.margin.bottom - this.margin.top, 0])
-            .nice();
+            .nice()
+
+        this.yScaleLog = d3.scaleLog()
+            .domain([this.min_price, this.max_price])
+            .range([this.vizHeight - this.margin.bottom - this.margin.top, 0])
+            .nice()
+
+        if(this.logOn) {
+            this.yScale = this.yScaleLog
+        }
+
         this.yAxis = d3.axisLeft(this.yScale);
+
         this.svg.select('#y-axis')
             .attr('transform', 'translate(' + this.margin.left + ',' + this.margin.bottom + ')')
             .call(this.yAxis)
+
+
     }
 
     updatePaths(){
         let names = globalObj.selectedNames;
-        // if (names.length===0) {
-        //     // console.log("names = globalObj.allNames!!!")
-        //     names = globalObj.allNames;
-
         for (let name of names){
             let data = this.groupedData.get(name)
                 .filter(d => globalObj.selectedTime.length === 0 ? false : globalObj.selectedTime.includes(d.month))
@@ -102,7 +117,9 @@ class LineChart {
                 .attr('fill', this.colorScale(name))
                 .attr('opacity', 0.5)
 
+
             this.svg.append("path")// draw a wider path for easier hovering
+                .datum(name)
                 .attr('transform', 'translate(' + this.margin.left + ',' + this.margin.top + ')')
                 .attr('id', name)
                 .attr('d', this.pathGenerator(data))
@@ -129,6 +146,7 @@ class LineChart {
                         .attr("stroke-width", 1)
                 })
 
+
         }
     }
 
@@ -139,20 +157,12 @@ class LineChart {
             .attr('stroke-width', 10)
     }
 
-    updateRange() {
+    update() {
         this.svg.selectAll('path').remove();
 
         this.selectedData = this.parsedData//
             .filter(d => globalObj.selectedTime.length === 0 ? false : globalObj.selectedTime.includes(d.month))
             .filter(d => globalObj.selectedNames.length === 0 ? false : globalObj.selectedNames.includes(d.name))//
-
-        // if (this.selectedData.length === 0) {  // if no data is selected, select all
-        // // if (globalObj.selectedTime.length === 0 && globalObj.selectedNames.length === 0) {
-        // //     console.log("selecting all")
-        //     this.selectedData = this.parsedData;
-        //     globalObj.selectedTime = this.allTime;
-        //     globalObj.selectedNames = this.allNames;
-        // }
 
         this.updateAxes()
         this.updatePaths()
@@ -201,6 +211,12 @@ class LineChart {
                     .attr('alignment-baseline', 'hanging')
                     .attr('fill', d => d[1]);
             }
+            else {
+                this.svg.select('#overlay')
+                    .selectAll('text')
+                    .attr('visibility', 'hidden')
+            }
+
         }
 
 

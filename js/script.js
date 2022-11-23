@@ -34,7 +34,7 @@ const globalObj = {
 
         console.log(globalObj.selectedNames)
 
-        globalObj.line_chart.updateRange()
+        globalObj.line_chart.update()
         globalObj.name_select.updateCheckboxStatus()
         globalObj.treemap.updateTreeRectStatus()
     }
