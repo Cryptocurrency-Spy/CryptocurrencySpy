@@ -3,54 +3,61 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Visualization – Homework 4</title>
+    <title>Cryptocurrency Spy</title>
     <link rel="stylesheet" href="styles.css" />
     <script src="https://d3js.org/d3.v7.min.js"></script>
 </head>
 
 <body>
-    <div class="header">
-        <h1>Cryptocurrency Spy</h1>
-        <p>Name: Yintong Shang; E-Mail: u1431623@utah.edu; UID: u1431623 <br>
-        Name: Haoyang Shi; E-Mail: u1431587@umail.utah.edu; UID: u1431587</p>
+    <div class="wrapper">
+        <nav>
+            <div class="header">
+                Cryptocurrency Spy
+                Name: Yintong Shang; E-Mail: u1431623@utah.edu; UID: u1431623;
+                Name: Haoyang Shi; E-Mail: u1431587@umail.utah.edu; UID: u1431587
+            </div>
+        </nav>
+
+        <div class="view1">
+            <div>
+                <g id="button_group">
+                    <button id="preset1">preset 1</button>
+                    <button id="preset2">preset 2</button>
+                </g>
+            </div>
+            <div>
+                <svg id="line-chart">
+                    <g id="x-axis"></g>
+                    <g id="y-axis"></g>
+                    <g id="lines"></g>
+                    <g id="overlay"><line id="overlay_line"></line></g>
+                </svg>
+            </div>
+<!--            <div id="name-select">-->
+<!--                <g id="checkbox_group"></g>-->
+<!--            </div>-->
+            <div id="network-div">
+                <svg id="network" width="800" height="600"></svg>
+            </div>
+        </div>
+
+        <div class="view2">
+            <div id="tree-map">
+                 <svg id="treemap" width="550" height="500"></svg>
+            </div>
+            <div id="grid-brush">
+                <svg>
+                    <g id="rect_group"></g>
+                    <g id="brush_group"></g>
+                </svg>
+                <button id="clear_time">unselect time</button>
+            </div>
+        </div>
+        <!-- <footer>Footer</footer> -->
     </div>
 
-    <div class="split left" id="div_left">
 
-        <div id="tree-map">
-            <svg id="treemap" width="960" height="960"></svg>
-        </div>
-        <div id="network-div">
-            <svg id="network" width="800" height="600"></svg>
-        </div>
-    </div>
 
-    <div class="split right" id="div_right">
-        <div>
-            <svg id="line-chart">
-                <g id="x-axis"></g>
-                <g id="y-axis"></g>
-                <g id="lines"></g>
-                <g id="overlay"><line></line></g>
-            </svg>
-            <g id="button_group">
-                <button id="preset_1">preset 1</button>
-                <button id="preset_2">preset 2</button>
-            </g>
-        </div>
-        <div id="name-select">
-            <g id="checkbox_group"></g>
-
-            <button id="clear_names">unselect cryptocurrency</button>
-        </div>
-        <div id="grid-brush">
-            <svg>
-                <g id="rect_group"></g>
-                <g id="brush_group"></g>
-            </svg>
-            <button id="clear_time">unselect time</button>
-        </div>
-    </div>
 
     <script src="js/line-chart.js"></script>
     <script src="js/name-select.js"></script>
