@@ -63,22 +63,11 @@ class Treemap {
     //
     // }
 
-    cropTime(time) {
-        let lower = '2013/04', upper = '2019/04'
-        return d3.min([d3.max([time, lower]), upper])
-    }
-
     draw_treemap() {
         console.log(globalObj.selectedTime)
 
         this.final_time = d3.max(globalObj.selectedTime)
         this.start_time = d3.min(globalObj.selectedTime)
-
-        this.final_time = this.cropTime(this.final_time)
-        this.start_time = this.cropTime(this.start_time)
-
-        console.log(this.start_time)
-        console.log(this.final_time)
 
         let final_data = this.parsedData.filter(d => d.month === `${this.final_time}`)
         let start_data = this.parsedData.filter(d => d.month === `${this.start_time}`)

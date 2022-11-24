@@ -5,7 +5,8 @@ class GridBrush {//Bubble
         this.parsedData = globalObj.parsedData;
 
         this.groupedTimeData = globalObj.groupedTimeData
-        this.allTime = Array.from(this.groupedTimeData.keys())
+        this.allTime = globalObj.allTime
+
         globalObj.selectedTime = this.allTime  // ["2019/04", "2019/03", ...]
         this.allTimeStart = 2013
         this.year_count = 7
@@ -207,8 +208,14 @@ class GridBrush {//Bubble
                 let month_str = (d[0]+1).toString()
                 if (month_str.length < 2)
                     month_str = "0" + month_str
-                globalObj.selectedTime.push(year_str + "/" + month_str)
-                return year_str + "/" + month_str
+                let time_str = year_str + "/" + month_str
+
+
+                if (time_str >= '2013/04' && time_str <= '2019/04') {
+                    globalObj.selectedTime.push(time_str)
+                }
+
+                return time_str
             })
 
         // console.log(globalObj.selectedTime)
