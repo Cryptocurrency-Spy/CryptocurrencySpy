@@ -2,6 +2,30 @@ class Treemap {
 
     constructor() {
         this.svg = d3.select("#treemap")
+            .on('mouseover', e => {
+                let mouseX = e.clientX;
+                let mouseY = e.clientY;
+                let et = e.target
+                console.log(mouseX, mouseY)
+                d3.select('#treemap_tooltip')
+                    .attr('visibility', 'visible')
+                    // .attr('transform', 'translate(' + 0.5*(d.x1+d.x0) + ',' + 0.5*(d.y1+d.y0) + ')')
+                    .attr('transform', 'translate(' + (mouseX-10) + ',' + (mouseY-50) + ')')
+            })
+            .on('mouseout', e => {
+                d3.select('#treemap_tooltip')
+                    .attr('visibility', 'visible')
+            })
+
+        this.tooltip = d3.select("#treemap_tooltip")
+            .style("position", "absolute")
+            .style("z-index", "10")
+            .style("visibility", "hidden")
+            .style('background-color', 'white')
+            .style('width', 200)
+            .style('height', 100)
+            .style('font-size', '20px')
+
         this.width = this.svg.attr("width")
         this.height = this.svg.attr("height");
         // this.color = d3.scaleOrdinal(d3.schemeGnBu[9]);
@@ -64,7 +88,7 @@ class Treemap {
     // }
 
     draw_treemap() {
-        console.log(globalObj.selectedTime)
+        // console.log(globalObj.selectedTime)
 
         this.final_time = d3.max(globalObj.selectedTime)
         this.start_time = d3.min(globalObj.selectedTime)
@@ -107,8 +131,7 @@ class Treemap {
 
         this.treemap(this.root)
 
-        this.cell = this.svg
-            .selectAll("a")
+        this.cell = this.svg.select('#cell_group').selectAll("a")
             .data(this.root.leaves())
             .join("a")
             .selectAll("g")
@@ -116,6 +139,8 @@ class Treemap {
             .join("g")
             .attr("target", "_blank")
             .attr("transform", d => "translate(" + d.x0 + "," + d.y0 + ")");
+
+        this.hidden_rects = []
 
         this.rectangles = this.cell.selectAll("rect")
             .data(d => {
@@ -125,8 +150,14 @@ class Treemap {
             })
             .join("rect")
             .attr("id", d => d.id)
+            .attr('aaa', d => {
+                if (d.x1 - d.x0 < d.id.length * 10) { // mark small rectangles
+                    this.hidden_rects.push(d.id)
+                }
+            })
             .attr("width", d => d.x1 - d.x0)
             .attr("height", d => d.y1 - d.y0)
+
             .attr("fill", d => {
                 let a = d.ancestors();
                 // console.log(globalObj.colorScale(a[0].id))//a: "bitcoin", "a"
@@ -138,6 +169,19 @@ class Treemap {
                 globalObj.updateGlobalNameSelection(e)
                 // globalObj.name_select.checkboxes.attr("checked", false)
             })
+            .on("mouseover", e => {this.tooltip.style("visibility", "visible");})
+            .on("mousemove", e => {
+                // console.log(e.clientX, e.clientY)
+                let et = e.target
+                this.tooltip
+                    .style("top", (e.clientY-5)+"px")
+                    .style("left",(e.clientX+5)+"px")
+                    .style('color', globalObj.colorScale(et.id))
+                    .text(et.id + " " + this.format(et.__data__.value))
+
+            })
+            .on("mouseout", e => {this.tooltip.style("visibility", "hidden")});
+
 
         // texts (their color encode changes in prices)
         let changes = final_data.map(d => d.change)
@@ -151,14 +195,16 @@ class Treemap {
         this.texts = this.cell.selectAll('text')
             .data(d => [d])
             .join("text")
-            .attr("x", d => 0.05 * (d.x1 -d.x0))
-            .attr("y", d => 0.5 * (d.y1 - d.y0))
-            .text(d => d.id + "\n" + this.format(d.value))
-            .style("font-size", "20px")
+            .attr("x", d => 0.05 * (d.x1 - d.x0))
+            .attr("y", d => 0.50 * (d.y1 - d.y0))
+            .style('font-size', '20px')
+            // .text(d => d.id + "\n" + this.format(d.value))
+            .text(d => d.id)
             .style('fill', d => {
                 let t = map_from_name.get(d.id)[0]
                 return this.scale_change(t.change);
             })
+            .attr('visibility', d => this.hidden_rects.includes(d.id)? 'hidden': 'visible')
 
 
 
