@@ -69,13 +69,17 @@ class Treemap {
     }
 
     draw_treemap() {
+        console.log(globalObj.selectedTime)
+
         this.final_time = d3.max(globalObj.selectedTime)
         this.start_time = d3.min(globalObj.selectedTime)
 
-        // this.final_time = this.cropTime(this.final_time)
-        // this.start_time = this.cropTime(this.start_time)
+        this.final_time = this.cropTime(this.final_time)
+        this.start_time = this.cropTime(this.start_time)
 
-        // console.log(date)
+        console.log(this.start_time)
+        console.log(this.final_time)
+
         let final_data = this.parsedData.filter(d => d.month === `${this.final_time}`)
         let start_data = this.parsedData.filter(d => d.month === `${this.start_time}`)
 
@@ -89,9 +93,7 @@ class Treemap {
             name: "a",
             cap: "",
         })
-        // let tmp = d3.filter(start_data, d => d.name === "bitcoin")
         final_data = final_data.map(d => {
-            // let name = d.name;
             d.cap = d.cap * 1.0;
             d.cap0 = 0;
             for (let data of start_data) {
@@ -116,13 +118,12 @@ class Treemap {
 
         this.treemap(this.root)
 
-        this.cell = this.svg.selectAll("a")
+        this.cell = this.svg
+            .selectAll("a")
             .data(this.root.leaves())
             .join("a")
-            // .selectAll("#cell_group")
             .selectAll("g")
             .data(d => [d])
-            // .data(this.root.leaves())
             .join("g")
             .attr("target", "_blank")
             .attr("transform", d => "translate(" + d.x0 + "," + d.y0 + ")");
