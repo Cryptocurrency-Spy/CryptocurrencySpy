@@ -6,7 +6,8 @@
     <title>Cryptocurrency Spy</title>
     <link rel="stylesheet" href="styles.css" />
     <script src="https://d3js.org/d3.v7.min.js"></script>
-</head>
+    <link rel="stylesheet"
+          href="https://fonts.googleapis.com/css?family=Caveat"></head>
 
 <body>
     <div class="wrapper">
@@ -46,6 +47,19 @@
         </div>
 
         <div class="view2">
+            <div id="legend_div">
+                <svg id="legend" width="300" height="30">
+                    <rect id="gradient_rect"></rect>
+                    <defs>
+                        <linearGradient id="color-gradient">
+                            <stop id="color1" offset="0%" style="stop-color: #fedbcc; stop-opacity: 1"></stop>
+                            <stop id="color2" offset="100%" style="stop-color: #dd2a25; stop-opacity: 1"></stop>
+                        </linearGradient>
+                    </defs>
+                    <text id="label_1"></text>
+                    <text id="label_2"></text>
+                </svg>
+            </div>
             <div id="tree-map">
                 <div id="treemap_tooltip"></div>
                 <svg id="treemap" width="550" height="500">

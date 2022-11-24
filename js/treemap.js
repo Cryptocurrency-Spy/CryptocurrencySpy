@@ -9,7 +9,6 @@ class Treemap {
                 console.log(mouseX, mouseY)
                 d3.select('#treemap_tooltip')
                     .attr('visibility', 'visible')
-                    // .attr('transform', 'translate(' + 0.5*(d.x1+d.x0) + ',' + 0.5*(d.y1+d.y0) + ')')
                     .attr('transform', 'translate(' + (mouseX-10) + ',' + (mouseY-50) + ')')
             })
             .on('mouseout', e => {
@@ -24,11 +23,11 @@ class Treemap {
             .style('background-color', 'white')
             .style('width', 200)
             .style('height', 100)
-            .style('font-size', '20px')
+            .style('font-size', "24px")
+            .attr('class', 'nice-font')
 
         this.width = this.svg.attr("width")
         this.height = this.svg.attr("height");
-        // this.color = d3.scaleOrdinal(d3.schemeGnBu[9]);
 
         this.format = d3.format(",d");
 
@@ -86,6 +85,8 @@ class Treemap {
     //
     //
     // }
+
+
 
     draw_treemap() {
         // console.log(globalObj.selectedTime)
@@ -185,11 +186,11 @@ class Treemap {
 
         // texts (their color encode changes in prices)
         let changes = final_data.map(d => d.change)
-        let max_changes = d3.max(changes)
-        let min_changes = d3.min(changes)
+        this.max_changes = d3.max(changes)
+        this.min_changes = d3.min(changes)
 
         this.scale_change = d3.scaleDiverging()
-            .domain([min_changes, 0, max_changes])
+            .domain([this.min_changes, 0, this.max_changes])
             .interpolator(d3.interpolateRdYlGn)
 
         this.texts = this.cell.selectAll('text')
@@ -197,7 +198,9 @@ class Treemap {
             .join("text")
             .attr("x", d => 0.05 * (d.x1 - d.x0))
             .attr("y", d => 0.50 * (d.y1 - d.y0))
-            .style('font-size', '20px')
+            .style('font-size', "32px")
+            .attr('class', 'nice-font')
+
             // .text(d => d.id + "\n" + this.format(d.value))
             .text(d => d.id)
             .style('fill', d => {
@@ -206,9 +209,30 @@ class Treemap {
             })
             .attr('visibility', d => this.hidden_rects.includes(d.id)? 'hidden': 'visible')
 
+        d3.select('#color1').style('stop-color', this.scale_change(this.min_changes))
+        d3.select('#color2').style('stop-color', this.scale_change(this.max_changes))
 
-
+        this.drawLegend()
     }
+
+    drawLegend() {
+        let legend = d3.select('#gradient_rect')
+            .attr('width', '40%')
+            .attr('height', '100%')
+            .attr('fill', 'url(#color-gradient)')
+            .attr('transform', 'translate(' + 60 + ', 0)')
+        const f = d3.format(".2s");
+        d3.select('#label_1')
+            .attr('class', 'label')
+            .attr('transform', 'translate(' + 30 + ', ' + 20 + ')')
+            .text(f(this.max_changes))
+        d3.select('#label_2')
+            .attr('class', 'label')
+            .attr('transform', 'translate(' + 210 + ', ' + 20 + ')')
+            .text(f(this.min_changes))
+    }
+
+
 
     updateTreeRectStatus() {
         this.rectangles
