@@ -7,12 +7,18 @@ class Network {
         let svg = d3.select("#network")
             .attr('width', width)
             .attr('height', height);
+        this.draw(data)
+    }
+
+    draw(data){
+        let width = 1200;
+        let height = 1200;
+        let svg = d3.select("#network")
         let values = data.map(d => d.value)
         let min_value = d3.min(values), max_value = d3.max(values)
         let scale = d3.scaleLog()
             .domain([min_value, max_value])
             .range([1.0, 15.0])
-        let color = d3.scaleOrdinal(d3.schemePaired);
 
         // Here we create our simulation, and give it some forces to apply
         //  to all the nodes:
@@ -42,8 +48,16 @@ class Network {
         all_nodes = [...node_set.values()]
         // First we create the links in their own group that comes before the node
         //  group (so the circles will always be on top of the lines)
-        let linkLayer = svg.append("g")
+        let linkLayer = svg.selectAll(".links")
+            .data([0])
+            .join("g")
             .attr("class", "links");
+
+        let nodeLayer = svg.selectAll(".nodes")
+            .data([1])
+            .join("g")
+            .attr("class", "nodes");
+        
         // Now let's create the lines
         let links = linkLayer.selectAll("line")
             .data(data)
@@ -68,8 +82,6 @@ class Network {
         });
 
         // Now we create the node group, and the nodes inside it
-        let nodeLayer = svg.append("g")
-            .attr("class", "nodes");
         let nodes = nodeLayer
             .selectAll("circle")
             .data(all_nodes)
