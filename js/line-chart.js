@@ -5,7 +5,7 @@ class LineChart {
         this.vizWidth = 900;
         this.vizHeight = 500;
         this.margin = { left: 70, bottom: 20, top: 20, right: 20 };
-        this.logOn = false;
+        this.logOn = true;
 
         this.svg = d3.select("#line-chart")
             .attr('width', this.vizWidth)
@@ -45,6 +45,7 @@ class LineChart {
             .attr('transform', 'rotate(-90)');
 
         this.logButton = d3.select("#logButton")
+            .attr("checked", true)
             .on('change', e => {
                 this.logOn = e.target.checked
                 console.log(this.logOn)
@@ -117,7 +118,6 @@ class LineChart {
                 .attr('fill', this.colorScale(name))
                 .attr('opacity', 0.5)
 
-
             this.svg.append("path")// draw a wider path for easier hovering
                 .datum(name)
                 .attr('transform', 'translate(' + this.margin.left + ',' + this.margin.top + ')')
@@ -137,7 +137,7 @@ class LineChart {
                         .attr("stroke-width", 3)//highlight
 
                 })
-                .on("mouseout", e => {
+                .on("mouseout", e => {//restore
                     this.svg.selectAll(".lines")
                         .attr("stroke", d => this.colorScale(d))
                     this.svg.selectAll(".areas")

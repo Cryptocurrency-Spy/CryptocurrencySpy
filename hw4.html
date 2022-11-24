@@ -23,8 +23,8 @@
                 <g id="button_group">
                     <button id="preset1">preset 1</button>
                     <button id="preset2">preset 2</button>
-                    <label id="logButton" class="switch">
-                        <input type="checkbox" id="toggle_input">
+                    <label id="toggle_input" class="switch">
+                        <input type="checkbox" id="logButton">
                         <span class="slider round"></span>
                     </label>
                 </g>
@@ -47,7 +47,10 @@
 
         <div class="view2">
             <div id="tree-map">
-                 <svg id="treemap" width="550" height="500"></svg>
+                 <svg id="treemap" width="550" height="500">
+                     <a><g id="cell_group"></g></a>
+                     <g id="tree_brush_group"></g>
+                 </svg>
             </div>
             <div id="grid-brush">
                 <svg>

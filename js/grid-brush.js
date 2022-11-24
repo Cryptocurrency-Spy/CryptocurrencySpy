@@ -112,7 +112,7 @@ class GridBrush {//Bubble
             .text(d => d)
 
         // brushes
-        this.attachBrushes()
+        this.attachBrush()
 
         // button
         this.clearButton = this.div.select('#clear_time')
@@ -120,7 +120,7 @@ class GridBrush {//Bubble
 
     }
 
-    attachBrushes() {
+    attachBrush() {
         this.brushGroup = d3.select('#brush_group')  // g
             .attr('transform', 'translate(' + this.dx + ',' + this.dy + ')')
 
@@ -142,28 +142,26 @@ class GridBrush {//Bubble
     }
 
     brushed(e) {
-        let s = e.selection;
-        let [[x0, y0], [x1, y1]] = s;
-        // console.log(x0, y0)
-        // console.log(x1, y1)
+        let s = e.selection
+        let [[x0, y0], [x1, y1]] = s
 
-        crop(x0, y0, 0, 0, 12 * this.w, this.year_count * this.h);
-        crop(x1, y1, 0, 0, 12 * this.w, this.year_count * this.h);
+        crop(x0, y0, 0, 0, 12 * this.w, this.year_count * this.h)
+        crop(x1, y1, 0, 0, 12 * this.w, this.year_count * this.h)
         function crop(x, y, x_min, y_min, x_max, y_max) {
             if (x < x_min) {
-                x = x_min;
+                x = x_min
             }
             if (y < y_min) {
-                y = y_min;
+                y = y_min
             }
             if (x > x_max) {
-                x = x_max;
+                x = x_max
             }
             if (y > y_max) {
-                y = y_max;
+                y = y_max
             }
         }
-        this.rects.attr('class', 'gridRect');
+        this.rects.attr('class', 'gridRect')
 
         let connerRectIndices = []
         for (let j of [...Array(this.year_count).keys()]) {
@@ -182,14 +180,14 @@ class GridBrush {//Bubble
         }
 
         if (connerRectIndices[0][0] > connerRectIndices[1][0]){
-            let tmp = connerRectIndices[0][0];
-            connerRectIndices[0][0] = connerRectIndices[1][0];
-            connerRectIndices[1][0] = tmp;
+            let tmp = connerRectIndices[0][0]
+            connerRectIndices[0][0] = connerRectIndices[1][0]
+            connerRectIndices[1][0] = tmp
         }
         if (connerRectIndices[0][1] > connerRectIndices[1][1]){
-            let tmp = connerRectIndices[0][1];
-            connerRectIndices[0][1] = connerRectIndices[1][1];
-            connerRectIndices[1][1] = tmp;
+            let tmp = connerRectIndices[0][1]
+            connerRectIndices[0][1] = connerRectIndices[1][1]
+            connerRectIndices[1][1] = tmp
         }
 
         this.selectedRects = this.rects
@@ -208,7 +206,7 @@ class GridBrush {//Bubble
                 let year_str = (d[1]+2013).toString()
                 let month_str = (d[0]+1).toString()
                 if (month_str.length < 2)
-                    month_str = "0" + month_str;
+                    month_str = "0" + month_str
                 globalObj.selectedTime.push(year_str + "/" + month_str)
                 return year_str + "/" + month_str
             })
