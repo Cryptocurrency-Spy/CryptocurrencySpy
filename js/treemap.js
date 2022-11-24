@@ -9,9 +9,13 @@ class Treemap {
         this.format = d3.format(",d");
 
         this.treemap = d3.treemap()
+            .tile(d3.treemapBinary)
+            //treemapBinary,treemapDice,treemapSlice,treemapSliceDice,treemapSquarify(default)
             .size([this.width, this.height])
             .round(true)
-            .padding(1);
+            .padding(10)
+
+        // this.treemap.mode("slice")
 
         this.parsedData = globalObj.parsedData;
         this.draw_treemap();
@@ -103,6 +107,7 @@ class Treemap {
             .sort((a, b) => b.height - a.height || b.value - a.value)
 
         this.treemap(this.root);
+        // this.treemap.mode("slice")
 
         this.cell = this.svg.selectAll("a")
             .data(this.root.leaves())
