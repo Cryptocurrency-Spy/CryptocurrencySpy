@@ -10,12 +10,11 @@ class Treemap {
 
         this.treemap = d3.treemap()
             .tile(d3.treemapBinary)
-            //treemapBinary,treemapDice,treemapSlice,treemapSliceDice,treemapSquarify(default)
+            //treemapBinary,treemapDice,treemapSlice,treemapSliceDice,treemapSquarify(default),d3.treemapResquarify
             .size([this.width, this.height])
             .round(true)
-            .padding(10)
+            .padding(7)
 
-        // this.treemap.mode("slice")
 
         this.parsedData = globalObj.parsedData;
         this.draw_treemap();
@@ -77,37 +76,45 @@ class Treemap {
         // this.start_time = this.cropTime(this.start_time)
 
         // console.log(date)
-        let _data = this.parsedData.filter(d => d.date === `${this.final_time}/24`);
-        let start_data = this.parsedData.filter(d => d.date === `${this.start_time}/24`)
-        _data.push({
+        let final_data = this.parsedData.filter(d => d.month === `${this.final_time}`)
+        let start_data = this.parsedData.filter(d => d.month === `${this.start_time}`)
+
+        this.final_date = d3.max(final_data.map(d => d.date))
+        this.start_date = d3.min(start_data.map(d => d.date))
+
+        final_data = final_data.filter(d => (d.date === this.final_date))
+        start_data = start_data.filter(d => (d.date === this.start_date))
+
+        final_data.push({
             name: "a",
             cap: "",
         })
-        _data = _data.map(d => {
-            let t = d.cap;
-            let name = d.name;
-            d.cap = t * 1.0;
-            d.cap0 = 0.0;
-            let section = d3.filter(start_data, d => d.name === name)
-            if (section.length > 0) {
-                d.cap0 = section[0].cap * 1.0;
+        // let tmp = d3.filter(start_data, d => d.name === "bitcoin")
+        final_data = final_data.map(d => {
+            // let name = d.name;
+            d.cap = d.cap * 1.0;
+            d.cap0 = 0;
+            for (let data of start_data) {
+                if (data.name === d.name) {
+                    // console.log(d.name)
+                    d.cap0 = data.cap * 1.0;
+                }
             }
             d.change = d.cap - d.cap0
             return d;
         })
         // this._data = _data
 
-        let map_from_name = d3.group(_data, d => d.name);
+        let map_from_name = d3.group(final_data, d => d.name);
 
         this.root = d3.stratify()
             .id(d => d.name)
             .parentId(d => d.name === "a" ? null : "a")
-            (_data)
-            .sum(d => d.cap)
+            (final_data)
+            .sum(d => d.cap)//create value properties in each node
             .sort((a, b) => b.height - a.height || b.value - a.value)
 
-        this.treemap(this.root);
-        // this.treemap.mode("slice")
+        this.treemap(this.root)
 
         this.cell = this.svg.selectAll("a")
             .data(this.root.leaves())
@@ -120,8 +127,7 @@ class Treemap {
             .attr("target", "_blank")
             .attr("transform", d => "translate(" + d.x0 + "," + d.y0 + ")");
 
-        this.rectangles = this.cell
-            .selectAll("rect")
+        this.rectangles = this.cell.selectAll("rect")
             .data(d => {
                 let _d = d;
                 _d.selected = false;
@@ -144,7 +150,7 @@ class Treemap {
             })
 
         // texts (their color encode changes in prices)
-        let changes = _data.map(d => d.change)
+        let changes = final_data.map(d => d.change)
         let max_changes = d3.max(changes)
         let min_changes = d3.min(changes)
 
