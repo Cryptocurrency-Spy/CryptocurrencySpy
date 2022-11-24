@@ -34,7 +34,6 @@ class Treemap {
         })
         _data = _data.map(d => {
             let t = d.cap;
-            let name = d.name;
             d.cap = t * 1.0;
             d.cap0 = 0.0;
             let section = d3.filter(start_data, d => d.name === name)
@@ -95,9 +94,7 @@ class Treemap {
             .attr("width", d => d.x1 - d.x0)
             .attr("height", d => d.y1 - d.y0)
             .attr("fill", d => {
-                // return globalObj.colorScale(d.id);
-                let t = map_from_name.get(d.id)[0]
-                return scale_change(t.change);
+                return globalObj.colorScale(d.id);
                 // let a = d.ancestors();
                 // return this.color(a[0].id);
             })

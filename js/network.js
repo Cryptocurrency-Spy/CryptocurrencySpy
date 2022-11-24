@@ -48,8 +48,8 @@ class Network {
         let links = linkLayer.selectAll("line")
             .data(data)
             .enter().append("line")
-            .attr("stroke-width", d => scale(d.value));
-            // .attr("stroke-width", d => Math.sqrt(d.value/ 49) + 1.0);
+            // .attr("stroke-width", d => scale(d.value));
+            .attr("stroke-width", d => Math.sqrt(d.value/ 49) + 0.5);
         
         links.append("title")
             .text(d => `${d.time}, ${d.value} bitcoins`)
