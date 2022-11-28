@@ -210,7 +210,6 @@ class GridBrush {//Bubble
                     month_str = "0" + month_str
                 let time_str = year_str + "/" + month_str
 
-
                 if (time_str >= '2013/04' && time_str <= '2019/04') {
                     globalObj.selectedTime.push(time_str)
                 }
@@ -219,7 +218,7 @@ class GridBrush {//Bubble
             })
 
         // console.log(globalObj.selectedTime)
-        console.log(globalObj.selectedNames)
+        // console.log(globalObj.selectedNames)
         globalObj.treemap.draw_treemap()
         globalObj.line_chart.update(e)
 

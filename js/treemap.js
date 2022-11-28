@@ -232,8 +232,6 @@ class Treemap {
             .text(f(this.min_changes))
     }
 
-
-
     updateTreeRectStatus() {
         this.rectangles
             .style("stroke", d => (globalObj.selectedNames.includes(d.id))? "black": "none")
