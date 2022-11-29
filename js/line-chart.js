@@ -26,14 +26,14 @@ class LineChart {
 
         this.updateAxes()
 
-        this.pathGenerator = d3.line()
-            .x(d => this.xScale(d3.timeParse("%Y/%m/%d")(d.date)))
-            .y(d => this.yScale(d.price))
-
-        this.areaGenerator = d3.area()
-            .x(d => this.xScale(d3.timeParse("%Y/%m/%d")(d.date)))
-            .y1(d => this.yScale(d.high))
-            .y0(d => this.yScale(d.low));
+        // this.pathGenerator = d3.line()
+        //     .x(d => this.xScale(d3.timeParse("%Y/%m/%d")(d.date)))
+        //     .y(d => this.yScale(d.price))
+        //
+        // this.areaGenerator = d3.area()
+        //     .x(d => this.xScale(d3.timeParse("%Y/%m/%d")(d.date)))
+        //     .y1(d => this.yScale(d.high))
+        //     .y0(d => this.yScale(d.low));
 
         this.colorScale = globalObj.colorScale;
         this.colorScaleFade = globalObj.colorScaleFade;
@@ -115,34 +115,34 @@ class LineChart {
             tmp = this.ft
         }
         this.time_intervals.push(0)
-        console.log(this.time_intervals)//
+        // console.log(this.time_intervals)//
 
         this.total_days = d3.timeDay.count(this.start_time, this.final_time)
         let w = this.vizWidth - this.margin.left - this.margin.right
         let wr = w / this.total_days
         for (let i of [...Array(this.years.length).keys()]) {
-            this.xS = d3.scaleTime()
+            let r0 = wr * (d3.timeDay.count(this.start_time, this.start_times[i]) - this.time_intervals[i]*0.5);
+            // wr * (d3.timeDay.count(this.start_time, this.start_times[i]))
+            let r1 = wr * (d3.timeDay.count(this.start_time, this.final_times[i]) + this.time_intervals[i+1]*0.5)
+            // wr * (d3.timeDay.count(this.start_time, this.final_times[i]))
+            let xS = d3.scaleTime()
                 .domain([this.start_times[i], this.final_times[i]])
-                .range([
-                    // wr * (d3.timeDay.count(this.start_time, this.start_times[i]) - Math.floor(this.time_intervals[i]*0.5)),
-                    wr * (d3.timeDay.count(this.start_time, this.start_times[i])),
-                    // wr * (d3.timeDay.count(this.start_time, this.final_times[i]) + Math.floor(this.time_intervals[i+1]*0.5))
-                    wr * (d3.timeDay.count(this.start_time, this.final_times[i]))
-                ])
-            this.xA = d3.axisBottom(this.xS)
+                .range([r0, r1])
+            let xA = d3.axisBottom(xS)
                 .tickFormat(d3.timeFormat("%y.%m.%d"))
-                .ticks(1)
+                .ticks(Math.floor(0.01 * (r1 - r0))) // number of ticks
+                // .ticks(2)
             this.xAxisGroup = this.svg.select('#x-axis')
                 .attr('transform', 'translate(' + this.margin.left + ',' + (this.vizHeight - this.margin.bottom) + ')')
             this.xAxisGroup.append('g')
-                .call(this.xA)
+                .call(xA)
 
             // path generators for each x-axis
             let pG = d3.line()
-                .x(d => this.xS(d3.timeParse("%Y/%m/%d")(d.date)))
+                .x(d => xS(d3.timeParse("%Y/%m/%d")(d.date)))
                 .y(d => this.yScale(d.price))
             let aG = d3.area()
-                .x(d => this.xS(d3.timeParse("%Y/%m/%d")(d.date)))
+                .x(d => xS(d3.timeParse("%Y/%m/%d")(d.date)))
                 .y1(d => this.yScale(d.high))
                 .y0(d => this.yScale(d.low));
             this.pathGenerators.push(pG)
@@ -184,17 +184,19 @@ class LineChart {
             let groupedData = d3.group(Data, d => d.month.slice(0, 4));// group by year
 
             for (let i of [...Array(this.years.length).keys()]) { // for each year
-                // console.log(groupedData.keys())
+            // for (let i of [...Array(1).keys()]) { // for each year
 
                 if (Array.from(groupedData.keys()).includes(this.years[i])){
                     let data = groupedData.get(this.years[i])
 
                     let cgroup = this.svg.append('g')
+                        .attr('id', name + i.toString())
+                        .attr('class', 'path_group')
 
                     cgroup.append('path')
                         .datum(name)
                         .attr('class', 'lines')
-                        // .attr('id', name)
+
                         .attr('transform', 'translate(' + this.margin.left + ',' + this.margin.top + ')')
                         .attr('d', this.pathGenerators[i](data))
                         // .attr('d', this.pathGenerator(data))
@@ -205,7 +207,6 @@ class LineChart {
                         .datum(name)
                         .attr('class', 'areas')
                         .attr('transform', 'translate(' + this.margin.left + ',' + this.margin.top + ')')
-                        // .attr('id', name)
                         .attr('d', this.areaGenerators[i](data))
                         // .attr('d', this.areaGenerator(data))
                         .attr('fill', this.colorScale(name))
@@ -214,7 +215,6 @@ class LineChart {
                     cgroup.append("path")// draw a wider path for easier hovering
                         .datum(name)
                         .attr('transform', 'translate(' + this.margin.left + ',' + this.margin.top + ')')
-                        // .attr('id', name)
                         .attr('d', this.pathGenerators[i](data))
                         // .attr('d', this.pathGenerator(data))
                         .attr("class", "fatpath")
@@ -248,7 +248,7 @@ class LineChart {
     }
 
     update() {
-        this.svg.selectAll('path').remove();
+        this.svg.selectAll('.path_group').remove();
         this.xAxisGroup.selectAll('g').remove()
 
         this.selectedData = this.parsedData//
