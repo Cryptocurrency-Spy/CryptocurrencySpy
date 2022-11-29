@@ -6,7 +6,7 @@ class Treemap {
                 let mouseX = e.clientX;
                 let mouseY = e.clientY;
                 let et = e.target
-                console.log(mouseX, mouseY)
+                // console.log(mouseX, mouseY)
                 d3.select('#treemap_tooltip')
                     .attr('visibility', 'visible')
                     .attr('transform', 'translate(' + (mouseX-10) + ',' + (mouseY-50) + ')')

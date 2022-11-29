@@ -239,8 +239,8 @@ class GridBrush {//Bubble
 
         this.rects.attr('class', 'gridRect')
 
-        globalObj.line_chart.updateRange()
-        globalObj.treemap.draw_treemap()
+        // globalObj.line_chart.update()
+        // globalObj.treemap.draw_treemap()
     }
 
 }

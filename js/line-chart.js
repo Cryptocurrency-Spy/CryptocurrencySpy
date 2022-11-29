@@ -11,7 +11,7 @@ class LineChart {
             .attr('width', this.vizWidth)
             .attr('height', this.vizHeight)
 
-        this.svg.on('mousemove', e => this.updateOverlay(e));
+        // this.svg.on('mousemove', e => this.updateOverlay(e));
 
         this.parsedData = globalObj.parsedData;
 
@@ -20,6 +20,9 @@ class LineChart {
         this.groupedData = globalObj.groupedData
         this.allNames = globalObj.allNames
         this.allTime = globalObj.allTime
+
+        this.pathGenerators = []
+        this.areaGenerators = []
 
         this.updateAxes()
 
@@ -71,15 +74,77 @@ class LineChart {
         // update x-axis
         this.start_time = d3.min(this.selectedData, d => Date.parse(d.date));//
         this.final_time = d3.max(this.selectedData, d => Date.parse(d.date));//
-        // console.log(d3.timeFormat("%Y/%m%/%d")(this.start_time), d3.timeFormat("%Y/%m%/%d")(this.final_time))
-        this.xScale = d3.scaleTime()
-            .domain([this.start_time, this.final_time])
-            .range([0, this.vizWidth - this.margin.left - this.margin.right])
-        this.xAxis = d3.axisBottom(this.xScale)
-            .tickFormat(d3.timeFormat("%y.%m.%d"));
-        this.svg.select('#x-axis')
-            .attr('transform', 'translate(' + this.margin.left + ',' + (this.vizHeight - this.margin.bottom) + ')')
-            .call(this.xAxis)
+        // console.log(d3.timeFormat("%Y/%m/%d")(this.start_time), d3.timeFormat("%Y/%m/%d")(this.final_time))
+        // this.xScale = d3.scaleTime()
+        //     .domain([this.start_time, this.final_time])
+        //     .range([0, this.vizWidth - this.margin.left - this.margin.right])
+        // this.xAxis = d3.axisBottom(this.xScale)
+        //     .tickFormat(d3.timeFormat("%y.%m.%d"));
+        // this.xAxisGroup = this.svg.select('#x-axis')
+        //     .attr('transform', 'translate(' + this.margin.left + ',' + (this.vizHeight - this.margin.bottom) + ')')
+        // this.xAxisGroup.append('g')
+        //     .call(this.xAxis)
+
+
+
+        this.years = []
+        for (let time of globalObj.selectedTime) {
+            let tmp = time.slice(0, 4)
+            if (!this.years.includes(tmp)){
+                this.years.push(tmp)
+            }
+        }
+        this.years.sort((a,b) => (a-b)) //
+        this.groupedYearData = d3.group(this.selectedData, d => d.month.slice(0, 4));
+        this.start_times = []
+        this.final_times = []
+        this.time_intervals = []
+        let tmp = ""
+        for (let year of this.years) {
+            let data = this.groupedYearData.get(year)
+            this.st = d3.min(data, d => Date.parse(d.date)) // start time of the year
+            this.ft = d3.max(data, d => Date.parse(d.date)) // final time of the year
+            // console.log("...")
+            this.start_times.push(this.st)
+            this.final_times.push(this.ft)
+            if (tmp === ""){
+                this.time_intervals.push(0)
+            }
+            else {
+                this.time_intervals.push(d3.timeDay.count(tmp, this.st))
+            }
+            tmp = this.ft
+        }
+        this.time_intervals.push(0)
+        this.total_days = d3.timeDay.count(this.start_time, this.final_time)
+        let w = this.vizWidth - this.margin.left - this.margin.right
+        let wr = w / this.total_days
+        for (let i of [...Array(this.years.length).keys()]) {
+            this.xS = d3.scaleTime()
+                .domain([this.start_times[i], this.final_times[i]])
+                .range([
+                    wr * (d3.timeDay.count(this.start_time, this.start_times[i]) - this.time_intervals[i]*0.5),
+                    wr * (d3.timeDay.count(this.start_time, this.final_times[i]) + this.time_intervals[i+1]*0.5)
+                ])
+            this.xA = d3.axisBottom(this.xS)
+                .tickFormat(d3.timeFormat("%y.%m.%d"))
+                .ticks(1)
+            this.xAxisGroup = this.svg.select('#x-axis')
+                .attr('transform', 'translate(' + this.margin.left + ',' + (this.vizHeight - this.margin.bottom) + ')')
+            this.xAxisGroup.append('g')
+                .call(this.xA)
+
+            // path generators for each x-axis
+            let pG = d3.line()
+                .x(d => this.xS(d3.timeParse("%Y/%m/%d")(d.date)))
+                .y(d => this.yScale(d.price))
+            let aG = d3.area()
+                .x(d => this.xS(d3.timeParse("%Y/%m/%d")(d.date)))
+                .y1(d => this.yScale(d.high))
+                .y0(d => this.yScale(d.low));
+            this.pathGenerators.push(pG)
+            this.areaGenerators.push(aG)
+        }
 
         // update y-axis
         this.max_price = d3.max(this.selectedData, d => parseFloat(d.price))
@@ -109,70 +174,79 @@ class LineChart {
 
     updatePaths(){
         let names = globalObj.selectedNames;
-        for (let name of names){
-            let data = this.groupedData.get(name)
+        for (let name of names){ // for each cryptocurrency
+            let Data = this.groupedData.get(name)
                 .filter(d => globalObj.selectedTime.length === 0 ? false : globalObj.selectedTime.includes(d.month))
 
-            this.svg.append('path')
-                .datum(name)
-                .attr('class', 'lines')
-                .attr('id', name)
-                .attr('transform', 'translate(' + this.margin.left + ',' + this.margin.top + ')')
-                .attr('d', this.pathGenerator(data))
-                .attr('fill', 'none')
-                .attr('stroke', this.colorScale(name))
-                .on('mouseover', e => this.highlightPath(e))
+            let groupedData = d3.group(Data, d => d.month.slice(0, 4));// group by year
 
-            this.svg.append('path')// price range area
-                .datum(name)
-                .attr('class', 'areas')
-                .attr('transform', 'translate(' + this.margin.left + ',' + this.margin.top + ')')
-                .attr('id', name)
-                .attr('d', this.areaGenerator(data))
-                .attr('fill', this.colorScale(name))
-                .attr('opacity', 0.5)
+            let cgroup = this.svg.append('g')
 
-            this.svg.append("path")// draw a wider path for easier hovering
-                .datum(name)
-                .attr('transform', 'translate(' + this.margin.left + ',' + this.margin.top + ')')
-                .attr('id', name)
-                .attr('d', this.pathGenerator(data))
-                .attr("class", "fatpath")
-                .on("mouseover", e => {
-                    this.svg.selectAll(".lines")
-                        .attr("stroke", d => this.colorScaleFade(d))//fade
-                        .filter(d => d===name)
-                        .attr("stroke", this.colorScale(name))
-                    this.svg.selectAll(".areas")
-                        .attr("fill", d => this.colorScaleFade(d))//fade
-                        .filter(d => d===name)
-                        .attr("fill", this.colorScale(name))
-                    this.svg.select("#"+(e.target).id)
-                        .attr("stroke-width", 3)//highlight
+            for (let i of [...Array(this.years.length).keys()]) { // for each year
+                // console.log(groupedData.keys())
 
-                })
-                .on("mouseout", e => {//restore
-                    this.svg.selectAll(".lines")
-                        .attr("stroke", d => this.colorScale(d))
-                    this.svg.selectAll(".areas")
-                        .attr("fill", d => this.colorScale(d))
-                    this.svg.select("#"+(e.target).id)
-                        .attr("stroke-width", 1)
-                })
+                if (Array.from(groupedData.keys()).includes(this.years[i])){
+                    let data = groupedData.get(this.years[i])
+
+                    cgroup.append('path')
+                        .datum(name)
+                        .attr('class', 'lines')
+                        .attr('id', name)
+                        .attr('transform', 'translate(' + this.margin.left + ',' + this.margin.top + ')')
+                        .attr('d', this.pathGenerators[i](data))
+                        // .attr('d', this.pathGenerator(data))
+                        .attr('fill', 'none')
+                        .attr('stroke', this.colorScale(name))
+
+                    cgroup.append('path')// price range area
+                        .datum(name)
+                        .attr('class', 'areas')
+                        .attr('transform', 'translate(' + this.margin.left + ',' + this.margin.top + ')')
+                        .attr('id', name)
+                        .attr('d', this.areaGenerators[i](data))
+                        // .attr('d', this.areaGenerator(data))
+                        .attr('fill', this.colorScale(name))
+                        .attr('opacity', 0.5)
+
+                    cgroup.append("path")// draw a wider path for easier hovering
+                        .datum(name)
+                        .attr('transform', 'translate(' + this.margin.left + ',' + this.margin.top + ')')
+                        .attr('id', name)
+                        .attr('d', this.pathGenerators[i](data))
+                        // .attr('d', this.pathGenerator(data))
+                        .attr("class", "fatpath")
+                        .on("mouseover", e => {
+                            this.svg.selectAll(".lines")
+                                .attr("stroke", d => this.colorScaleFade(d))//fade
+                                .filter(d => d===name)
+                                .attr("stroke", this.colorScale(name))
+                            this.svg.selectAll(".areas")
+                                .attr("fill", d => this.colorScaleFade(d))//fade
+                                .filter(d => d===name)
+                                .attr("fill", this.colorScale(name))
+                            this.svg.selectAll("#"+(e.target).id)
+                                .attr("stroke-width", 3)//highlight
+                        })
+                        .on("mouseout", e => {//restore
+                            this.svg.selectAll(".lines")
+                                .attr("stroke", d => this.colorScale(d))
+                            this.svg.selectAll(".areas")
+                                .attr("fill", d => this.colorScale(d))
+                            this.svg.selectAll("#"+(e.target).id)
+                                .attr("stroke-width", 1)
+                        })
+                }
+            }
+
+
 
 
         }
     }
 
-    highlightPath(e) {
-        let et = e.target
-        console.log(et)
-        et.attr('stroke', '#ffff00')
-            .attr('stroke-width', 10)
-    }
-
     update() {
         this.svg.selectAll('path').remove();
+        this.xAxisGroup.selectAll('g').remove()
 
         this.selectedData = this.parsedData//
             .filter(d => globalObj.selectedTime.length === 0 ? false : globalObj.selectedTime.includes(d.month))
@@ -201,6 +275,7 @@ class LineChart {
                 for (let name of globalObj.selectedNames) {
                     let data = this.groupedData.get(name)
                         .filter(d => globalObj.selectedTime.length === 0 ? false : globalObj.selectedTime.includes(d.month))
+                    // console.log(this.)
                     let dateHovered = new Date(Math.floor(this.xScale.invert(mouseX - this.margin.left)));
                     let tmp = data
                         .filter(d => Math.abs(d3.timeDay.count(d3.timeParse("%Y/%m/%d")(d.date), dateHovered)) < 1.1);
