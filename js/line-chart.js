@@ -132,7 +132,7 @@ class LineChart {
                 .range([r0, r1])
             let xA = d3.axisBottom(xS)
                 .tickFormat(d3.timeFormat("%y.%m.%d"))
-                .ticks(Math.floor(0.01 * (r1 - r0))) // number of ticks
+                .ticks(Math.floor(0.014 * (r1 - r0))) // number of ticks
                 // .ticks(2)
             this.xAxisGroup = this.svg.select('#x-axis')
                 .attr('transform', 'translate(' + this.margin.left + ',' + (this.vizHeight - this.margin.bottom) + ')')
@@ -163,7 +163,6 @@ class LineChart {
         this.svg.select('#y-axis')
             .attr('transform', 'translate(' + this.margin.left + ',' + this.margin.bottom + ')')
             .call(this.yAxis)
-
 
     }
 
