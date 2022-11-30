@@ -54,6 +54,28 @@
 <!--            </div>-->
             <div id="network-div">
                 <svg id="network" width="800" height="600"></svg>
+                <span>
+                    <label>Dataset:</label>
+                    <select id="dataset">
+                      <option selected value="chunk0">chunk0</option>
+                      <option value="chunk1">chunk1</option>
+                      <option value="chunk2">chunk2</option>
+                      <option value="chunk3">chunk3</option>
+                      <option value="chunk4">chunk4</option>
+                      <option value="chunk5">chunk5</option>
+                      <option value="chunk6">chunk6</option>
+                      <option value="chunk7">chunk7</option>
+                      <option value="chunk8">chunk8</option>
+                      <option value="chunk9">chunk9</option>
+                    </select>
+                    0<input type="range" id="value" min="0" max="100" step="any">100
+                    <label for="value">Value</label>
+                    <input type="range" id="time" min="0" max="11">
+                    <label for="time">Time</label>
+                    0.01<input type="range" id="strength" min="0" max="11">1
+                    <label for="strength">Strength</label>
+                  </span>
+                              
             </div>
         </div>
 
@@ -86,7 +108,8 @@
                 <button id="clear_time">unselect time</button>
             </div>
         </div>
-        <!-- <footer>Footer</footer> -->
+<!--        <aside>Aside</aside>-->
+        <footer>Footer</footer>
     </div>
 
     <script src="js/navigation.js"></script>
