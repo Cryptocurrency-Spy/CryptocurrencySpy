@@ -114,6 +114,9 @@ function Tree(data, { // data is either tabular (array of objects) or hierarchy 
         .attr("stroke-linecap", strokeLinecap)
         .attr("stroke-linejoin", strokeLinejoin)
         .attr("stroke-width", strokeWidth)
+    
+    root.x0 = root.x
+    root.y0 = root.y
     update(root)
     
     function update(source) {
@@ -126,18 +129,24 @@ function Tree(data, { // data is either tabular (array of objects) or hierarchy 
 
         let _link = g_link
             .selectAll("path")
-            .data(root.links())
+            .data(root.links(), d => {
+                // console.log(d.target.data.id)
+                return d.target.data.id})
 
         let linkEnter = _link.enter().insert('path')
             .attr("d", d3.linkRadial()
-                .angle(d => d.x)
-                .radius(d => d.y));
-
+                .angle(d => {
+                    // console.log(d)
+                    return d.x0 ? d.x0: d.parent? d.parent.x : d.x;
+                })
+                .radius(d => d.y0? d.y0: d.parent? d.parent.y: d.y))
         let linkUpdate = linkEnter.merge(_link)
         linkUpdate.transition()
             .duration(300)
             .attr('d', d3.linkRadial()
-                .angle(d => d.x)
+                .angle(d => {
+                    // console.log(d)
+                    return d.x})
                 .radius(d => d.y))
 
         let linkExit = _link.exit().transition()
@@ -149,13 +158,18 @@ function Tree(data, { // data is either tabular (array of objects) or hierarchy 
 
         const node = svg
             .selectAll("a")
-            .data(root.descendants())
+            .data(root.descendants(), d => {
+                // console.log(d)
+                return d.data.id})
 
         let nodeEnter = node.enter()
             .append("a")
             .attr("xlink:href", link == null ? null : d => link(d.data, d))
             .attr("target", link == null ? null : linkTarget)
-            .attr("transform", d => `rotate(${d.x * 180 / Math.PI - 90}) translate(${d.y},0)`);
+            .attr("transform", d => {
+                // console.log(d.depth)
+                return `rotate(${(d.parent? d.parent.x: d.x) * 180 / Math.PI - 90}) translate(${d.parent? d.parent.y: d.y},0)`
+            });
         nodeEnter.append("circle")
             .attr("fill", d => d.children || d._children ? stroke : fill)
             .attr("r", r)
@@ -176,7 +190,12 @@ function Tree(data, { // data is either tabular (array of objects) or hierarchy 
             .remove();
 
         nodeExit.select("circle").attr('r', 0)
-
+        // console.log(nodeEnter.size(), nodeUpdate.size(), nodeExit.size())
+        nodes.forEach(d => {
+            d.x0 = d.x
+            d.y0 = d.y
+        });
+        console.log(linkEnter.size(), linkUpdate.size(), linkExit.size())
         if (title != null) node.append("title")
             .text(d => title(d.data, d));
 
@@ -189,9 +208,7 @@ function Tree(data, { // data is either tabular (array of objects) or hierarchy 
             .attr("stroke", halo)
             .attr("stroke-width", haloWidth)
             .text((d, i) => L[i]);
-        console.log("done")
         function click(event, d) {
-            console.log("Hello")
             if (d.children) {
                 d._children = d.children;
                 d.children = null;
