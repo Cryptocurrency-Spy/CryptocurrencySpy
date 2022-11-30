@@ -181,6 +181,7 @@ class LineChart {
                     let data = groupedData.get(this.years[i])
 
                     let cgroup = this.svg.append('g')
+                        .datum(name)
                         .attr('id', name + i.toString())
                         .attr('class', 'path_group')
 
@@ -202,16 +203,15 @@ class LineChart {
                         .attr('id', name)
                         .attr('transform', 'translate(' + this.margin.left + ',' + this.margin.top + ')')
                         .attr('d', pG(data))
-                        // .attr('d', this.pathGenerator(data))
                         .attr('fill', 'none')
                         .attr('stroke', this.colorScale(name))
                     
                     cgroup.append('path')// price range area
                         .datum(name)
+                        .attr('id', name)
                         .attr('class', 'areas')
                         .attr('transform', 'translate(' + this.margin.left + ',' + this.margin.top + ')')
                         .attr('d', aG(data))
-                        // .attr('d', this.areaGenerator(data))
                         .attr('fill', this.colorScale(name))
                         .attr('opacity', 0.5)
 
@@ -220,7 +220,6 @@ class LineChart {
                         .attr('id', name)
                         .attr('transform', 'translate(' + this.margin.left + ',' + this.margin.top + ')')
                         .attr('d', pG(data))
-                        // .attr('d', this.pathGenerator(data))
                         .attr("class", "fatpath")
                         .on("mouseover", e => {
                             this.svg.selectAll(".lines")
@@ -233,6 +232,9 @@ class LineChart {
                                 .attr("fill", this.colorScale(name))
                             this.svg.selectAll("#"+(e.target).id)
                                 .attr("stroke-width", 3)//highlight
+
+                            this.svg.selectAll(".path_group")
+                                .sort((a, b) => a === (e.target).id? 1: -1)
                         })
                         .on("mouseout", e => {//restore
                             this.svg.selectAll(".lines")
@@ -299,13 +301,13 @@ class LineChart {
                             xs = d3.scaleTime()
                                 .domain([this.start_times[i], this.final_times[i]])
                                 .range(this.r0r1s[i])
-                            console.log(":::::"+i)
+                            // console.log(":::::"+i)
                             break
                         }
                     }
                     // let dateHovered = new Date(Math.floor(xs.invert(posX)));
                     let dateHovered =xs.invert(posX)
-                    console.log(d3.timeFormat("%Y/%m/%d")(dateHovered))
+                    // console.log(d3.timeFormat("%Y/%m/%d")(dateHovered))
                     // let dateHovered = new Date(Math.floor(this.xScale.invert(posX)));
                     let tmp = data
                         .filter(d => Math.abs(d3.timeDay.count(d3.timeParse("%Y/%m/%d")(d.date), dateHovered)) < 1.1);
@@ -314,7 +316,7 @@ class LineChart {
                     }
                 }
                 dataFetched.sort((d1, d2) => parseFloat(d2[0].price) - parseFloat(d1[0].price))
-                console.log(dataFetched)
+                // console.log(dataFetched)
             }
 
             if(dataFetched.length) {
