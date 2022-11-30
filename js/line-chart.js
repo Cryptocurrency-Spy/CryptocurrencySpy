@@ -2,6 +2,9 @@
 class LineChart {
 
     constructor() {
+        this.s = window.screen.width / 1920;
+        document.body.style.zoom = this.s;
+
         this.vizWidth = 900;
         this.vizHeight = 500;
         this.margin = { left: 70, bottom: 20, top: 20, right: 20 };
@@ -266,7 +269,8 @@ class LineChart {
     }
 
     updateOverlay(e) {
-        let mouseX = e.clientX - 5;
+        console.log(e.clientX)
+        let mouseX = (e.clientX - 5) / this.s;
         let aaa = false;
         for (let i of [...Array(this.years.length).keys()]) {
             let posX = mouseX - this.margin.left
