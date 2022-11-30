@@ -42,51 +42,7 @@ class Treemap {
         this.parsedData = globalObj.parsedData;
         this.draw_treemap();
 
-        // this.attachTreemapBrush()
     }
-
-    // attachTreemapBrush() {
-    //     this.brushGroup = d3.select('#tree_brush_group')  // g
-    //         // .attr('transform', 'translate(' + this.dx + ',' + this.dy + ')')
-    //
-    //     this.brush = d3.brush().extent([
-    //         [0, 0],
-    //         [this.width, this.height]
-    //     ])
-    //         // .on("start", e => this.brushstart(e))
-    //         // .on("brush", e => this.brushed(e))
-    //         .on("end", e => this.brushend(e))
-    //
-    //     this.brushg = this.brushGroup.append('g')
-    //         .call(this.brush)
-    // }
-    //
-    // brushend(e) {
-    //     let s = e.selection
-    //     let [[x0, y0], [x1, y1]] = s
-    //     console.log(s)
-    //
-    //     crop(x0, y0, 0, 0, this.width, this.height)
-    //     crop(x1, y1, 0, 0, this.width, this.height)
-    //     function crop(x, y, x_min, y_min, x_max, y_max) {
-    //         if (x < x_min) {
-    //             x = x_min
-    //         }
-    //         if (y < y_min) {
-    //             y = y_min
-    //         }
-    //         if (x > x_max) {
-    //             x = x_max
-    //         }
-    //         if (y > y_max) {
-    //             y = y_max
-    //         }
-    //     }
-    //
-    //
-    // }
-
-
 
     draw_treemap() {
         // console.log(globalObj.selectedTime)

@@ -108,6 +108,12 @@ Promise.all([pricesFile, transFile]).then(data =>
         }));
         globalObj.network = new Network();
 
+        // let logButton = d3.select("#logButton")
+        //     .attr("checked", true)
+        //     .on('change', e => {
+        //         globalObj.line_chart.logOn = e.target.checked
+        //         globalObj.line_chart.update()
+        //     })
 
     })
     .catch(error => console.error(error));

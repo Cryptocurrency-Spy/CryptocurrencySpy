@@ -51,12 +51,14 @@ class LineChart {
             .attr('transform', 'rotate(-90)');
 
         this.logButton = d3.select("#logButton")
+            .attr('type', 'checkbox')
             .attr("checked", true)
             .on('change', e => {
                 this.logOn = e.target.checked
                 // console.log(this.logOn)
                 this.update()
             })
+            // .attr('class', 'myCheckbox')
 
         this.preset1Button = d3.select("#preset1")
             .on('click', e => {
@@ -269,7 +271,7 @@ class LineChart {
     }
 
     updateOverlay(e) {
-        console.log(e.clientX)
+        // console.log(e.clientX)
         let mouseX = (e.clientX - 5) / this.s;
         let aaa = false;
         for (let i of [...Array(this.years.length).keys()]) {
