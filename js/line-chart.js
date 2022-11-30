@@ -11,7 +11,7 @@ class LineChart {
             .attr('width', this.vizWidth)
             .attr('height', this.vizHeight)
 
-        // this.svg.on('mousemove', e => this.updateOverlay(e));
+        this.svg.on('mousemove', e => this.updateOverlay(e));
 
         this.parsedData = globalObj.parsedData;
 
@@ -75,9 +75,9 @@ class LineChart {
         this.start_time = d3.min(this.selectedData, d => Date.parse(d.date));//
         this.final_time = d3.max(this.selectedData, d => Date.parse(d.date));//
         // console.log(d3.timeFormat("%Y/%m/%d")(this.start_time), d3.timeFormat("%Y/%m/%d")(this.final_time))
-        // this.xScale = d3.scaleTime()
-        //     .domain([this.start_time, this.final_time])
-        //     .range([0, this.vizWidth - this.margin.left - this.margin.right])
+        this.xScale = d3.scaleTime()
+            .domain([this.start_time, this.final_time])
+            .range([0, this.vizWidth - this.margin.left - this.margin.right])
         // this.xAxis = d3.axisBottom(this.xScale)
         //     .tickFormat(d3.timeFormat("%y.%m.%d"));
         // this.xAxisGroup = this.svg.select('#x-axis')
@@ -199,7 +199,7 @@ class LineChart {
                     cgroup.append('path')
                         .datum(name)
                         .attr('class', 'lines')
-
+                        .attr('id', name)
                         .attr('transform', 'translate(' + this.margin.left + ',' + this.margin.top + ')')
                         .attr('d', pG(data))
                         // .attr('d', this.pathGenerator(data))
@@ -217,6 +217,7 @@ class LineChart {
 
                     cgroup.append("path")// draw a wider path for easier hovering
                         .datum(name)
+                        .attr('id', name)
                         .attr('transform', 'translate(' + this.margin.left + ',' + this.margin.top + ')')
                         .attr('d', pG(data))
                         // .attr('d', this.pathGenerator(data))
@@ -264,7 +265,15 @@ class LineChart {
 
     updateOverlay(e) {
         let mouseX = e.clientX - 5;
-        if (mouseX > this.margin.left && mouseX < this.vizWidth - this.margin.right) {
+        let aaa = false;
+        for (let i of [...Array(this.years.length).keys()]) {
+            let posX = mouseX - this.margin.left
+            if (posX > this.r0r1s[i][0] && posX < this.r0r1s[i][1]) {
+                aaa = true
+            }
+        }
+
+        if (mouseX > this.margin.left && mouseX < this.vizWidth - this.margin.right && aaa) {
             this.svg.select('#overlay').style("visibility", 'visible')
 
             this.svg.select('#overlay').select('#overlay_line')
@@ -281,8 +290,23 @@ class LineChart {
                 for (let name of globalObj.selectedNames) {
                     let data = this.groupedData.get(name)
                         .filter(d => globalObj.selectedTime.length === 0 ? false : globalObj.selectedTime.includes(d.month))
-                    // console.log(this.)
-                    let dateHovered = new Date(Math.floor(this.xScale.invert(mouseX - this.margin.left)));
+
+                    let posX = mouseX - this.margin.left
+                    // console.log(posX)
+                    let xs = this.xScale
+                    for (let i of [...Array(this.years.length).keys()]) {
+                        if (posX > this.r0r1s[i][0] && posX < this.r0r1s[i][1]){
+                            xs = d3.scaleTime()
+                                .domain([this.start_times[i], this.final_times[i]])
+                                .range(this.r0r1s[i])
+                            console.log(":::::"+i)
+                            break
+                        }
+                    }
+                    // let dateHovered = new Date(Math.floor(xs.invert(posX)));
+                    let dateHovered =xs.invert(posX)
+                    console.log(d3.timeFormat("%Y/%m/%d")(dateHovered))
+                    // let dateHovered = new Date(Math.floor(this.xScale.invert(posX)));
                     let tmp = data
                         .filter(d => Math.abs(d3.timeDay.count(d3.timeParse("%Y/%m/%d")(d.date), dateHovered)) < 1.1);
                     if (tmp.length !== 0) {
@@ -290,7 +314,7 @@ class LineChart {
                     }
                 }
                 dataFetched.sort((d1, d2) => parseFloat(d2[0].price) - parseFloat(d1[0].price))
-                // console.log(dataFetched)
+                console.log(dataFetched)
             }
 
             if(dataFetched.length) {
@@ -301,7 +325,8 @@ class LineChart {
                     .join('text')
                     .text(d => `${d[0].name}, ${f(d[0].price)}`)
                     .attr('x', d => (d3.timeParse("%Y/%m/%d")(d[0].date)) > (0.5 * this.start_time + 0.5 * this.final_time) ?
-                        mouseX - 170 : mouseX + 10)
+                        mouseX - 140 : mouseX + 10)
+                    // .attr('x', 0)
                     .attr('y', (d, i) => 20 * i + 20)
                     .attr('alignment-baseline', 'hanging')
                     .attr('fill', d => d[1]);
