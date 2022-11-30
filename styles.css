@@ -22,10 +22,12 @@ nav {
     height: 50px;
 }
 .view1 {
-    width:900px
+    /*width:900px*/
+    width: 60%
 }
 .view2 {
-    width:590px
+    /*width:590px*/
+    width: 40%
 }
 footer {
     grid-column: 1 / 3;

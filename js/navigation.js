@@ -1,48 +1,6 @@
 {
-    d3.select('#title')
-        .attr('class', 'nice-font')
-        .style('font-size', "30px")
 
-    let holder = d3.select("nav")
-        .append("svg")
-        .attr("width", 200)
-        .attr("height", 40)
-        .attr('transform', 'translate(' + 210 + ',' + (-40) + ')')
-        .attr('overflow', 'visible')
 
-    holder.append("a")
-        .attr("xlink:href", "https://docs.google.com/document/d/1JbXymtiiotoVQZYsW-98GvW79KWOF6nGqgNGV5mN4sQ/edit")
-        .append("rect")
-        .attr("x", 10)
-        .attr("height", 40)
-        .attr("width", 125)
-        .style("fill", "lightgreen")
-    holder.append("text")
-        .attr("x", 70)
-        .attr("y", 15)
-        .style("fill", "black")
-        .style("font-size", "20px")
-        .attr("dy", ".35em")
-        .attr("text-anchor", "middle")
-        .style("pointer-events", "none")
-        .text("Process Book");
-
-    holder.append("a")
-        .attr("xlink:href", "https://docs.google.com/document/d/1JbXymtiiotoVQZYsW-98GvW79KWOF6nGqgNGV5mN4sQ/edit")
-        .append("rect")
-        .attr("x", 140)
-        .attr("y", 0)
-        .attr("height", 40)
-        .attr("width", 120)
-        .style("fill", "lightgreen")
-    holder.append("text")
-        .attr("x", 195)
-        .attr("y", 15)
-        .style("fill", "black")
-        .style("font-size", "20px")
-        .attr("dy", ".35em")
-        .attr("text-anchor", "middle")
-        .style("pointer-events", "none")
-        .text("Demo Video");
-
+    s = window.screen.width / 1920;
+    document.body.style.zoom = s;
 }

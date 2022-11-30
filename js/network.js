@@ -1,7 +1,7 @@
 class Network {
 
     constructor() {
-        let width = 1200;
+        let width = 800;
         let height = 1200;
         let data = globalObj.parsedTransData;
         let svg = d3.select("#network")
