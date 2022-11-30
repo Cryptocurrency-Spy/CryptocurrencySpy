@@ -1,12 +1,53 @@
-let json = d3.json("data/flare.json")
-Promise.all([json]).then(data => Tree(data[0], {
-    label: d => d.name,
-    title: (d, n) => `${n.ancestors().reverse().map(d => d.data.name).join(".")}`, // hover text
-    link: (d, n) => `https://github.com/prefuse/Flare/${n.children ? "tree" : "blob"}/master/flare/src/${n.ancestors().reverse().map(d => d.data.name).join("/")}${n.children ? "" : ".as"}`,
-    width: 1152,
-    height: 1152,
-    margin: 100
-}))
+// let json = d3.json("data/flare.json")
+// Promise.all([json]).then(data => Tree(data[0], {
+//     label: d => d.name,
+//     title: (d, n) => `${n.ancestors().reverse().map(d => d.data.name).join(".")}`, // hover text
+//     link: (d, n) => `https://github.com/prefuse/Flare/${n.children ? "tree" : "blob"}/master/flare/src/${n.ancestors().reverse().map(d => d.data.name).join("/")}${n.children ? "" : ".as"}`,
+//     width: 1152,
+//     height: 1152,
+//     margin: 100
+// }))
+
+let csv = d3.csv("data/chunk0.csv")
+Promise.all([csv]).then(data => {
+    console.log(data)
+    const sucker = '1XPTgDRhN8RFnzniWCddobD9iKZatrvH4'
+    let traversed = new Set()
+    // set.has
+
+    traversed.add(sucker)
+    let queue = [sucker]
+    let map = d3.group(data[0].slice(0, 300), d => d.input_key)
+    function Node(id) {
+        return {
+            id: id,
+            children: []
+        }
+    }
+    let root = Node(sucker)
+    function traverse(node) {
+        const _t = map.get(node.id)
+        console.log(_t)
+        if (_t == undefined) return;
+        const t = Array.from(_t)
+        for (let c of t) {
+            const cid = c.output_key
+            if (!traversed.has(cid)) {
+                traversed.add(cid)
+                node.children.push(Node(cid))
+                traverse(node.children.at(-1))
+            }
+        }
+    }
+    traverse(root)
+    console.log(root);
+    Tree(root, {
+        title: (d) => `${d.id}`, // hover text
+        width: 1152,
+        height: 1152,
+        margin: 100
+    })
+})
 // Copyright 2022 Observable, Inc.
 // Released under the ISC license.
 // https://observablehq.com/@d3/radial-tree
