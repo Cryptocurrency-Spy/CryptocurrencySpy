@@ -8,8 +8,10 @@
 //     margin: 100
 // }))
 
-let csv = d3.csv("data/chunk0.csv")
-Promise.all([csv]).then(data => {
+// let csv = d3.csv("data/chunk0.csv")
+// Promise.all([csv]).then(data => radial(data))
+    
+function radial(data){
     console.log(data)
     const sucker = '1XPTgDRhN8RFnzniWCddobD9iKZatrvH4'
     let traversed = new Set()
@@ -17,7 +19,7 @@ Promise.all([csv]).then(data => {
 
     traversed.add(sucker)
     let queue = [sucker]
-    let map = d3.group(data[0].slice(0, 300), d => d.input_key)
+    let map = d3.group(data.slice(0, 300), d => d.source)
     function Node(id) {
         return {
             id: id,
@@ -31,7 +33,7 @@ Promise.all([csv]).then(data => {
         if (_t == undefined) return;
         const t = Array.from(_t)
         for (let c of t) {
-            const cid = c.output_key
+            const cid = c.target
             if (!traversed.has(cid)) {
                 traversed.add(cid)
                 node.children.push(Node(cid))
@@ -47,7 +49,7 @@ Promise.all([csv]).then(data => {
         height: 1152,
         margin: 100
     })
-})
+}
 // Copyright 2022 Observable, Inc.
 // Released under the ISC license.
 // https://observablehq.com/@d3/radial-tree
@@ -99,22 +101,30 @@ function Tree(data, { // data is either tabular (array of objects) or hierarchy 
     // Compute the layout.
     let treeData = tree().size([2 * Math.PI, radius]).separation(separation)(root);
 
-    const svg = d3.select("#s")
-        .attr("viewBox", [-marginLeft - radius, -marginTop - radius, width, height])
-        .attr("width", width)
-        .attr("height", height)
-        .attr("style", "max-width: 100%; height: auto; height: intrinsic;")
+    const svg = d3.select("#network")
+        // .attr("viewBox", [-marginLeft - radius, -marginTop - radius, width, height])
+        // .attr("width", width)
+        // .attr("height", height)
+        // .attr("style", "max-width: 100%; height: auto; height: intrinsic;")
         .attr("font-family", "sans-serif")
         .attr("font-size", 10);
 
-    let g_link = svg.append("g")
-        .attr("fill", "none")
+    // let g_link = svg.append("g")
+    let g_link = svg.selectAll("svg>g")
+        .filter(d => d == 1)
+
+    g_link.attr("fill", "none")
         .attr("stroke", stroke)
         .attr("stroke-opacity", strokeOpacity)
         .attr("stroke-linecap", strokeLinecap)
         .attr("stroke-linejoin", strokeLinejoin)
         .attr("stroke-width", strokeWidth)
-    
+        .attr("transform", `translate(${width / 2},${height / 2})`)
+    let g_node = svg.selectAll("svg > g")
+        .filter(d => d == 2)
+        .attr("transform", `translate(${width / 2},${height / 2})`)
+    g_link.selectAll("*").remove()
+    g_node.selectAll("*").remove()
     root.x0 = root.x
     root.y0 = root.y
     update(root)
@@ -156,7 +166,7 @@ function Tree(data, { // data is either tabular (array of objects) or hierarchy 
                 .radius(d => d.y))
             .remove()
 
-        const node = svg
+        const node = g_node
             .selectAll("a")
             .data(root.descendants(), d => {
                 // console.log(d)

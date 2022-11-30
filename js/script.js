@@ -44,6 +44,7 @@ pricesFile = d3.csv('./data/consolidated_coin_data.csv');
 transFile = d3.csv('./data/chunk0.csv');
 d3.select("#dataset").on("change", changeData)
 d3.select("#value").on("change", change_filter)
+d3.select("#network_switch").on("change", change_switch)
 
 Promise.all([pricesFile, transFile]).then(data =>
     {
@@ -139,4 +140,14 @@ function changeData () {
 function change_filter() {
     console.log("calling back")
     globalObj.network.draw(globalObj.parsedTransData)
+}
+function change_switch() {
+    let checked = d3.select("#network_switch").property("checked");
+    console.log(checked)
+    if (checked) {
+        globalObj.network.draw(globalObj.parsedTransData)
+    }   
+    else {
+        radial(globalObj.parsedTransData)
+    }
 }

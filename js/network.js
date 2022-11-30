@@ -19,7 +19,7 @@ class Network {
         
         console.log(value_lower)
         let data = _data.filter(d => d.value * 1.0 > value_lower);
-        console.log(data)
+        // console.log(data)
         let values = data.map(d => d.value * 1.0)
         let min_value = d3.min(values), max_value = d3.max(values)
         let scale = d3.scaleLog()
@@ -58,9 +58,9 @@ class Network {
         let nodeLayer = layers.filter(d => d == 2)
             .attr("class", "nodes");
 
-        let t = linkLayer.selectAll("g line")
+        let t = linkLayer.selectAll("g>*")
 
-        let s = nodeLayer.selectAll("g circle").remove()
+        let s = nodeLayer.selectAll("g>*").remove()
         console.log(t.size())
         console.log(s.size())
         t.remove()
