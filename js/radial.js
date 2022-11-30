@@ -27,7 +27,7 @@ Promise.all([csv]).then(data => {
     let root = Node(sucker)
     function traverse(node) {
         const _t = map.get(node.id)
-        console.log(_t)
+        // console.log(_t)
         if (_t == undefined) return;
         const t = Array.from(_t)
         for (let c of t) {
@@ -40,7 +40,7 @@ Promise.all([csv]).then(data => {
         }
     }
     traverse(root)
-    console.log(root);
+    // console.log(root);
     Tree(root, {
         title: (d) => `${d.id}`, // hover text
         width: 1152,
@@ -97,9 +97,8 @@ function Tree(data, { // data is either tabular (array of objects) or hierarchy 
     const L = label == null ? null : descendants.map(d => label(d.data, d));
 
     // Compute the layout.
-    tree().size([2 * Math.PI, radius]).separation(separation)(root);
+    let treeData = tree().size([2 * Math.PI, radius]).separation(separation)(root);
 
-    // const svg = d3.create("svg")
     const svg = d3.select("#s")
         .attr("viewBox", [-marginLeft - radius, -marginTop - radius, width, height])
         .attr("width", width)
@@ -108,44 +107,101 @@ function Tree(data, { // data is either tabular (array of objects) or hierarchy 
         .attr("font-family", "sans-serif")
         .attr("font-size", 10);
 
-    svg.append("g")
+    let g_link = svg.append("g")
         .attr("fill", "none")
         .attr("stroke", stroke)
         .attr("stroke-opacity", strokeOpacity)
         .attr("stroke-linecap", strokeLinecap)
         .attr("stroke-linejoin", strokeLinejoin)
         .attr("stroke-width", strokeWidth)
-        .selectAll("path")
-        .data(root.links())
-        .join("path")
-        .attr("d", d3.linkRadial()
-            .angle(d => d.x)
-            .radius(d => d.y));
+    update(root)
+    
+    function update(source) {
 
-    const node = svg.append("g")
-        .selectAll("a")
-        .data(root.descendants())
-        .join("a")
-        .attr("xlink:href", link == null ? null : d => link(d.data, d))
-        .attr("target", link == null ? null : linkTarget)
-        .attr("transform", d => `rotate(${d.x * 180 / Math.PI - 90}) translate(${d.y},0)`);
+        let nodes = treeData.descendants(),
+            links = treeData.descendants().slice(1)
 
-    node.append("circle")
-        .attr("fill", d => d.children ? stroke : fill)
-        .attr("r", r);
 
-    if (title != null) node.append("title")
-        .text(d => title(d.data, d));
 
-    if (L) node.append("text")
-        .attr("transform", d => `rotate(${d.x >= Math.PI ? 180 : 0})`)
-        .attr("dy", "0.32em")
-        .attr("x", d => d.x < Math.PI === !d.children ? 6 : -6)
-        .attr("text-anchor", d => d.x < Math.PI === !d.children ? "start" : "end")
-        .attr("paint-order", "stroke")
-        .attr("stroke", halo)
-        .attr("stroke-width", haloWidth)
-        .text((d, i) => L[i]);
-    console.log("done")
-    return svg.node();
+
+        let _link = g_link
+            .selectAll("path")
+            .data(root.links())
+
+        let linkEnter = _link.enter().insert('path')
+            .attr("d", d3.linkRadial()
+                .angle(d => d.x)
+                .radius(d => d.y));
+
+        let linkUpdate = linkEnter.merge(_link)
+        linkUpdate.transition()
+            .duration(300)
+            .attr('d', d3.linkRadial()
+                .angle(d => d.x)
+                .radius(d => d.y))
+
+        let linkExit = _link.exit().transition()
+            .duration(300)
+            .attr('d', d3.linkRadial()
+                .angle(d => d.x)
+                .radius(d => d.y))
+            .remove()
+
+        const node = svg
+            .selectAll("a")
+            .data(root.descendants())
+
+        let nodeEnter = node.enter()
+            .append("a")
+            .attr("xlink:href", link == null ? null : d => link(d.data, d))
+            .attr("target", link == null ? null : linkTarget)
+            .attr("transform", d => `rotate(${d.x * 180 / Math.PI - 90}) translate(${d.y},0)`);
+        nodeEnter.append("circle")
+            .attr("fill", d => d.children || d._children ? stroke : fill)
+            .attr("r", r)
+            .on('click', click)
+        // node.append("circle")
+        //     .attr("fill", d => d.children ? stroke : fill)
+        //     .attr("r", r);
+        let nodeUpdate = nodeEnter.merge(node);
+
+        nodeUpdate.transition()
+            .duration(300)
+            .attr("transform", d => `rotate(${d.x * 180 / Math.PI - 90}) translate(${d.y},0)`)
+            .attr('r', r)
+
+        let nodeExit = node.exit().transition()
+            .duration(300)
+            .attr("transform", d => `rotate(${d.x * 180 / Math.PI - 90}) translate(${d.y},0)`)
+            .remove();
+
+        nodeExit.select("circle").attr('r', 0)
+
+        if (title != null) node.append("title")
+            .text(d => title(d.data, d));
+
+        if (L) node.append("text")
+            .attr("transform", d => `rotate(${d.x >= Math.PI ? 180 : 0})`)
+            .attr("dy", "0.32em")
+            .attr("x", d => d.x < Math.PI === !d.children ? 6 : -6)
+            .attr("text-anchor", d => d.x < Math.PI === !d.children ? "start" : "end")
+            .attr("paint-order", "stroke")
+            .attr("stroke", halo)
+            .attr("stroke-width", haloWidth)
+            .text((d, i) => L[i]);
+        console.log("done")
+        function click(event, d) {
+            console.log("Hello")
+            if (d.children) {
+                d._children = d.children;
+                d.children = null;
+            } else {
+                d.children = d._children;
+                d._children = null;
+            }
+            update(d);
+        }
+    }
+
+
 }
