@@ -43,6 +43,8 @@ const globalObj = {
 pricesFile = d3.csv('./data/consolidated_coin_data.csv');
 transFile = d3.csv('./data/chunk0.csv');
 d3.select("#dataset").on("change", changeData)
+d3.select("#value").on("change", change_filter)
+
 Promise.all([pricesFile, transFile]).then(data =>
     {
         let pricesData = data[0];
@@ -99,12 +101,14 @@ Promise.all([pricesFile, transFile]).then(data =>
 
         let transData = data[1];
         let parse = d3.timeParse("%Q");
+        let i = 0
         globalObj.parsedTransData = transData.map(d => ({
             // timestamp,input_key,output_key,satoshis
             time: parse(d["timestamp"]),
             source: d["input_key"],
             target: d["output_key"],
             value: d["satoshis"] / 1e8,
+            id: ++i
         }));
         globalObj.network = new Network();
 
@@ -125,10 +129,14 @@ function changeData () {
             target: d["output_key"],
             value: d["satoshis"] / 1e8,
         }));
+        globalObj.parsedTransData = dataResult
         globalObj.network.draw(dataResult)
         }).catch(e => {
         console.log(e);
         alert('Error!');
         });
     }
-
+function change_filter() {
+    console.log("calling back")
+    globalObj.network.draw(globalObj.parsedTransData)
+}
