@@ -42,9 +42,7 @@ const globalObj = {
 
 pricesFile = d3.csv('./data/consolidated_coin_data.csv');
 transFile = d3.csv('./data/chunk0.csv');
-
-
-
+d3.select("#dataset").on("change", changeData)
 Promise.all([pricesFile, transFile]).then(data =>
     {
         let pricesData = data[0];
@@ -113,4 +111,24 @@ Promise.all([pricesFile, transFile]).then(data =>
 
     })
     .catch(error => console.error(error));
+function changeData () {
+    //  Load the file indicated by the select menu
+    const dataFile = d3.select('#dataset').property('value');
+    
+    d3.csv(`data/${dataFile}.csv`)
+        .then(dataOutput => {
+    
+        let parse = d3.timeParse("%Q");
+        const dataResult = dataOutput.map((d) => ({
+            time: parse(d["timestamp"]),
+            source: d["input_key"],
+            target: d["output_key"],
+            value: d["satoshis"] / 1e8,
+        }));
+        globalObj.network.draw(dataResult)
+        }).catch(e => {
+        console.log(e);
+        alert('Error!');
+        });
+    }
 
