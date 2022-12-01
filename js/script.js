@@ -222,7 +222,7 @@ function change_switch() {
         .data(story)
         .enter().insert("div")
         // .join("div")
-        // .classed("invisible", true)
+        .classed("invisible", d => d.step != 1)
         .classed("tooltip2", true)
         .attr("id", d => "tips" + d.step)
         .style("left", d => d.left + "px")

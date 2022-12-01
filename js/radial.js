@@ -20,13 +20,15 @@ function radial(data){
     traversed.add(sucker)
     let queue = [sucker]
     let map = d3.group(data.slice(0, 300), d => d.source)
-    function Node(id) {
+    function Node(c) {
         return {
-            id: id,
+            id: c.target,
+            value: c.value,
+            time: c.time,
             children: []
         }
     }
-    let root = Node(sucker)
+    let root = Node({target: sucker})
     function traverse(node) {
         const _t = map.get(node.id)
         // console.log(_t)
@@ -36,7 +38,7 @@ function radial(data){
             const cid = c.target
             if (!traversed.has(cid)) {
                 traversed.add(cid)
-                node.children.push(Node(cid))
+                node.children.push(Node(c))
                 traverse(node.children.at(-1))
             }
         }
@@ -78,7 +80,7 @@ function Tree(data, { // data is either tabular (array of objects) or hierarchy 
     fill = "#999", // fill for nodes
     fillOpacity, // fill opacity for nodes
     stroke = "#555", // stroke for links
-    strokeWidth = 1.5, // stroke width for links
+    strokeWidth = 3, // stroke width for links
     strokeOpacity = 0.4, // stroke opacity for links
     strokeLinejoin, // stroke line join for links
     strokeLinecap, // stroke line cap for links
@@ -127,6 +129,15 @@ function Tree(data, { // data is either tabular (array of objects) or hierarchy 
     g_node.selectAll("*").remove()
     root.x0 = root.x
     root.y0 = root.y
+
+    const times = root.descendants().slice(1).map(d => d.data.time)
+    let max_opa = 0.8, min_opa = 0.1,
+        max_time = d3.max(times), min_time = d3.min(times)
+    console.log(max_time, min_time)
+    let time_scale = d3.scaleTime()
+        .domain([min_time, max_time])
+        .range([min_opa, max_opa])
+
     update(root)
     
     function update(source) {
@@ -150,7 +161,9 @@ function Tree(data, { // data is either tabular (array of objects) or hierarchy 
                     return d.x0 ? d.x0: d.parent? d.parent.x : d.x;
                 })
                 .radius(d => d.y0? d.y0: d.parent? d.parent.y: d.y))
-        let linkUpdate = linkEnter.merge(_link)
+        linkEnter.append("title")
+                .text(d => `${d.target.data.time}, ${d.target.data.value} bitcoins`)
+            let linkUpdate = linkEnter.merge(_link)
         linkUpdate.transition()
             .duration(300)
             .attr('d', d3.linkRadial()
@@ -158,6 +171,9 @@ function Tree(data, { // data is either tabular (array of objects) or hierarchy 
                     // console.log(d)
                     return d.x})
                 .radius(d => d.y))
+            .style("opacity", d => {
+                // console.log(d)
+                return time_scale(d.target.data.time)})
 
         let linkExit = _link.exit().transition()
             .duration(300)
