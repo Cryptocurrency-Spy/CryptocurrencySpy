@@ -1,8 +1,8 @@
 class Network {
 
     constructor() {
-        let width = 900;
-        let height = 800;
+        let width = 1600;
+        let height = 1080;
         let data = globalObj.parsedTransData;
         let svg = d3.select("#network")
             .attr('width', width)
@@ -11,12 +11,12 @@ class Network {
     }
 
     draw(_data) {
-        let width = 1200;
-        let height = 1200;
+        let width = 1600;
+        let height = 1080;
         let svg = d3.select("#network")
         let value_filter = d3.select("#value")
         let value_lower = value_filter.property("valueAsNumber")
-        
+
         console.log(value_lower)
         let data = _data.filter(d => d.value * 1.0 > value_lower);
         // console.log(data)
@@ -49,7 +49,7 @@ class Network {
         let layers = svg.selectAll("g")
             .data([0, 1, 2])
             .join("g")
-            
+
         let grid_Layer = layers.filter(d => d == 0)
             .attr("class", "grid")
         let linkLayer = layers.filter(d => d == 1)
@@ -68,12 +68,12 @@ class Network {
         t = linkLayer.selectAll("g line")
 
         s = nodeLayer.selectAll("g circle").remove()
-        console.log("after",t.size())
-        console.log("after",s.size())
+        console.log("after", t.size())
+        console.log("after", s.size())
 
         // grid_Layer
         //     .attr("class", "grid")
-        
+
 
         // let grid_Layer = svg.selectAll("g.grid")
         //     .data([2])
@@ -93,14 +93,14 @@ class Network {
             .append("g")
             .attr("class", "nodes");
         nodeLayer = nodeLayer.merge(nle)
-        
+
         // Now let's create the lines
         let links = linkLayer.selectAll("line")
             .data(data, d => d.id)
-            // .join("line")
+        // .join("line")
         let link_enter = links.enter()
             .insert("line")
-            // .attr("stroke-width", d => scale(d.value));
+        // .attr("stroke-width", d => scale(d.value));
         link_enter.append("title")
             .text(d => `${d.time}, ${d.value} bitcoins`)
         links = links.merge(link_enter)
@@ -179,7 +179,7 @@ class Network {
             .text(d => `Account signature ${d.id}`);
 
         // Now that we have the data, let's give it to the simulation...
-        simulation.nodes(all_nodes, d =>d.id);
+        simulation.nodes(all_nodes, d => d.id);
         simulation.force("link")
             .links(data, d => d.id);
 

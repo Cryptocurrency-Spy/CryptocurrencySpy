@@ -383,3 +383,13 @@ input:checked + .slider:before {
     stroke-width: 2px;
   }
   
+.tooltip2{
+    /* width: 50;
+    height: 30; */
+    position: absolute;
+    /* border-radius: 5px;
+    padding: 5px; */
+}
+.invisible{
+    display: none;
+}
