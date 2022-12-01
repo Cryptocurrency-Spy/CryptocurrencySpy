@@ -173,6 +173,7 @@ function changeData() {
             alert('Error!');
         });
 }
+show_second()
 function change_filter() {
     console.log("calling back")
     globalObj.network.draw(globalObj.parsedTransData)
@@ -186,4 +187,89 @@ function change_switch() {
     else {
         radial(globalObj.parsedTransData)
     }
+}
+
+{
+    let story = [
+        {
+            pid: "#network-div",
+            caption: "In May 2010, California student Jeremy Sturdivant, then 19, noticed a bizarre request on a cryptocurrency internet forum: He could receive 10,000 bitcoins, at the time reportedly valued at $41, in exchange for the delivery of two large pizzas to Florida resident Laszlo Hanyecz.",
+            left: 500,
+            top: 500,
+            step: 1,
+            direction: "right"
+        },
+        {
+            pid: "#network-div",
+            caption: "         Sturdivant filled the order, sending him two large pizzas from Papa John's — atransaction that would become the first physical purchase made with bitcoin in history, marked by the annual Bitcoin Pizza Day on May 22.",
+            left: 550,
+            top: 500,
+            step: 2,
+            direction: "right"
+
+        },
+        {
+            pid: "#network-div",
+            caption: "But Sturdivant didn't save the bitcoins for the future; instead, he spent them all on travel. Today, that lowly 10,000 bitcoin haul would be worth a pie-in-the-sky $365 million.",
+            left: 600,
+            top: 500,
+            step: 3,
+            direction: "right"
+        }
+    ]
+    let tips = d3.select(story[0].pid)
+        .selectAll("div")
+        .data(story)
+        .enter().insert("div")
+        // .join("div")
+        // .classed("invisible", true)
+        .classed("tooltip2", true)
+        .attr("id", d => "tips" + d.step)
+        .style("left", d => d.left + "px")
+        .style("top", d => d.top + "px")
+        .html(d => `
+        <div class="popover popover-right">
+        <button class="btn btn-primary s-circle"><i class="icon icon-search"></i></button>
+            <div class="popover-container">
+                <div class="card">
+                    <div class="card-header">
+                        
+                    </div>
+                    <div class="card-body">${d.caption}
+                    </div>
+                    <div class="card-footer" id="footer${d.step}">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    `);
+    let _steps = tips.select("div.card-footer")
+        .append("ul")
+        .classed("step", true)
+        .selectAll("li")
+        .data(d => story.map(s => d.step))
+        .join("li")
+    function gen(i) {
+        return () => { 
+            d3.selectAll(".tooltip2")
+                .classed("invisible", true)
+            d3.select("#tips" + i)
+                .classed("invisible", false)
+                // .select("button")
+                // .node()
+                // .click()
+            console.log("callback", i) 
+        };
+    }
+    let step_callbacks = story.map(d => gen(d.step))
+    _steps.classed("step-item", true)
+        .classed("active", (d, i) => d == i + 1)
+        .html((d, i) => `<a href="#${i + 1}" class="tooltip" data-tooltip="Step ${i + 1}" id="_${d}_${i + 1}">Step ${i + 1}</a>`)
+    for (let i = 0; i < story.length; i++)
+        for (let j = 0; j < story.length; j++) {
+            d3.select(`#_${i + 1}_${j + 1}`)
+                .on("click", step_callbacks[j])
+        }
+
 }
