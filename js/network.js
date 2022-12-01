@@ -302,6 +302,20 @@ class Network {
             // gx.call(xAxis, zx);
             // gy.call(yAxis, zy);
             grid_Layer.call(grid, zx, zy);
+            // // step1.attr("transform", transform)
+            // let pos_sucker = pos(sucker)
+            // let pos_payer = pos(payer)
+
+            // let tooltip_pos = [
+            //     (pos_sucker[0] + pos_payer[0] - width / 2) / 2 / transform.k + transform.x,
+            //     (pos_sucker[1] + pos_payer[1] - height / 2) / 2 / transform.k + transform.y,
+            // ]
+            
+            step1.style("transform", `translateX(${transform.x}px) translateY(${transform.y}px)`)
+            // step1
+            //     .style("left", tooltip_pos[0] * transform.k + "px")
+            //     .style("top", tooltip_pos[1] * transform.k + 80 + "px")
+            // step1.classed("trans", true)
             // svg.call
         }
         svg.call(zoom).call(zoom.transform, d3.zoomIdentity);
