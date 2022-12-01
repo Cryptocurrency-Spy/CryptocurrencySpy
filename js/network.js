@@ -61,14 +61,11 @@ class Network {
 
         let t = linkLayer.selectAll("g>*")
 
-        let s = nodeLayer.selectAll("g>*").remove()
+        let s = nodeLayer.selectAll("g>*")
         // console.log(t.size())
         // console.log(s.size())
         t.remove()
         s.remove()
-        t = linkLayer.selectAll("g line")
-
-        s = nodeLayer.selectAll("g circle").remove()
         // console.log("after", t.size())
         // console.log("after", s.size())
 
@@ -112,6 +109,11 @@ class Network {
         console.log("links exit, enter, update, data size ", link_exit.size(), link_enter.size(), links.size(), data.length)
         let out_links = d3.group(links, d => d.__data__.source);
         let in_links = d3.group(links, d => d.__data__.target)
+
+        // let tooltip_x = interested.__data__.x
+        // let tooltip_y = interested.__data__.y
+        // console.log(tooltip_x, tooltip_y)
+
         // d3.selectAll(t.get('1XPTgDRhN8RFnzniWCddobD9iKZatrvH4'))
         //     .style("stroke", "black")
         all_nodes = all_nodes.map(d => {
@@ -132,15 +134,29 @@ class Network {
             .classed("nodes", true)
             .attr("r", 5)
             .attr("fill", d => "#888")
+            .attr("id", d => "_" + d.id)
             .call(d3.drag()
                 .on("start", dragstarted)
                 .on("drag", dragged)
-                .on("end", dragended));
+                .on("end", dragended))
         nodes = nodes.merge(node_enter)
 
         let node_exit = nodes.exit()
         console.log("nodes enter, update, exit, nodes", node_enter.size(), nodes.size(), node_exit.size(), all_nodes.length)
         node_exit.remove()
+
+        let sucker = '17SkEw2md5avVNyYgj6RiXuQKNwkXaxFyQ'
+        let payer = '1XPTgDRhN8RFnzniWCddobD9iKZatrvH4'
+        const interested = links.filter(d => {
+            return d.value == 1e4 && d.source == payer && d.target == sucker
+        })
+        function pos(node_id) {
+            let t = svg.select("#_" + node_id).datum()
+            return [t.x, t.y]
+        }
+
+        let step1 = d3.select(`#tips1`)
+
         const times = data.map(d => d.time)
         let max_opa = 0.8, min_opa = 0.1,
             max_time = d3.max(times), min_time = d3.min(times)
@@ -207,6 +223,18 @@ class Network {
                 .attr("cy", function (d) {
                     return d.y;
                 });
+
+            let pos_sucker = pos(sucker)
+            let pos_payer = pos(payer)
+
+            let tooltip_pos = [
+                (pos_sucker[0] + pos_payer[0]) / 2,
+                (pos_sucker[1] + pos_payer[1]) / 2,
+            ]
+
+            step1
+                .style("left", tooltip_pos[0] + "px")
+                .style("top", tooltip_pos[1] + 80 + "px")
         });
 
 
@@ -279,6 +307,19 @@ class Network {
         svg.call(zoom).call(zoom.transform, d3.zoomIdentity);
         t = svg.selectAll("g circle")
         s = svg.selectAll("g.links line")
+        step1.select("button")
+            .on("mouseover", tips1_edge_highlight)
+            .on("mouseleave", tips1_edge_recover)
+        function tips1_edge_recover(){
+            interested
+            .style('opacity', d => time_scale(d.time))
+                .style('stroke', "#999")
+        }
+        function tips1_edge_highlight(){
+            interested
+            .style('opacity', "1.0")
+                .style('stroke', "green")
+        }
         // console.log(t.size(), s.size())
     }
 }
