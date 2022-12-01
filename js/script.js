@@ -176,16 +176,18 @@ function changeData() {
 show_second()
 function change_filter() {
     console.log("calling back")
-    globalObj.network.draw(globalObj.parsedTransData)
+    let copy = JSON.parse(JSON.stringify(globalObj.parsedTransData))
+    globalObj.network.draw(copy)
 }
 function change_switch() {
     let checked = d3.select("#network_switch").property("checked");
     console.log(checked)
     if (checked) {
-        globalObj.network.draw(globalObj.parsedTransData)
+        let copy = JSON.parse(JSON.stringify(globalObj.parsedTransData))
+        globalObj.network.draw(copy)
     }
     else {
-        radial(globalObj.parsedTransData)
+        radial(globalObj.parsedTransData.map(d => d))
     }
 }
 

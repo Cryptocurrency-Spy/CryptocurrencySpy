@@ -10,8 +10,8 @@
 
 // let csv = d3.csv("data/chunk0.csv")
 // Promise.all([csv]).then(data => radial(data))
-    
-function radial(data){
+
+function radial(data) {
     console.log(data)
     const sucker = '1XPTgDRhN8RFnzniWCddobD9iKZatrvH4'
     let traversed = new Set()
@@ -28,7 +28,7 @@ function radial(data){
             children: []
         }
     }
-    let root = Node({target: sucker})
+    let root = Node({ target: sucker })
     function traverse(node) {
         const _t = map.get(node.id)
         // console.log(_t)
@@ -139,7 +139,7 @@ function Tree(data, { // data is either tabular (array of objects) or hierarchy 
         .range([min_opa, max_opa])
 
     update(root)
-    
+
     function update(source) {
 
         let nodes = treeData.descendants(),
@@ -152,28 +152,33 @@ function Tree(data, { // data is either tabular (array of objects) or hierarchy 
             .selectAll("path")
             .data(root.links(), d => {
                 // console.log(d.target.data.id)
-                return d.target.data.id})
+                return d.target.data.id
+            })
 
         let linkEnter = _link.enter().insert('path')
             .attr("d", d3.linkRadial()
                 .angle(d => {
                     // console.log(d)
-                    return d.x0 ? d.x0: d.parent? d.parent.x : d.x;
+                    return d.x0 ? d.x0 : d.parent ? d.parent.x : d.x;
                 })
-                .radius(d => d.y0? d.y0: d.parent? d.parent.y: d.y))
+                .radius(d => d.y0 ? d.y0 : d.parent ? d.parent.y : d.y))
         linkEnter.append("title")
-                .text(d => `${d.target.data.time}, ${d.target.data.value} bitcoins`)
-            let linkUpdate = linkEnter.merge(_link)
+            .text(d => `${d.target.data.time}, ${d.target.data.value} bitcoins`)
+        let linkUpdate = linkEnter.merge(_link)
         linkUpdate.transition()
             .duration(300)
             .attr('d', d3.linkRadial()
                 .angle(d => {
                     // console.log(d)
-                    return d.x})
+                    return d.x
+                })
                 .radius(d => d.y))
             .style("opacity", d => {
                 // console.log(d)
-                return time_scale(d.target.data.time)})
+                return time_scale(d.target.data.time)
+            })
+            .attr("stroke-width", d => Math.sqrt(d.target.data.value / 49) + 0.5);
+
 
         let linkExit = _link.exit().transition()
             .duration(300)
@@ -186,7 +191,8 @@ function Tree(data, { // data is either tabular (array of objects) or hierarchy 
             .selectAll("a")
             .data(root.descendants(), d => {
                 // console.log(d)
-                return d.data.id})
+                return d.data.id
+            })
 
         let nodeEnter = node.enter()
             .append("a")
@@ -194,7 +200,7 @@ function Tree(data, { // data is either tabular (array of objects) or hierarchy 
             .attr("target", link == null ? null : linkTarget)
             .attr("transform", d => {
                 // console.log(d.depth)
-                return `rotate(${(d.parent? d.parent.x: d.x) * 180 / Math.PI - 90}) translate(${d.parent? d.parent.y: d.y},0)`
+                return `rotate(${(d.parent ? d.parent.x : d.x) * 180 / Math.PI - 90}) translate(${d.parent ? d.parent.y : d.y},0)`
             });
         nodeEnter.append("circle")
             .attr("fill", d => d.children || d._children ? stroke : fill)

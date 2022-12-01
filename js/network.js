@@ -3,7 +3,8 @@ class Network {
     constructor() {
         let width = 1600;
         let height = 1080;
-        let data = globalObj.parsedTransData;
+        let copy = JSON.parse(JSON.stringify(globalObj.parsedTransData))
+        let data = copy;
         let svg = d3.select("#network")
             .attr('width', width)
             .attr('height', height);
@@ -61,15 +62,15 @@ class Network {
         let t = linkLayer.selectAll("g>*")
 
         let s = nodeLayer.selectAll("g>*").remove()
-        console.log(t.size())
-        console.log(s.size())
+        // console.log(t.size())
+        // console.log(s.size())
         t.remove()
         s.remove()
         t = linkLayer.selectAll("g line")
 
         s = nodeLayer.selectAll("g circle").remove()
-        console.log("after", t.size())
-        console.log("after", s.size())
+        // console.log("after", t.size())
+        // console.log("after", s.size())
 
         // grid_Layer
         //     .attr("class", "grid")
@@ -278,6 +279,6 @@ class Network {
         svg.call(zoom).call(zoom.transform, d3.zoomIdentity);
         t = svg.selectAll("g circle")
         s = svg.selectAll("g.links line")
-        console.log(t.size(), s.size())
+        // console.log(t.size(), s.size())
     }
 }
