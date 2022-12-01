@@ -50,3 +50,332 @@ footer {
     fill-opacity: 0;
 }
 
+.tooltip {
+    opacity: 0.8;
+    fill: aliceblue;
+}
+
+.hide {
+    visibility: hidden;
+}
+
+
+
+/* Split the screen in half */
+.split {
+    height: 100%;
+    width: 50%;
+    position: fixed;
+    z-index: 1;
+    top: 0;
+    overflow-x: hidden;
+    padding-top: 20px;
+}
+
+/* Control the left side */
+.left {
+    left: 0;
+    background-color: white;
+}
+
+/* Control the right side */
+.right {
+    right: 0;
+    background-color: white;
+}
+
+#bubble_div {
+    width: 1000px;
+    height: 1000px;
+}
+
+#table_div {
+    width: 800px;
+}
+
+.republican {
+    color: firebrick;
+    fill: firebrick;
+}
+
+.democratic {
+    color: steelblue;
+    fill: steelblue;
+}
+
+.econ{  /*economy*/
+    color: rgb(91, 185, 154);
+    fill: rgb(91, 185, 154);
+}
+
+.ener{  /*energy*/
+    color: rgb(245, 130, 87);
+    fill: rgb(245, 130, 87);
+}
+
+.crim{  /*crime*/
+    color: rgb(128, 149, 195);
+    fill: rgb(128, 149, 195);
+}
+
+.educ{  /*education*/
+    color: rgb(228, 127, 186);
+    fill: rgb(228, 127, 186);
+}
+
+.heal{  /*health*/
+    color: rgb(156, 209, 74);
+    fill: rgb(156, 209, 74);
+}
+
+.ment{  /*mental*/
+    color: rgb(252, 213, 42);
+    fill: rgb(252, 213, 42);
+}
+
+.gridlines{
+    stroke-width: 1;
+    stroke: rgb(150,150,150);
+}
+
+.centerline{
+    stroke-width: 2;
+    stroke: rgb(127, 127, 127);
+    position:absolute;
+}
+
+tr:hover .margin-bar {
+    opacity: 0.9;
+}
+
+.margin-bar {
+    opacity: 0.6;
+}
+
+.margin-circle {
+    stroke: black;
+    stroke-width: 0.5;
+}
+
+table {
+    border-collapse: collapse;
+    font: 14px sans-serif;
+}
+
+
+th {
+    font-weight: normal;
+    text-align: center;
+    padding-right: 6px;
+    min-width: 125px;
+}
+
+
+td {
+    text-align: center;
+}
+
+
+.sorting {
+    background: black;
+    color: white;
+}
+
+.sortable {
+    user-select: none;
+    border-radius: 3px;
+    cursor: pointer;
+    padding: 6px;
+}
+
+.sortable:hover {
+    background: #d1d1d1;
+}
+
+.sortable.sorting:hover {
+    background: #232323;
+}
+
+
+td {
+    color:black;
+}
+
+tbody tr:hover {
+    background-color: #efefef;
+}
+
+.label{
+    text-anchor: middle;
+}
+
+
+h1 {
+    margin-top: 0;
+    color: #343651;
+}
+
+h2 {
+    color: #343651;
+}
+
+header {
+    padding: 0.1em;
+    text-align: center;
+    height: 30px;
+}
+
+
+.no-display {
+    display: none !important;
+}
+
+
+
+
+/*toggle button*/
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 34px;
+}
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    -webkit-transition: .4s;
+    transition: .4s;
+}
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    -webkit-transition: .4s;
+    transition: .4s;
+}
+input:checked + .slider {
+    background-color: #2196F3;
+}
+input:focus + .slider {
+    box-shadow: 0 0 1px #2196F3;
+}
+input:checked + .slider:before {
+    -webkit-transform: translateX(26px);
+    -ms-transform: translateX(26px);
+    transform: translateX(26px);
+}
+.slider.round {
+    border-radius: 34px;
+}
+.slider.round:before {
+    border-radius: 50%;
+}
+
+.links line {
+    stroke: #999;
+    stroke-opacity: 0.6;
+}
+.links line:hover {
+    /* stroke: #000; */
+    stroke-opacity: 1.0;
+}
+.nodes {
+    stroke: #666;
+    stroke-width: 1.5px;
+}
+.nodes:hover {
+    fill: #000;
+}
+
+
+/*toggle button*/
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 40px;
+    height: 26px;
+}
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    -webkit-transition: .4s;
+    transition: .4s;
+}
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 16px;
+    width: 16px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    -webkit-transition: .4s;
+    transition: .4s;
+}
+input:checked + .slider {
+    background-color: #2196F3;
+}
+input:focus + .slider {
+    box-shadow: 0 0 1px #2196F3;
+}
+input:checked + .slider:before {
+    -webkit-transform: translateX(16px);
+    -ms-transform: translateX(16px);
+    transform: translateX(16px);
+}
+.slider.round {
+    border-radius: 34px;
+}
+.slider.round:before {
+    border-radius: 50%;
+}
+.node circle {
+    fill: #fff;
+    stroke: steelblue;
+    stroke-width: 3px;
+  }
+  
+  .node text {
+    font: 12px sans-serif;
+  }
+  
+  .link {
+    fill: none;
+    stroke: #ccc;
+    stroke-width: 2px;
+  }
+  
+.tooltip2{
+    /* width: 50;
+    height: 30; */
+    position: absolute;
+    /* border-radius: 5px;
+    padding: 5px; */
+}
+.invisible{
+    display: none;
+}

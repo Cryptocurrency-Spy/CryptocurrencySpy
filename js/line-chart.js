@@ -6,7 +6,7 @@ class LineChart {
         document.body.style.zoom = this.s;
 
         this.vizWidth = 900;
-        this.vizHeight = 500;
+        this.vizHeight = 800;
         this.margin = { left: 70, bottom: 20, top: 20, right: 20 };
         this.logOn = true;
 
