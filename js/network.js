@@ -201,6 +201,7 @@ class Network {
             .links(data, d => d.id);
 
         // Finally, let's tell the simulation how to update the graphics
+        let trans = {x: 0.0, y: 0.0, k: 1.0}
         simulation.on("tick", function () {
             links
                 .attr("x1", function (d) {
@@ -228,8 +229,8 @@ class Network {
             let pos_payer = pos(payer)
 
             let tooltip_pos = [
-                (pos_sucker[0] + pos_payer[0]) / 2,
-                (pos_sucker[1] + pos_payer[1]) / 2,
+                (pos_sucker[0] + pos_payer[0]) / 2 * trans.k + trans.x,
+                (pos_sucker[1] + pos_payer[1]) / 2 * trans.k + trans.y,
             ]
 
             step1
@@ -303,19 +304,19 @@ class Network {
             // gy.call(yAxis, zy);
             grid_Layer.call(grid, zx, zy);
             // // step1.attr("transform", transform)
-            // let pos_sucker = pos(sucker)
-            // let pos_payer = pos(payer)
+            let pos_sucker = pos(sucker)
+            let pos_payer = pos(payer)
 
-            // let tooltip_pos = [
-            //     (pos_sucker[0] + pos_payer[0] - width / 2) / 2 / transform.k + transform.x,
-            //     (pos_sucker[1] + pos_payer[1] - height / 2) / 2 / transform.k + transform.y,
-            // ]
+            let tooltip_pos = [
+                (pos_sucker[0] + pos_payer[0]) / 2 * transform.k + transform.x,
+                (pos_sucker[1] + pos_payer[1]) / 2 * transform.k + transform.y,
+            ]
             
-            step1.style("transform", `translateX(${transform.x}px) translateY(${transform.y}px)`)
-            // step1
-            //     .style("left", tooltip_pos[0] * transform.k + "px")
-            //     .style("top", tooltip_pos[1] * transform.k + 80 + "px")
-            // step1.classed("trans", true)
+            // step1.style("transform", `translateX(${transform.x}px) translateY(${transform.y}px)`)
+            trans = transform
+            step1
+                .style("left", tooltip_pos[0] + "px")
+                .style("top", tooltip_pos[1] + 80 +  "px")
             // svg.call
         }
         svg.call(zoom).call(zoom.transform, d3.zoomIdentity);
