@@ -72,7 +72,8 @@ function radial(__data__) {
         title: (d) => `${d.id}`, // hover text
         width: 1152,
         height: 1152,
-        margin: 100
+        margin: 100,
+        fill: "#ddd",
     })
     const svg = d3.select("#network")
     let g = svg.append("g")
