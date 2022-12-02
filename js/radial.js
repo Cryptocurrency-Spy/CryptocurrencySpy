@@ -15,7 +15,7 @@ function radial(__data__) {
     // FIXME: change to async callback
     const sucker = '1XPTgDRhN8RFnzniWCddobD9iKZatrvH4'
     let traversed = new Set()
-    // set.has
+
     d3.selectAll(".tooltip2")
         .classed("invisible", true)
     traversed.add(sucker)
@@ -30,6 +30,7 @@ function radial(__data__) {
         }
     }
     let root = Node({ target: sucker })
+    let extra_edges = []
     function traverse(node) {
         const _t = map.get(node.id)
         // console.log(_t)
@@ -42,16 +43,56 @@ function radial(__data__) {
                 node.children.push(Node(c))
                 traverse(node.children.at(-1))
             }
+            else {
+                extra_edges.push(c)
+            }
         }
     }
     traverse(root)
     // console.log(root);
-    Tree(root, {
+    let node = Tree(root, {
         title: (d) => `${d.id}`, // hover text
         width: 1152,
         height: 1152,
         margin: 100
     })
+    const svg = d3.select("#network")
+    let g = svg.append("g")
+        .classed("extra_links", true)
+
+        function transformed_x
+        (x, y){
+            // transform", d => `rotate(${d.x * 180 / Math.PI - 90}) translate(${d.y},0)
+            let r = x - Math.PI / 2
+            let _x = y * Math.cos(r)
+            let _y = y * Math.sin(r)
+            return _x
+        }
+        function transformed_y(x, y) {
+            let r = x - Math.PI / 2
+            let _x = y * Math.cos(r)
+            let _y = y * Math.sin(r)
+            return _y
+        }
+    let line_gen = d3.line()
+        .x(d => transformed_x(d.x, d.y))
+        .y(d => transformed_y(d.x, d.y))
+
+    
+    let helping_map = d3.group(node, d => d.data.id)
+    // maps raw data format to {source: {x, y}, target: {x,y}} format
+    extra_edges = extra_edges.map(d => {
+        let t = helping_map.get(d.source)
+        let s = helping_map.get(d.target)
+        d.source = {x: t.x, y: t.y}
+        d.target = {x: s.x, y: s.y}
+        return d;
+    })
+    g.selectAll("line")
+        .data(extra_edges)
+        .join("line")
+        .attr("d", line_gen)
+    
 }
 function Tree(data, { // data is either tabular (array of objects) or hierarchy (nested objects)
     path, // as an alternative to id and parentId, returns an array identifier, imputing internal nodes
@@ -136,12 +177,11 @@ function Tree(data, { // data is either tabular (array of objects) or hierarchy 
         .domain([min_time, max_time])
         .range([min_opa, max_opa])
 
-    update(root)
+    return update(root)
 
     function update(source) {
 
-        let nodes = treeData.descendants(),
-            links = treeData.descendants().slice(1)
+        let nodes = treeData.descendants()
 
 
 
@@ -248,6 +288,7 @@ function Tree(data, { // data is either tabular (array of objects) or hierarchy 
             }
             update(d);
         }
+        return root.descendants()
     }
 
 
