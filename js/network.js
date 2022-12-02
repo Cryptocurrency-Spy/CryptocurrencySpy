@@ -8,7 +8,7 @@ class Network {
         let svg = d3.select("#network")
             .attr('width', width)
             .attr('height', height);
-        this.draw(data.slice(0, 50))
+        this.draw(data)
     }
 
     draw(_data) {
@@ -41,10 +41,10 @@ class Network {
         let targets = [...d3.group(data, d => d.target).keys()];
         let sources = [...d3.group(data, d => d.source).keys()];
 
-        let all_nodes = targets.concat(sources);
+        let _all_nodes = targets.concat(sources);
         let node_set = new Set()
-        all_nodes.forEach(d => node_set.add(d))
-        all_nodes = [...node_set.values()]
+        _all_nodes.forEach(d => node_set.add(d))
+        _all_nodes = [...node_set.values()]
         // First we create the links in their own group that comes before the node
         //  group (so the circles will always be on top of the lines)
         let layers = svg.selectAll("g")
@@ -110,13 +110,9 @@ class Network {
         let out_links = d3.group(links, d => d.__data__.source);
         let in_links = d3.group(links, d => d.__data__.target)
 
-        // let tooltip_x = interested.__data__.x
-        // let tooltip_y = interested.__data__.y
-        // console.log(tooltip_x, tooltip_y)
-
         // d3.selectAll(t.get('1XPTgDRhN8RFnzniWCddobD9iKZatrvH4'))
         //     .style("stroke", "black")
-        all_nodes = all_nodes.map(d => {
+        let all_nodes = _all_nodes.map(d => {
             let obj = {
                 id: d,
                 outs: out_links.get(d),
@@ -147,15 +143,48 @@ class Network {
 
         let sucker = '17SkEw2md5avVNyYgj6RiXuQKNwkXaxFyQ'
         let payer = '1XPTgDRhN8RFnzniWCddobD9iKZatrvH4'
+        // let receiver = '1XPTgDRhN8RFnzniWCddobD9iKZatrvH4'
+        // let receiver = "1MLh2UVHgonJY4ZtsakoXtkcXDJ2EPU6RY"
+        let receiver = sucker
         const interested = links.filter(d => {
             return d.value == 1e4 && d.source == payer && d.target == sucker
+        })
+        const interested3 = links.filter(d => {
+            return d.source == sucker && d.target == receiver
         })
         function pos(node_id) {
             let t = svg.select("#_" + node_id).datum()
             return [t.x, t.y]
         }
+        function update_tooltips_pos(trans){
+            let pos_sucker = pos(sucker)
+            let pos_payer = pos(payer)
+            let pos_receiver = pos(receiver)
 
+            let tooltip_pos = [
+                (pos_sucker[0] + pos_payer[0]) / 2 * trans.k + trans.x,
+                (pos_sucker[1] + pos_payer[1]) / 2 * trans.k + trans.y,
+            ]
+            let tooltip3_pos = [
+                (pos_sucker[0] + pos_receiver[0]) / 2 * trans.k + trans.x,
+                (pos_sucker[1] + pos_receiver[1]) / 2 * trans.k + trans.y,
+            ]
+
+            step1
+                .style("left", tooltip_pos[0] + "px")
+                .style("top", tooltip_pos[1] + 80 + "px")
+            step2
+                .style("left", tooltip_pos[0] + "px")
+                .style("top", tooltip_pos[1] + 80 + "px")
+            step3
+                .style("left", tooltip3_pos[0] + "px")
+                .style("top", tooltip3_pos[1] + 80 + "px")
+
+        }
         let step1 = d3.select(`#tips1`)
+        let step2 = d3.select("#tips2")
+        let step3 = d3.select("#tips3")
+        let trans = {x: 0.0, y: 0.0, k: 1.0}
 
         const times = data.map(d => d.time)
         let max_opa = 0.8, min_opa = 0.1,
@@ -201,7 +230,6 @@ class Network {
             .links(data, d => d.id);
 
         // Finally, let's tell the simulation how to update the graphics
-        let trans = {x: 0.0, y: 0.0, k: 1.0}
         simulation.on("tick", function () {
             links
                 .attr("x1", function (d) {
@@ -224,18 +252,7 @@ class Network {
                 .attr("cy", function (d) {
                     return d.y;
                 });
-
-            let pos_sucker = pos(sucker)
-            let pos_payer = pos(payer)
-
-            let tooltip_pos = [
-                (pos_sucker[0] + pos_payer[0]) / 2 * trans.k + trans.x,
-                (pos_sucker[1] + pos_payer[1]) / 2 * trans.k + trans.y,
-            ]
-
-            step1
-                .style("left", tooltip_pos[0] + "px")
-                .style("top", tooltip_pos[1] + 80 + "px")
+            update_tooltips_pos(trans)
         });
 
 
@@ -303,20 +320,8 @@ class Network {
             // gx.call(xAxis, zx);
             // gy.call(yAxis, zy);
             grid_Layer.call(grid, zx, zy);
-            // // step1.attr("transform", transform)
-            let pos_sucker = pos(sucker)
-            let pos_payer = pos(payer)
-
-            let tooltip_pos = [
-                (pos_sucker[0] + pos_payer[0]) / 2 * transform.k + transform.x,
-                (pos_sucker[1] + pos_payer[1]) / 2 * transform.k + transform.y,
-            ]
-            
-            // step1.style("transform", `translateX(${transform.x}px) translateY(${transform.y}px)`)
             trans = transform
-            step1
-                .style("left", tooltip_pos[0] + "px")
-                .style("top", tooltip_pos[1] + 80 +  "px")
+            update_tooltips_pos(trans)
             // svg.call
         }
         svg.call(zoom).call(zoom.transform, d3.zoomIdentity);
@@ -325,6 +330,13 @@ class Network {
         step1.select("button")
             .on("mouseover", tips1_edge_highlight)
             .on("mouseleave", tips1_edge_recover)
+        step2.select("button")
+            .on("mouseover", tips1_edge_highlight)
+            .on("mouseleave", tips1_edge_recover)
+        step3.select("button")
+            .on("mouseover", tips3_edge_highlight)
+            .on("mouseleave", tips3_edge_recover)
+                
         function tips1_edge_recover(){
             interested
             .style('opacity', d => time_scale(d.time))
@@ -335,6 +347,27 @@ class Network {
             .style('opacity', "1.0")
                 .style('stroke', "green")
         }
-        // console.log(t.size(), s.size())
+        function tips3_edge_highlight(){
+            let d = all_nodes.filter(t => t.id == sucker)[0]    
+            let outs = d3.selectAll(d.outs)
+            let ins = d3.selectAll(d.ins)
+            ins
+                .style('opacity', 1.0)
+                .style('stroke', "green")
+            outs
+                .style('opacity', 1.0)
+                .style('stroke', "firebrick")
+        }
+        function tips3_edge_recover(){
+            let d = all_nodes.filter(t => t.id == sucker)[0]
+            let outs = d3.selectAll(d.outs)
+            let ins = d3.selectAll(d.ins)
+            outs //.merge(ins) // nothing happens
+                .style('opacity', d => time_scale(d.time))
+                .style('stroke', "#999")
+            ins
+                .style('opacity', d => time_scale(d.time))
+                .style('stroke', "#999")
+        }
     }
 }
