@@ -2,9 +2,6 @@
 class LineChart {
 
     constructor() {
-        this.s = window.screen.width / 1920;
-        document.body.style.zoom = this.s;
-
         this.vizWidth = 900;
         this.vizHeight = 800;
         this.margin = { left: 70, bottom: 20, top: 20, right: 20 };
@@ -51,14 +48,12 @@ class LineChart {
             .attr('transform', 'rotate(-90)');
 
         this.logButton = d3.select("#logButton")
-            .attr('type', 'checkbox')
             .attr("checked", true)
             .on('change', e => {
                 this.logOn = e.target.checked
                 // console.log(this.logOn)
                 this.update()
             })
-            // .attr('class', 'myCheckbox')
 
         this.preset1Button = d3.select("#preset1")
             .on('click', e => {
@@ -271,8 +266,7 @@ class LineChart {
     }
 
     updateOverlay(e) {
-        // console.log(e.clientX)
-        let mouseX = (e.clientX - 5) / this.s;
+        let mouseX = e.clientX - 5;
         let aaa = false;
         for (let i of [...Array(this.years.length).keys()]) {
             let posX = mouseX - this.margin.left
