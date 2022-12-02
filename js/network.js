@@ -20,7 +20,15 @@ class Network {
         let width = 1600;
         let height = 1080;
         let svg = d3.select("#network")
+        {
+            let target_count = 300;
+            _data.sort((a, b) => a.value - b.value)
+            // FIXME: ascending
+            _data = _data.slice(-target_count)
+            let min_filtered = d3.min(_data.map(d => d.value))
+            // FIXME: disable range inputs here
 
+        }
         let value_filter = d3.select("#value_slider")
         let value_lower = value_filter.property("valueAsNumber")
         let time_filter = d3.select("#time_slider")
@@ -31,6 +39,7 @@ class Network {
         const times = _data.map(d => d.time)
         let max_opa = 0.8, min_opa = 0.3,
             max_time = d3.max(times), min_time = d3.min(times)
+
 
         let time_scale = d3.scaleTime()
             .domain([min_time, max_time])
@@ -43,6 +52,8 @@ class Network {
             .range([0,10])
         let time_lower = time_filter_scale
             (_time_lower)
+
+
         let data = _data.filter(d => d.value * 1.0 > value_lower)
             .filter(d => d.time < time_lower)
         let values = data.map(d => d.value * 1.0)
