@@ -2,6 +2,7 @@
 const globalObj = {
     parsedData: null,
     parsedTransData: null,
+    _parsedTransData: [],
     colorScale: null,
     colorScaleFade: null,
     groupedData: null,
@@ -42,10 +43,10 @@ const globalObj = {
 
 pricesFile = d3.csv('./data/consolidated_coin_data.csv');
 transFile = d3.csv('./data/chunk0.csv');
-d3.select("#dataset").on("change", changeData)
+d3.select("#data_slider").on("change", changeData)
 d3.select("#value_slider").on("change", vchange_filter)
 d3.select("#strength_slider").on("change", change_filter)
-d3.select("#network_switch").on("change", change_switch)
+// d3.select("#network_switch").on("change", change_switch)
 
 {
     // default values
@@ -265,6 +266,7 @@ Promise.all([pricesFile, transFile]).then(data => {
     }
     globalObj._tchange_filter = _tchange_filter
     globalObj.t_scale = t_scale
+    globalObj._parsedTransData.push(globalObj.parsedTransData)
     globalObj.network = new Network();
 
     d3.select("#time_slider").on("change", tchange_filter)
@@ -275,24 +277,66 @@ Promise.all([pricesFile, transFile]).then(data => {
 
 function changeData() {
     //  Load the file indicated by the select menu
-    const dataFile = d3.select('#dataset').property('value');
+    const dataFile = d3.select('#data_slider').property('value') - 1;
 
-    d3.csv(`data/${dataFile}.csv`)
-        .then(dataOutput => {
-
-            let parse = d3.timeParse("%Q");
-            const dataResult = dataOutput.map((d) => ({
-                time: parse(d["timestamp"]),
+    let files_to_come = []
+    for (let i = 1; i <= dataFile; i++) {
+        let filename = `data/chunk${i}.csv`
+        // files.push(filename)
+        if (globalObj._parsedTransData.length > i) { }
+        else {
+            files_to_come.push(d3.csv(filename))
+        }
+    }
+    Promise.all(files_to_come).then(datasets => {
+        datasets.forEach(ds => {
+            const dataResult = ds.map((d) => ({
+                time: d["timestamp"],
                 source: d["input_key"],
                 target: d["output_key"],
                 value: d["satoshis"] / 1e8,
             }));
+            globalObj._parsedTransData.push(dataResult)
             globalObj.parsedTransData = globalObj.parsedTransData.concat(dataResult)
+        })
+
+        if (dataFile >= 3) {
+            radial(globalObj.parsedTransData)
+        }
+        else {
             globalObj.network.draw(globalObj.parsedTransData)
-        }).catch(e => {
-            console.log(e);
-            alert('Error!');
-        });
+
+        }
+    }).catch(e => {
+        console.log(e);
+        alert('Error!');
+    });
+
+
+
+    // d3.csv(`data/chunk${dataFile}.csv`)
+    //     .then(dataOutput => {
+
+    //         let parse = d3.timeParse("%Q");
+    //         const dataResult = dataOutput.map((d) => ({
+    //             time: parse(d["timestamp"]),
+    //             source: d["input_key"],
+    //             target: d["output_key"],
+    //             value: d["satoshis"] / 1e8,
+    //         }));
+
+    //         globalObj.parsedTransData = globalObj.parsedTransData.concat(dataResult)
+    //         if (dataFile >= 3) {
+    //             radial(globalObj.parsedTransData)
+    //         }
+    //         else {
+    //             globalObj.network.draw(globalObj.parsedTransData)
+
+    //         }
+    //     }).catch(e => {
+    //         console.log(e);
+    //         alert('Error!');
+    //     });
 }
 show_second()
 function change_filter() {
@@ -319,7 +363,7 @@ function change_switch() {
         globalObj.network.draw(globalObj.parsedTransData)
     }
     else {
-        radial(globalObj.parsedTransData.map(d => d))
+        radial(globalObj.parsedTransData)
     }
 }
 

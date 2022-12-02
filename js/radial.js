@@ -11,15 +11,16 @@
 // let csv = d3.csv("data/chunk0.csv")
 // Promise.all([csv]).then(data => radial(data))
 
-function radial(data) {
-    console.log(data)
+function radial(__data__) {
+    // FIXME: change to async callback
     const sucker = '1XPTgDRhN8RFnzniWCddobD9iKZatrvH4'
     let traversed = new Set()
     // set.has
-
+    d3.selectAll(".tooltip2")
+        .classed("invisible", true)
     traversed.add(sucker)
     let queue = [sucker]
-    let map = d3.group(data.slice(0, 300), d => d.source)
+    let map = d3.group(__data__.slice(0, 300), d => d.source)
     function Node(c) {
         return {
             id: c.target,
@@ -52,9 +53,6 @@ function radial(data) {
         margin: 100
     })
 }
-// Copyright 2022 Observable, Inc.
-// Released under the ISC license.
-// https://observablehq.com/@d3/radial-tree
 function Tree(data, { // data is either tabular (array of objects) or hierarchy (nested objects)
     path, // as an alternative to id and parentId, returns an array identifier, imputing internal nodes
     id = Array.isArray(data) ? d => d.id : null, // if tabular data, given a d in data, returns a unique identifier (string)
