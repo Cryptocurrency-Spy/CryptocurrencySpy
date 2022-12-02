@@ -106,7 +106,7 @@ function show_second() {
         },
         {
             pid: "#network-div",
-            caption: "Before that, people just squander the bitcoins around. There are more than 40 transactions over 1,000 bitcoins of worth.",
+            caption: "Before that, there are only a handful bitcoin transactions.",
             left: 750,
             top: 80,
             step: 2,

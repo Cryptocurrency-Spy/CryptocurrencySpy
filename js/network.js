@@ -29,7 +29,7 @@ class Network {
         let _strength = strength_filter.property("valueAsNumber")
         let strength = Math.pow(4, _strength)
         const times = _data.map(d => d.time)
-        let max_opa = 0.8, min_opa = 0.1,
+        let max_opa = 0.8, min_opa = 0.3,
             max_time = d3.max(times), min_time = d3.min(times)
 
         let time_scale = d3.scaleTime()
@@ -126,7 +126,7 @@ class Network {
         link_enter.append("title")
             .text(d => `${d.time}, ${d.value} bitcoins`)
         links = links.merge(link_enter)
-            .attr("stroke-width", d => Math.sqrt(d.value / 49) + 0.5);
+        .attr("stroke-width", d => Math.sqrt(d.value / 49) + 1);
 
         let link_exit = links.exit()
         link_exit.remove()
@@ -183,7 +183,6 @@ class Network {
         })
         function pos(node_id) {
             let t = svg.select("#_" + node_id)
-            console.log(t.size())
             if (t.size()){
                 t =t.datum()
                 return [t.x, t.y]
@@ -196,7 +195,6 @@ class Network {
         let trans = {x: 0.0, y: 0.0, k: 1.0}
         function update_tooltips_pos(trans){
             if (time_lower * 1 <= globalObj.interested_date * 1) {
-                console.log(time_lower* 1, globalObj.interested_date * 1)
                 return;
             }
             else {
@@ -382,20 +380,24 @@ class Network {
         }
 
         function tips2_callback(){
-            value_filter.property("value", 1000)
-            d3.select("#value_label").text(1000);
+            value_filter.property("value", 0)
+            d3.select("#value_label").text("Value: > 0");
             let inv = time_filter_scale_inv(interested_date)
             time_filter.property("value", inv)
-            console.log(inv * 1.0)
             const format =
             d3.timeFormat("%Y/%m/%d")
-            d3.select("#time_label").text(format(interested_date));
+            d3.select("#time_label").text("Time: before " + format(interested_date));
 
             globalObj.network.draw(globalObj.parsedTransData)
         }
 
         function tips3_edge_highlight(){
-            let d = all_nodes.filter(t => t.id == sucker)[0]    
+            let _d = all_nodes.filter(t => t.id == sucker)
+            let d = _d.length ? _d[0] : null;    
+            if (_d.length == 0)
+            {
+                return;
+            }
             let outs = d3.selectAll(d.outs)
             let ins = d3.selectAll(d.ins)
             ins
@@ -406,7 +408,12 @@ class Network {
                 .style('stroke', "firebrick")
         }
         function tips3_edge_recover(){
-            let d = all_nodes.filter(t => t.id == sucker)[0]
+            let _d = all_nodes.filter(t => t.id == sucker)
+            let d = _d.length ? _d[0] : null;    
+            if (_d.length == 0)
+            {
+                return;
+            }
             let outs = d3.selectAll(d.outs)
             let ins = d3.selectAll(d.ins)
             outs //.merge(ins) // nothing happens
