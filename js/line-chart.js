@@ -24,7 +24,21 @@ class LineChart {
         this.pathGenerators = []
         this.areaGenerators = []
 
+        // this.update()
+        this.years = []
+        for (let time of globalObj.selectedTime) {
+            let tmp = time.slice(0, 4)
+            if (!this.years.includes(tmp)){
+                this.years.push(tmp)
+            }
+        }
+        this.years.sort((a,b) => (a-b))
+
+        this.colorScale = globalObj.colorScale;
+        this.colorScaleFade = globalObj.colorScaleFade;
+
         this.updateAxes()
+        this.updatePaths()
 
         // this.pathGenerator = d3.line()
         //     .x(d => this.xScale(d3.timeParse("%Y/%m/%d")(d.date)))
@@ -35,16 +49,11 @@ class LineChart {
         //     .y1(d => this.yScale(d.high))
         //     .y0(d => this.yScale(d.low));
 
-        this.colorScale = globalObj.colorScale;
-        this.colorScaleFade = globalObj.colorScaleFade;
-
-        this.updatePaths()
-
         this.svg.append('text')
             .attr('id', 'y-text')
             .text('market price')
             .attr('x', -140)
-            .attr('y', 12)
+            .attr('y', 32)
             .attr('transform', 'rotate(-90)');
 
         this.logButton = d3.select("#logButton")
@@ -60,6 +69,10 @@ class LineChart {
                 globalObj.selectedTime = ["2017/01", "2017/02", "2017/03", "2017/04", "2017/05", "2017/06",
                     "2017/07", "2017/08", "2017/09", "2017/10", "2017/11", "2017/12", ]
                 this.update()
+                globalObj.grid_brush.rects
+                    .attr('class', 'gridRect')
+                    .filter(d => (d[1]===4))
+                    .attr('class', 'selectedRect')
             })
 
         this.preset2Button = d3.select("#preset2")
@@ -67,6 +80,10 @@ class LineChart {
                 globalObj.selectedTime = ["2018/01", "2018/02", "2018/03", "2018/04", "2018/05", "2018/06",
                     "2018/07", "2018/08", "2018/09", "2018/10", "2018/11", "2018/12", ]
                 this.update()
+                globalObj.grid_brush.rects
+                    .attr('class', 'gridRect')
+                    .filter(d => (d[1]===5))
+                    .attr('class', 'selectedRect')
             })
     }
 
@@ -85,15 +102,6 @@ class LineChart {
         // this.xAxisGroup.append('g')
         //     .call(this.xAxis)
 
-
-        this.years = []
-        for (let time of globalObj.selectedTime) {
-            let tmp = time.slice(0, 4)
-            if (!this.years.includes(tmp)){
-                this.years.push(tmp)
-            }
-        }
-        this.years.sort((a,b) => (a-b)) //
         this.groupedYearData = d3.group(this.selectedData, d => d.month.slice(0, 4));
         this.start_times = []
         this.final_times = []
@@ -177,6 +185,7 @@ class LineChart {
         for (let name of names){ // for each cryptocurrency
             let Data = this.groupedData.get(name)
                 .filter(d => globalObj.selectedTime.length === 0 ? false : globalObj.selectedTime.includes(d.month))
+                .filter(d => globalObj.selectedNames.length === 0 ? false : globalObj.selectedNames.includes(d.name))
 
             let groupedData = d3.group(Data, d => d.month.slice(0, 4));// group by year
 
@@ -253,10 +262,6 @@ class LineChart {
                     // }
                 }
             }
-
-
-
-
         }
     }
 
@@ -272,6 +277,18 @@ class LineChart {
             .filter(d => globalObj.selectedNames.length === 0 ? false : globalObj.selectedNames.includes(d.name))
 
         // this.groupedData = d3.group(this.selectedData, d => d.name);
+        // if (globalObj.selectedTime.length === 0 || globalObj.selectedNames.length === 0) {
+        //     this.groupedData = globalObj.groupedData
+        // }
+
+        this.years = []
+        for (let time of globalObj.selectedTime) {
+            let tmp = time.slice(0, 4)
+            if (!this.years.includes(tmp)){
+                this.years.push(tmp)
+            }
+        }
+        this.years.sort((a,b) => (a-b))
 
         this.updateAxes()
         this.updatePaths()

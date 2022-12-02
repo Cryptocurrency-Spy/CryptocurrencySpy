@@ -59,7 +59,7 @@ class GridBrush {//Bubble
         this.rect_indices = []
         for(let j of [...Array(this.year_count).keys()]) {
             for (let i of [...Array(12).keys()]) {
-                this.rect_indices.push([i, j]);
+                this.rect_indices.push([i, j]);//[0-11,0-6]
             }
         }
         let capital_by_time = this.capital_by_time
@@ -196,7 +196,7 @@ class GridBrush {//Bubble
                 d[0] >= connerRectIndices[0][0] && d[0] <= connerRectIndices[1][0] &&
                 d[1] >= connerRectIndices[0][1] && d[1] <= connerRectIndices[1][1]
             ))
-            .attr('class', 'gridRect' + ' selected')
+            .attr('class', 'selected')
     }
 
     brushend(e) {
