@@ -106,7 +106,7 @@ function show_second() {
 {
     let story = [
         {
-            pid: "#network-div",
+            pid: "#svg-div",
             caption: "In May 2010, California student <b>Jeremy Sturdivant</b>, noticed a bizarre request on a cryptocurrency internet forum: He could receive <b>10,000 bitcoins</b>, at the time reportedly valued at $41, in exchange for the delivery of two large pizzas to Florida resident Laszlo Hanyecz. Sturdivant filled the order, sending him two large pizzas from Papa John's — a transaction that would become the first physical purchase made with bitcoin in history, marked by the annual Bitcoin Pizza Day on <b>May 22</b>.",
             left: 500,
             top: 500,
@@ -116,7 +116,7 @@ function show_second() {
         {
             pid: "#network-div",
             caption: "Before that, there are only a handful bitcoin transactions.",
-            left: 750,
+            left: 1000,
             top: 80,
             step: 2,
             direction: "right"
@@ -313,42 +313,21 @@ function changeData() {
         }
         else {
             globalObj.network.draw(globalObj.parsedTransData)
-
         }
     }).catch(e => {
         console.log(e);
         alert('Error!');
     });
-
-
-
-    // d3.csv(`data/chunk${dataFile}.csv`)
-    //     .then(dataOutput => {
-
-    //         let parse = d3.timeParse("%Q");
-    //         const dataResult = dataOutput.map((d) => ({
-    //             time: parse(d["timestamp"]),
-    //             source: d["input_key"],
-    //             target: d["output_key"],
-    //             value: d["satoshis"] / 1e8,
-    //         }));
-
-    //         globalObj.parsedTransData = globalObj.parsedTransData.concat(dataResult)
-    //         if (dataFile >= 3) {
-    //             radial(globalObj.parsedTransData)
-    //         }
-    //         else {
-    //             globalObj.network.draw(globalObj.parsedTransData)
-
-    //         }
-    //     }).catch(e => {
-    //         console.log(e);
-    //         alert('Error!');
-    //     });
 }
 // show_second()
 function change_filter() {
-    globalObj.network.draw(globalObj.parsedTransData)
+    const dataFile = d3.select('#data_slider').property('value') - 1;
+    if (dataFile >= 3) {
+        radial(globalObj.parsedTransData)
+    }
+    else {
+        globalObj.network.draw(globalObj.parsedTransData)
+    }
 }
 function _vchange_filter() {
     let v =

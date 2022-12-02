@@ -49,20 +49,26 @@ function radial(__data__) {
     }
     let root = Node({ target: sucker })
     let extra_edges = []
+    let width_limit = 30
     function traverse(node) {
         const _t = map.get(node.id)
         // console.log(_t)
         if (_t == undefined) return;
         const t = Array.from(_t)
+        let width = 0
         for (let c of t) {
             const cid = c.target
             if (!traversed.has(cid)) {
+                width ++;
                 traversed.add(cid)
                 node.children.push(Node(c))
                 traverse(node.children.at(-1))
             }
             else {
                 extra_edges.push(c)
+            }
+            if (width > width_limit) {
+                break;
             }
         }
     }
@@ -72,7 +78,8 @@ function radial(__data__) {
         title: (d) => `${d.id}`, // hover text
         width: 1152,
         height: 1152,
-        margin: 100
+        margin: 100,
+        fill: "#ddd",
     })
     const svg = d3.select("#network")
     let g = svg.append("g")
@@ -267,11 +274,21 @@ function Tree(data, { // data is either tabular (array of objects) or hierarchy 
             .attr("transform", d => {
                 // console.log(d.depth)
                 return `rotate(${(d.parent ? d.parent.x : d.x) * 180 / Math.PI - 90}) translate(${d.parent ? d.parent.y : d.y},0)`
-            });
+            })
+            
         nodeEnter.append("circle")
             .attr("fill", d => d.children || d._children ? stroke : fill)
             .attr("r", r)
             .on('click', click)
+            .on("mouseover", function(){
+                d3.select(this)
+                .attr("r", 2 * r)
+            })
+            .on("mouseleave", function(){
+                d3.select(this)
+                    .attr("r", r)
+            })
+
         // node.append("circle")
         //     .attr("fill", d => d.children ? stroke : fill)
         //     .attr("r", r);
