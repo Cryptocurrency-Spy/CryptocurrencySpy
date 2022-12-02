@@ -195,9 +195,13 @@ class LineChart {
 
         this.yAxis = d3.axisLeft(this.yScale);
 
-        this.svg.select('#y-axis')
-            .attr('transform', 'translate(' + this.margin.left + ',' + this.margin.bottom + ')')
-            .call(this.yAxis)
+
+        if(selectedData.length !== 0){
+            this.svg.select('#y-axis')
+                .attr('transform', 'translate(' + this.margin.left + ',' + this.margin.bottom + ')')
+                .call(this.yAxis)
+        }
+
 
     }
 
