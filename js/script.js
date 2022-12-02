@@ -346,7 +346,7 @@ function changeData() {
     //         alert('Error!');
     //     });
 }
-show_second()
+// show_second()
 function change_filter() {
     globalObj.network.draw(globalObj.parsedTransData)
 }

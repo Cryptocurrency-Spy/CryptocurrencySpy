@@ -121,7 +121,7 @@ class Treemap {
         })
         // this._data = _data
 
-        let map_from_name = d3.group(final_data, d => d.name);
+        // let map_from_name = d3.group(final_data, d => d.name);
 
         this.root = d3.stratify()
             .id(d => d.name)
@@ -143,6 +143,13 @@ class Treemap {
 
         this.hidden_rects = []
 
+        let changes = final_data.map(d => d.change)
+        this.max_changes = d3.max(changes)
+        this.min_changes = d3.min(changes)
+        this.scale_change = d3.scaleDiverging()
+            .domain([this.min_changes, 0, this.max_changes])
+            .interpolator(d3.interpolateRdYlGn)
+
         this.rectangles = this.cell.selectAll("rect")
             .data(d => {
                 let _d = d;
@@ -159,18 +166,19 @@ class Treemap {
             .attr("width", d => d.x1 - d.x0)
             .attr("height", d => d.y1 - d.y0)
 
-            .attr("fill", d => {
-                let a = d.ancestors();
-                // console.log(globalObj.colorScale(a[0].id))//a: "bitcoin", "a"
-                return globalObj.colorScale(d.id);
-            })
+            .attr("fill", d => this.scale_change(d.data.change))
             .style("stroke-width", "5px")
             .attr('checked', false)
             .on('click', e => {
-                globalObj.updateGlobalNameSelection(e)
+                globalObj.updateGlobalNameSelection(e);
                 // globalObj.name_select.checkboxes.attr("checked", false)
             })
-            .on("mouseover", e => {this.tooltip.style("visibility", "visible");})
+            .on("mouseover", e => {
+                this.tooltip.style("visibility", "visible");
+                let et = e.target
+                d3.select(et)
+                    .attr('fill', d => globalObj.colorScale(d.id))
+            })
             .on("mousemove", e => {
                 // console.log(e.clientX, e.clientY)
                 let et = e.target
@@ -179,20 +187,16 @@ class Treemap {
                     .style("left",(e.clientX+5)+"px")
                     .style('color', globalObj.colorScale(et.id))
                     .text(et.id + " " + this.format(et.__data__.value))
-
             })
-            .on("mouseout", e => {this.tooltip.style("visibility", "hidden")});
+            .on("mouseout", e => {
+                this.tooltip.style("visibility", "hidden")
+                let et = e.target
+                d3.select(et)
+                    .attr("fill", d => this.scale_change(d.data.change))
+            });
 
 
-        // texts (their color encode changes in prices)
-        let changes = final_data.map(d => d.change)
-        this.max_changes = d3.max(changes)
-        this.min_changes = d3.min(changes)
-
-        this.scale_change = d3.scaleDiverging()
-            .domain([this.min_changes, 0, this.max_changes])
-            .interpolator(d3.interpolateRdYlGn)
-
+        // texts
         this.texts = this.cell.selectAll('text')
             .data(d => [d])
             .join("text")
@@ -200,14 +204,11 @@ class Treemap {
             .attr("y", d => 0.50 * (d.y1 - d.y0))
             .style('font-size', "32px")
             .attr('class', 'nice-font')
-
-            // .text(d => d.id + "\n" + this.format(d.value))
             .text(d => d.id)
-            .style('fill', d => {
-                let t = map_from_name.get(d.id)[0]
-                return this.scale_change(t.change);
-            })
+            .style('fill', 'black')
+            // hide texts in too-small rectangle
             .attr('visibility', d => this.hidden_rects.includes(d.id)? 'hidden': 'visible')
+
 
         d3.select('#color1').style('stop-color', this.scale_change(this.min_changes))
         d3.select('#color2').style('stop-color', this.scale_change(this.max_changes))
@@ -233,6 +234,7 @@ class Treemap {
     }
 
     updateTreeRectStatus() {
+        // console.log(globalObj.selectedNames)
         this.rectangles
             .style("stroke", d => (globalObj.selectedNames.includes(d.id))? "black": "none")
     }
