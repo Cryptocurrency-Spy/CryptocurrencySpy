@@ -106,7 +106,7 @@ function show_second() {
 {
     let story = [
         {
-            pid: "#network-div",
+            pid: "#svg-div",
             caption: "In May 2010, California student <b>Jeremy Sturdivant</b>, noticed a bizarre request on a cryptocurrency internet forum: He could receive <b>10,000 bitcoins</b>, at the time reportedly valued at $41, in exchange for the delivery of two large pizzas to Florida resident Laszlo Hanyecz. Sturdivant filled the order, sending him two large pizzas from Papa John's — a transaction that would become the first physical purchase made with bitcoin in history, marked by the annual Bitcoin Pizza Day on <b>May 22</b>.",
             left: 500,
             top: 500,
@@ -116,7 +116,7 @@ function show_second() {
         {
             pid: "#network-div",
             caption: "Before that, there are only a handful bitcoin transactions.",
-            left: 750,
+            left: 1000,
             top: 80,
             step: 2,
             direction: "right"
