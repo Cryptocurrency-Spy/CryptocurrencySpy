@@ -24,7 +24,21 @@ class LineChart {
         this.pathGenerators = []
         this.areaGenerators = []
 
+        // this.update()
+        this.years = []
+        for (let time of globalObj.selectedTime) {
+            let tmp = time.slice(0, 4)
+            if (!this.years.includes(tmp)){
+                this.years.push(tmp)
+            }
+        }
+        this.years.sort((a,b) => (a-b))
+
+        this.colorScale = globalObj.colorScale;
+        this.colorScaleFade = globalObj.colorScaleFade;
+
         this.updateAxes()
+        this.updatePaths()
 
         // this.pathGenerator = d3.line()
         //     .x(d => this.xScale(d3.timeParse("%Y/%m/%d")(d.date)))
@@ -35,10 +49,6 @@ class LineChart {
         //     .y1(d => this.yScale(d.high))
         //     .y0(d => this.yScale(d.low));
 
-        this.colorScale = globalObj.colorScale;
-        this.colorScaleFade = globalObj.colorScaleFade;
-
-        this.updatePaths()
 
         this.svg.append('text')
             .attr('id', 'y-text')
@@ -86,14 +96,14 @@ class LineChart {
         //     .call(this.xAxis)
 
 
-        this.years = []
-        for (let time of globalObj.selectedTime) {
-            let tmp = time.slice(0, 4)
-            if (!this.years.includes(tmp)){
-                this.years.push(tmp)
-            }
-        }
-        this.years.sort((a,b) => (a-b)) //
+        // this.years = []
+        // for (let time of globalObj.selectedTime) {
+        //     let tmp = time.slice(0, 4)
+        //     if (!this.years.includes(tmp)){
+        //         this.years.push(tmp)
+        //     }
+        // }
+        // this.years.sort((a,b) => (a-b)) //
         this.groupedYearData = d3.group(this.selectedData, d => d.month.slice(0, 4));
         this.start_times = []
         this.final_times = []
@@ -177,6 +187,7 @@ class LineChart {
         for (let name of names){ // for each cryptocurrency
             let Data = this.groupedData.get(name)
                 .filter(d => globalObj.selectedTime.length === 0 ? false : globalObj.selectedTime.includes(d.month))
+                .filter(d => globalObj.selectedNames.length === 0 ? false : globalObj.selectedNames.includes(d.name))
 
             let groupedData = d3.group(Data, d => d.month.slice(0, 4));// group by year
 
@@ -253,10 +264,6 @@ class LineChart {
                     // }
                 }
             }
-
-
-
-
         }
     }
 
@@ -272,6 +279,15 @@ class LineChart {
             .filter(d => globalObj.selectedNames.length === 0 ? false : globalObj.selectedNames.includes(d.name))
 
         // this.groupedData = d3.group(this.selectedData, d => d.name);
+
+        this.years = []
+        for (let time of globalObj.selectedTime) {
+            let tmp = time.slice(0, 4)
+            if (!this.years.includes(tmp)){
+                this.years.push(tmp)
+            }
+        }
+        this.years.sort((a,b) => (a-b))
 
         this.updateAxes()
         this.updatePaths()
