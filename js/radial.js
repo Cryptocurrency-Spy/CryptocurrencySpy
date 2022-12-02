@@ -274,11 +274,21 @@ function Tree(data, { // data is either tabular (array of objects) or hierarchy 
             .attr("transform", d => {
                 // console.log(d.depth)
                 return `rotate(${(d.parent ? d.parent.x : d.x) * 180 / Math.PI - 90}) translate(${d.parent ? d.parent.y : d.y},0)`
-            });
+            })
+            
         nodeEnter.append("circle")
             .attr("fill", d => d.children || d._children ? stroke : fill)
             .attr("r", r)
             .on('click', click)
+            .on("mouseover", function(){
+                d3.select(this)
+                .attr("r", 2 * r)
+            })
+            .on("mouseleave", function(){
+                d3.select(this)
+                    .attr("r", r)
+            })
+
         // node.append("circle")
         //     .attr("fill", d => d.children ? stroke : fill)
         //     .attr("r", r);

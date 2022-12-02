@@ -313,42 +313,21 @@ function changeData() {
         }
         else {
             globalObj.network.draw(globalObj.parsedTransData)
-
         }
     }).catch(e => {
         console.log(e);
         alert('Error!');
     });
-
-
-
-    // d3.csv(`data/chunk${dataFile}.csv`)
-    //     .then(dataOutput => {
-
-    //         let parse = d3.timeParse("%Q");
-    //         const dataResult = dataOutput.map((d) => ({
-    //             time: parse(d["timestamp"]),
-    //             source: d["input_key"],
-    //             target: d["output_key"],
-    //             value: d["satoshis"] / 1e8,
-    //         }));
-
-    //         globalObj.parsedTransData = globalObj.parsedTransData.concat(dataResult)
-    //         if (dataFile >= 3) {
-    //             radial(globalObj.parsedTransData)
-    //         }
-    //         else {
-    //             globalObj.network.draw(globalObj.parsedTransData)
-
-    //         }
-    //     }).catch(e => {
-    //         console.log(e);
-    //         alert('Error!');
-    //     });
 }
 show_second()
 function change_filter() {
-    globalObj.network.draw(globalObj.parsedTransData)
+    const dataFile = d3.select('#data_slider').property('value') - 1;
+    if (dataFile >= 3) {
+        radial(globalObj.parsedTransData)
+    }
+    else {
+        globalObj.network.draw(globalObj.parsedTransData)
+    }
 }
 function _vchange_filter() {
     let v =
