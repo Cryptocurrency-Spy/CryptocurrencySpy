@@ -136,7 +136,7 @@ function show_second() {
         .data(story)
         .enter().insert("div")
         // .join("div")
-        .classed("invisible", d => d.step != 1)
+        .classed("invisible", d => d.step !== 1)
         .classed("tooltip2", true)
         .attr("id", d => "tips" + d.step)
         .style("left", d => d.left + "px")
@@ -146,14 +146,9 @@ function show_second() {
         <button class="btn btn-primary s-circle"><i class="icon icon-search"></i></button>
             <div class="popover-container">
                 <div class="card">
-                    <div class="card-header">
-                        
-                    </div>
-                    <div class="card-body">${d.caption}
-                    </div>
-                    <div class="card-footer" id="footer${d.step}">
-
-                    </div>
+                    <div class="card-header"></div>
+                    <div class="card-body">${d.caption}</div>
+                    <div class="card-footer" id="footer${d.step}"></div>
                 </div>
             </div>
         </div>
@@ -178,7 +173,7 @@ function show_second() {
     }
     let step_callbacks = story.map(d => gen(d.step))
     _steps.classed("step-item", true)
-        .classed("active", (d, i) => d == i + 1)
+        .classed("active", (d, i) => d === i + 1)
         .html((d, i) => `<a href="#${i + 1}" class="tooltip" data-tooltip="Step ${i + 1}" id="_${d}_${i + 1}">Step ${i + 1}</a>`)
     for (let i = 0; i < story.length; i++)
         for (let j = 0; j < story.length; j++) {
