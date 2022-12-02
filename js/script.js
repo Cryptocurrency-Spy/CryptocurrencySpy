@@ -43,9 +43,8 @@ const globalObj = {
 pricesFile = d3.csv('./data/consolidated_coin_data.csv');
 transFile = d3.csv('./data/chunk0.csv');
 d3.select("#dataset").on("change", changeData)
-d3.select("#value_slider").on("change", change_filter)
+d3.select("#value_slider").on("change", vchange_filter)
 d3.select("#strength_slider").on("change", change_filter)
-d3.select("#time_slider").on("change", change_filter)
 d3.select("#network_switch").on("change", change_switch)
 
 {
@@ -53,6 +52,7 @@ d3.select("#network_switch").on("change", change_switch)
     d3.select("#data_slider").property("value", 1)
     d3.select("#value_slider").property("value", 0.0)
     d3.select("#time_slider").property("value", 10.0)
+    _vchange_filter()
 }
 
 d3.select("#tip1")
@@ -156,15 +156,15 @@ function show_second() {
         .data(d => story.map(s => d.step))
         .join("li")
     function gen(i) {
-        return () => { 
+        return () => {
             d3.selectAll(".tooltip2")
                 .classed("invisible", true)
             d3.select("#tips" + i)
                 .classed("invisible", false)
-                // .select("button")
-                // .node()
-                // .click()
-            console.log("callback", i) 
+            // .select("button")
+            // .node()
+            // .click()
+            console.log("callback", i)
         };
     }
     let step_callbacks = story.map(d => gen(d.step))
@@ -232,21 +232,47 @@ Promise.all([pricesFile, transFile]).then(data => {
     globalObj.treemap.updateTreeRectStatus()
 
     let transData = data[1];
-    let parse = d3.timeParse("%Q");
     let i = 0
     globalObj.parsedTransData = transData.map(d => ({
         // timestamp,input_key,output_key,satoshis
-        time: parse(d["timestamp"]),
+        // time: parse(d["timestamp"]),
+        time: d["timestamp"],
         source: d["input_key"],
         target: d["output_key"],
         value: d["satoshis"] / 1e8,
         id: ++i
     }));
+    const times = globalObj.parsedTransData.map(d => d.time)
+    let max_time = d3.max(times), min_time = d3.min(times)
+
+    let t_scale = d3.scaleTime()
+        .domain([0, 10])
+        .range([min_time, max_time])
+    function _tchange_filter() {
+
+        let t =
+            d3.select("#time" + "_slider")
+                .property("value")
+        let _t = t_scale(t)
+        const format =
+            d3.timeFormat("%Y/%m/%d")
+        d3.select("#time" + "_label")
+            .text("Time: before " + format(_t))
+    }
+    function tchange_filter() {
+        _tchange_filter()
+        change_filter()
+    }
+    globalObj._tchange_filter = _tchange_filter
+    globalObj.t_scale = t_scale
     globalObj.network = new Network();
 
+    d3.select("#time_slider").on("change", tchange_filter)
+    _tchange_filter()
 
 })
     .catch(error => console.error(error));
+
 function changeData() {
     //  Load the file indicated by the select menu
     const dataFile = d3.select('#dataset').property('value');
@@ -262,8 +288,7 @@ function changeData() {
                 value: d["satoshis"] / 1e8,
             }));
             globalObj.parsedTransData = globalObj.parsedTransData.concat(dataResult)
-            let copy = JSON.parse(JSON.stringify(globalObj.parsedTransData))
-            globalObj.network.draw(copy)
+            globalObj.network.draw(globalObj.parsedTransData)
         }).catch(e => {
             console.log(e);
             alert('Error!');
@@ -271,15 +296,27 @@ function changeData() {
 }
 show_second()
 function change_filter() {
-    let copy = JSON.parse(JSON.stringify(globalObj.parsedTransData))
-    globalObj.network.draw(copy)
+    globalObj.network.draw(globalObj.parsedTransData)
 }
+function _vchange_filter() {
+    let v =
+        d3.select("#value" + "_slider")
+            .property("value")
+    const format = d3.format("d")
+    d3.select("#value" + "_label")
+        .text("Value: > " + format(v))
+    console.log(format(v))
+}
+function vchange_filter() {
+    _vchange_filter()
+    change_filter()
+}
+
 function change_switch() {
     let checked = d3.select("#network_switch").property("checked");
     console.log(checked)
     if (checked) {
-        let copy = JSON.parse(JSON.stringify(globalObj.parsedTransData))
-        globalObj.network.draw(copy)
+        globalObj.network.draw(globalObj.parsedTransData)
     }
     else {
         radial(globalObj.parsedTransData.map(d => d))

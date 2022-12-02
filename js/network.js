@@ -3,15 +3,19 @@ class Network {
     constructor() {
         let width = 1600;
         let height = 1080;
-        let copy = JSON.parse(JSON.stringify(globalObj.parsedTransData))
-        let data = copy;
         let svg = d3.select("#network")
             .attr('width', width)
             .attr('height', height);
-        this.draw(data)
+        this.draw(globalObj.parsedTransData)
     }
 
-    draw(_data) {
+    draw(__data__) {
+        let copy = JSON.parse(JSON.stringify(__data__))
+        let parse = d3.timeParse("%Q");
+        let _data = copy.map(d => {
+            d.time = parse(d.time);
+            return d;
+        });
         const offset = 30
         let width = 1600;
         let height = 1080;
@@ -31,9 +35,13 @@ class Network {
         let time_scale = d3.scaleTime()
             .domain([min_time, max_time])
             .range([min_opa, max_opa])
-        let time_lower = d3.scaleTime()
+        let time_filter_scale = d3.scaleTime()
             .domain([0,10])
             .range([min_time, max_time])
+        let time_filter_scale_inv = d3.scaleTime()
+        .domain([min_time, max_time])
+            .range([0,10])
+        let time_lower = time_filter_scale
             (_time_lower)
         let data = _data.filter(d => d.value * 1.0 > value_lower)
             .filter(d => d.time < time_lower)
@@ -165,41 +173,57 @@ class Network {
         const interested = links.filter(d => {
             return d.value == 1e4 && d.source == payer && d.target == sucker
         })
-        const interested_date = data.filter(d => d.value == 1e4 && d.source == payer && d.target == sucker)[0].time
+        const _interested_date = data.filter(d => d.value == 1e4 && d.source == payer && d.target == sucker)
+        if (_interested_date.length) {
+            globalObj.interested_date = _interested_date[0].time;
+        }
+        const interested_date = globalObj.interested_date
         const interested3 = links.filter(d => {
             return d.source == sucker && d.target == receiver
         })
         function pos(node_id) {
-            let t = svg.select("#_" + node_id).datum()
-            return [t.x, t.y]
+            let t = svg.select("#_" + node_id)
+            console.log(t.size())
+            if (t.size()){
+                t =t.datum()
+                return [t.x, t.y]
+            }
+            return [0.0, 0.0]
         }
         let step1 = d3.select(`#tips1`)
         let step2 = d3.select("#tips2")
         let step3 = d3.select("#tips3")
         let trans = {x: 0.0, y: 0.0, k: 1.0}
         function update_tooltips_pos(trans){
-            let pos_sucker = pos(sucker)
-            let pos_payer = pos(payer)
-            let pos_receiver = pos(receiver)
+            if (time_lower * 1 <= globalObj.interested_date * 1) {
+                console.log(time_lower* 1, globalObj.interested_date * 1)
+                return;
+            }
+            else {
 
-            let tooltip_pos = [
-                (pos_sucker[0] + pos_payer[0]) / 2 * trans.k + trans.x,
-                (pos_sucker[1] + pos_payer[1]) / 2 * trans.k + trans.y,
-            ]
-            let tooltip3_pos = [
-                (pos_sucker[0] + pos_receiver[0]) / 2 * trans.k + trans.x,
-                (pos_sucker[1] + pos_receiver[1]) / 2 * trans.k + trans.y,
-            ]
-
-            step1
-                .style("left", tooltip_pos[0] + offset + "px")
-                .style("top", tooltip_pos[1] + 80 + offset + "px")
-            // step2
-            //     .style("left", tooltip_pos[0] + offset + "px")
-            //     .style("top", tooltip_pos[1] + 80 + offset + "px")
-            step3
-                .style("left", tooltip3_pos[0] + offset + "px")
-                .style("top", tooltip3_pos[1] + 80 + offset + "px")
+                let pos_sucker = pos(sucker)
+                let pos_payer = pos(payer)
+                let pos_receiver = pos(receiver)
+    
+                let tooltip_pos = [
+                    (pos_sucker[0] + pos_payer[0]) / 2 * trans.k + trans.x,
+                    (pos_sucker[1] + pos_payer[1]) / 2 * trans.k + trans.y,
+                ]
+                let tooltip3_pos = [
+                    (pos_sucker[0] + pos_receiver[0]) / 2 * trans.k + trans.x,
+                    (pos_sucker[1] + pos_receiver[1]) / 2 * trans.k + trans.y,
+                ]
+    
+                step1
+                    .style("left", tooltip_pos[0] + offset + "px")
+                    .style("top", tooltip_pos[1] + 80 + offset + "px")
+                // step2
+                //     .style("left", tooltip_pos[0] + offset + "px")
+                //     .style("top", tooltip_pos[1] + 80 + offset + "px")
+                step3
+                    .style("left", tooltip3_pos[0] + offset + "px")
+                    .style("top", tooltip3_pos[1] + 80 + offset + "px")
+            }
 
         }
 
@@ -359,10 +383,15 @@ class Network {
 
         function tips2_callback(){
             value_filter.property("value", 1000)
-            let inv = time_scale.invert(interested_date)
+            d3.select("#value_label").text(1000);
+            let inv = time_filter_scale_inv(interested_date)
             time_filter.property("value", inv)
-            let copy = JSON.parse(JSON.stringify(globalObj.parsedTransData))
-            globalObj.network.draw(copy)
+            console.log(inv * 1.0)
+            const format =
+            d3.timeFormat("%Y/%m/%d")
+            d3.select("#time_label").text(format(interested_date));
+
+            globalObj.network.draw(globalObj.parsedTransData)
         }
 
         function tips3_edge_highlight(){

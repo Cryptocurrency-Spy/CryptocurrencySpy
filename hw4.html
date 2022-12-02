@@ -80,31 +80,18 @@
         </div>
         <div id="network-div" class="invisible">
             <span>
-                <!-- <label>Dataset:</label>
-                <select id="dataset">
-                    <option selected value="chunk0">chunk0</option>
-                    <option value="chunk1">chunk1</option>
-                    <option value="chunk2">chunk2</option>
-                    <option value="chunk3">chunk3</option>
-                    <option value="chunk4">chunk4</option>
-                    <option value="chunk5">chunk5</option>
-                    <option value="chunk6">chunk6</option>
-                    <option value="chunk7">chunk7</option>
-                    <option value="chunk8">chunk8</option>
-                    <option value="chunk9">chunk9</option>
-                </select> -->
                 
-                <label for="value">Dataset Size</label>
+                <label for="data_slider">Dataset Size</label>
                 1<input type="range" id="data_slider" min="1" max="10" step="1">10
 
-                <label for="value">Value</label>
+                <label for="value_slider" id="value_label">Value</label>
                 0<input type="range" id="value_slider" min="0" max="1000" step="any">1000
 
-                <label for="time">Time</label>
-                earliest<input type="range" id="time_slider" min="0" max="10" step="any">latest
+                <label for="time_slider" id="time_label">Time</label>
+                -<input type="range" id="time_slider" min="0" max="10" step="any">+
 
-                <label for="strength">Strength</label>
-                min<input type="range" id="strength_slider" min="1" max="4" step="1">max
+                <label for="strength_slider">Strength</label>
+                -<input type="range" id="strength_slider" min="1" max="4" step="1">+
 
                 <label id="ns" class="switch">
                     <input type="checkbox" id="network_switch" checked>
