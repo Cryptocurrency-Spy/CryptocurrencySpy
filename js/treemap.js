@@ -108,18 +108,19 @@ class Treemap {
             name: "invalid date",
             cap: "0",
             change: 0, 
-            price: "0"
+            price: "1",
+            price0: "1"
         })
 
         final_data = final_data.map(d => {
             // d.cap0 = 0;
             d.price0 = 0.
             let t = cap_map.get(d.name)
+            d.change = 0.0
             if (t != undefined && t.length) {
-                console.log(t.length)
                 d.price0 = t[0].price
+                d.change = (d.price - d.price0) / d.price0
             }
-            d.change = d.price - d.price0
             
             // d.change = d.cap - d.cap0
             console.log(d.change)
@@ -149,11 +150,14 @@ class Treemap {
         let changes = final_data.map(d => d.change)
         let max_changes = d3.max(changes)
         let min_changes = d3.min(changes)
-        let t = d3.max([Math.abs(max_changes), Math.abs(min_changes)])
+        let range = d3.max([Math.abs(max_changes), Math.abs(min_changes)])
+        // console.log(range)
         this.scale_change = d3.scaleDiverging()
-            .domain([-t, 0, t])
+            .domain([-range, 0, range])
             // .domain([min_changes, 0, max_changes])
             .interpolator(d3.interpolateRdYlGn)
+
+        let f = d3.format("+.2%");
 
         this.rectangles = this.cell.selectAll("rect")
             .data(d => {
@@ -184,14 +188,14 @@ class Treemap {
                 d3.select(et)
                     .attr('fill', d => globalObj.colorScale(d.id))
             })
-            .on("mousemove", e => {
+            .on("mousemove", (e, d) => {
                 // console.log(e.clientX, e.clientY)
                 let et = e.target
                 this.tooltip
                     .style("top", (e.clientY-5)+"px")
                     .style("left",(e.clientX+5)+"px")
                     .style('color', globalObj.colorScale(et.id))
-                    .text(et.id + " " + this.format(et.__data__.value))
+                    .text(et.id + " " + this.format(et.__data__.value) + ` ${f(d.data.change)}`)
             })
             .on("mouseout", e => {
                 this.tooltip.style("visibility", "hidden")
@@ -215,27 +219,27 @@ class Treemap {
             .attr('visibility', d => this.hidden_rects.includes(d.id)? 'hidden': 'visible')
 
 
-        d3.select('#color1').style('stop-color', this.scale_change(this.min_changes))
-        d3.select('#color2').style('stop-color', this.scale_change(this.max_changes))
+        d3.select('#color1').style('stop-color', this.scale_change(-range))
+        d3.select('#color2').style('stop-color', this.scale_change(range))
 
-        this.drawLegend()
+        this.drawLegend(-range, range)
     }
 
-    drawLegend() {
+    drawLegend(max_changes, min_changes) {
         let legend = d3.select('#gradient_rect')
             .attr('width', '40%')
             .attr('height', '100%')
             .attr('fill', 'url(#color-gradient)')
             .attr('transform', 'translate(' + 60 + ', 0)')
-        const f = d3.format(".2s");
+        const f = d3.format("+.2s");
         d3.select('#label_1')
             .attr('class', 'label')
             .attr('transform', 'translate(' + 30 + ', ' + 20 + ')')
-            .text(f(this.max_changes))
+            .text(f(max_changes * 100) + "%")
         d3.select('#label_2')
             .attr('class', 'label')
             .attr('transform', 'translate(' + 210 + ', ' + 20 + ')')
-            .text(f(this.min_changes))
+            .text(f(min_changes * 100) + "%")
     }
 
     updateTreeRectStatus() {
