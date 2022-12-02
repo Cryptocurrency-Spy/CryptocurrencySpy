@@ -49,20 +49,26 @@ function radial(__data__) {
     }
     let root = Node({ target: sucker })
     let extra_edges = []
+    let width_limit = 30
     function traverse(node) {
         const _t = map.get(node.id)
         // console.log(_t)
         if (_t == undefined) return;
         const t = Array.from(_t)
+        let width = 0
         for (let c of t) {
             const cid = c.target
             if (!traversed.has(cid)) {
+                width ++;
                 traversed.add(cid)
                 node.children.push(Node(c))
                 traverse(node.children.at(-1))
             }
             else {
                 extra_edges.push(c)
+            }
+            if (width > width_limit) {
+                break;
             }
         }
     }
