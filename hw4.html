@@ -59,12 +59,12 @@
         <div class="view1">
             <div>
                 <g id="button_group">
-                    <button id="preset1">preset 1</button>
-                    <button id="preset2">preset 2</button>
-                    <label id="toggle_input" class="switch">
+                    <button class="btn" id="preset1">preset 1</button>
+                    <button class="btn" id="preset2">preset 2</button>
+                    <label class="form-switch form-inline">
                         <input type="checkbox" id="logButton">
-                        <span class="slider round"></span>
-                    </label>
+                        <i class="form-icon"></i> Log Scale
+                      </label>
                 </g>
             </div>
             <div>
@@ -80,7 +80,7 @@
         </div>
         <div id="network-div" class="invisible">
             <span>
-                
+
                 <label for="data_slider">Dataset Size</label>
                 1<input type="range" id="data_slider" min="1" max="10" step="1">10
 
@@ -89,10 +89,10 @@
                     Apply auto value filter
                 </label>
                 <label for="count" class="invisible" id="count_label">Count
-                300<input type="range" id="count" min="300" max="1000" step="1">1000
-            </label>
-            <span id="value_span">
-                <label for="value_slider" id="value_label">Value</label>
+                    300<input type="range" id="count" min="300" max="1000" step="1">1000
+                </label>
+                <span id="value_span">
+                    <label for="value_slider" id="value_label">Value</label>
                     0<input type="range" id="value_slider" min="0" max="1000" step="any">1000
                 </span>
 
@@ -101,8 +101,8 @@
 
                 <label for="strength_slider">Strength</label>
                 -<input type="range" id="strength_slider" min="1" max="4" step="1">+
-                
-            <!-- <label id="ns" class="switch">
+
+                <!-- <label id="ns" class="switch">
                     <input type="checkbox" id="network_switch" checked>
                     <span class="slider round"></span>
 
@@ -139,7 +139,7 @@
                     <g id="rect_group"></g>
                     <g id="brush_group"></g>
                 </svg>
-                <button id="clear_time">unselect time</button>
+                <button class="btn" id="clear_time">unselect time</button>
             </div>
         </div>
     </div>
