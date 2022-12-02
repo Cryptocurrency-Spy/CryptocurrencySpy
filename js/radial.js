@@ -22,8 +22,13 @@ function radial(__data__) {
     let queue = [sucker]
     let _data = JSON.parse(JSON.stringify(__data__))
 
+    let auto_on = d3.select("#auto-filter").property("checked")
+
+    if(auto_on)
     {
-        let target_count = 300;
+        let target_count_input = d3.select("#count").property("value")
+        // let target_count = 300;
+        let target_count = target_count_input
         _data.sort((a, b) => a.value - b.value)
         // FIXME: ascending
         _data = _data.slice(-target_count)
@@ -105,7 +110,6 @@ function radial(__data__) {
             console.log("Error")
             return [{ x: 0.0, y: 0.0 }, { x: 0.0, y: 0.0 }]
         }
-        console.log(t, s)
         d.source = {x: t.x, y: t.y}
         d.target = {x: s.x, y: s.y}
         let data = [{ x: t.x, y: t.y },
@@ -197,7 +201,6 @@ function Tree(data, { // data is either tabular (array of objects) or hierarchy 
     const times = root.descendants().slice(1).map(d => d.data.time)
     let max_opa = 0.8, min_opa = 0.3,
         max_time = d3.max(times), min_time = d3.min(times)
-    console.log(max_time, min_time)
     let time_scale = d3.scaleTime()
         .domain([min_time, max_time])
         .range([min_opa, max_opa])
