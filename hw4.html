@@ -18,7 +18,7 @@
             <a href="" class="btn btn-link text-dark">Project Proposal</a>
             <a href="" class="btn btn-link text-dark">Video Walkthrough</a>
         </section>
-<!--        <section class="navbar-center">-->
+        <section class="navbar-center">
             <!-- centered logo or brand -->
             <a id="title" href="#" class="text-dark text-large">Cryptocurrency Spy</a>
         </section>
@@ -61,10 +61,9 @@
                 <g id="button_group">
                     <button id="preset1">preset 1</button>
                     <button id="preset2">preset 2</button>
-                    <label id="toggle_input">
+                    <label id="toggle_input" class="switch">
                         <input type="checkbox" id="logButton">
-                        <text>log scale</text>
-<!--                        <span class="slider round"></span>-->
+                        <span class="slider round"></span>
                     </label>
                 </g>
             </div>
@@ -81,110 +80,24 @@
         </div>
         <div id="network-div" class="invisible">
             <span>
-                <label>Dataset:</label>
-                <select id="dataset">
-                    <option selected value="chunk0">chunk0</option>
-                    <option value="chunk1">chunk1</option>
-                    <option value="chunk2">chunk2</option>
-                    <option value="chunk3">chunk3</option>
-                    <option value="chunk4">chunk4</option>
-                    <option value="chunk5">chunk5</option>
-                    <option value="chunk6">chunk6</option>
-                    <option value="chunk7">chunk7</option>
-                    <option value="chunk8">chunk8</option>
-                    <option value="chunk9">chunk9</option>
-                </select>
-                0<input type="range" id="value" min="0" max="10000" step="any">10000
-                <label for="value">Value</label>
-                <input type="range" id="time" min="0" max="11">
-                <label for="time">Time</label>
-                0.01<input type="range" id="strength" min="0" max="11">1
-                <label for="strength">Strength</label>
-                <label id="ns" class="switch">
+                
+                <label for="data_slider">Dataset Size</label>
+                1<input type="range" id="data_slider" min="1" max="10" step="1">10
+
+                <label for="value_slider" id="value_label">Value</label>
+                0<input type="range" id="value_slider" min="0" max="1000" step="any">1000
+
+                <label for="time_slider" id="time_label">Time</label>
+                -<input type="range" id="time_slider" min="0" max="10" step="any">+
+
+                <label for="strength_slider">Strength</label>
+                -<input type="range" id="strength_slider" min="1" max="4" step="1">+
+
+                <!-- <label id="ns" class="switch">
                     <input type="checkbox" id="network_switch" checked>
                     <span class="slider round"></span>
 
-                </label>
-                <div class="tooltip2" id="tip1">
-
-                    <div class="popover popover-right">
-                        <button class="btn btn-primary s-circle"><i class="icon icon-search"></i></button>
-                        <div class="popover-container">
-                            <div class="card">
-                                <div class="card-header">
-                                    ...
-                                </div>
-                                <div class="card-body">
-                                    In May 2010, California student Jeremy Sturdivant, then 19, noticed a bizarre
-                                    request on a cryptocurrency internet forum: He could receive 10,000 bitcoins, at the
-                                    time reportedly valued at $41, in exchange for the delivery of two large pizzas to
-                                    Florida resident Laszlo Hanyecz, 28.
-
-                                </div>
-                                <div class="card-footer">
-                                    <ul class="step">
-                                        <li class="step-item">
-                                            <a href="#1" class="tooltip" data-tooltip="Step 1">Step 1</a>
-                                        </li>
-                                        <li class="step-item active">
-                                            <a href="#2" class="tooltip" data-tooltip="Step 2">Step 2</a>
-                                        </li>
-                                        <li class="step-item">
-                                            <a href="#3" class="tooltip" data-tooltip="Step 3">Step 3</a>
-                                        </li>
-                                        <li class="step-item">
-                                            <a href="#4" class="tooltip" data-tooltip="Step 4">Step 4</a>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="popover popover-right">
-                    <button class="btn btn-primary">right popover</button>
-                    <div class="popover-container">
-                        <div class="card">
-                            <div class="card-header">
-                                ...
-                            </div>
-                            <div class="card-body">
-
-
-                                Sturdivant filled the order, sending him two large pizzas from Papa John's — a
-                                transaction that would become the first physical purchase made with bitcoin in history,
-                                marked by the annual Bitcoin Pizza Day on May 22.
-
-                            </div>
-                            <div class="card-footer">
-                                ...
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="popover popover-right">
-                    <button class="btn btn-primary">right popover</button>
-                    <div class="popover-container">
-                        <div class="card">
-                            <div class="card-header">
-                                ...
-                            </div>
-                            <div class="card-body">
-
-                                But Sturdivant didn't save the bitcoins for the future; instead, he spent them all on
-                                travel.
-
-                                Today, that lowly 10,000 bitcoin haul would be worth a pie-in-the-sky $365 million.
-                            </div>
-                            <div class="card-footer">
-                                ...
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
+                </label> -->
             </span>
             <svg id="network" width="800" height="600"></svg>
         </div>
@@ -220,11 +133,13 @@
                 <button id="clear_time">unselect time</button>
             </div>
         </div>
-        <!--        <aside>Aside</aside>-->
-        <footer>Footer</footer>
     </div>
 
-    <script src="js/navigation.js"></script>
+
+    <!-- <svg id="s"></svg>
+    <svg id="t"></svg> -->
+    <script src="js/radial.js"></script>
+    <!-- <script src="js/collapse.js"></script> -->
     <script src="js/line-chart.js"></script>
     <script src="js/name-select.js"></script>
     <script src="js/grid-brush.js"></script>

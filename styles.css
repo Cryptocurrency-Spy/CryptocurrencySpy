@@ -16,28 +16,42 @@
     gap: 10px;
 }
 nav {
+    /*!*background-color: orange;*!*/
     grid-column-start: 1;
     grid-column-end: 4;
     height: 50px;
 }
 .view1 {
-    /*width:900px*/
-    width: 60%
+    width:900px
 }
 .view2 {
-    /*width:590px*/
-    width: 40%
+    width:590px
 }
 footer {
     grid-column: 1 / 3;
 }
 
 .gridRect {
+    /*fill: gray;*/
     opacity: 0.5;
+    /*stroke: aqua;*/
 }
 
 .selected {
+    /*stroke-width: 1px;*/
+    /*stroke: black;*/
+    /*stroke-opacity: 1;*/
     opacity: 1.0;
+}
+
+
+.myCheckbox {
+
+}
+
+.box {
+    opacity: 0.8;
+    fill: chartreuse;
 }
 
 .brushg {
