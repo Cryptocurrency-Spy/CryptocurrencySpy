@@ -276,8 +276,8 @@ class LineChart {
         this.svg.selectAll('.path_group').remove();
         this.xAxisGroup.selectAll('g').remove()
 
-        // console.log(globalObj.selectedTime)
-        console.log(globalObj.selectedNames)
+        console.log(globalObj.selectedTime[0], globalObj.selectedTime[globalObj.selectedTime.length-1],)
+        // console.log(globalObj.selectedNames)
 
         this.selectedData = this.parsedData
             .filter(d => globalObj.selectedTime.length === 0 ? false : globalObj.selectedTime.includes(d.month))
