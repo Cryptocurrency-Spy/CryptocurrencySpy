@@ -103,29 +103,32 @@ class Treemap {
         final_data = final_data.filter(d => (d.date === this.final_date))
         start_data = start_data.filter(d => (d.date === this.start_date))
 
+        let cap_map = d3.group(start_data, d => d.name)
         final_data.push({
-            name: "a",
-            cap: "",
+            name: "invalid date",
+            cap: "0",
+            change: 0, 
+            price: "0"
         })
+
         final_data = final_data.map(d => {
-            d.cap = d.cap * 1.0;
-            d.cap0 = 0;
-            for (let data of start_data) {
-                if (data.name === d.name) {
-                    // console.log(d.name)
-                    d.cap0 = data.cap * 1.0;
-                }
+            // d.cap0 = 0;
+            d.price0 = 0.
+            let t = cap_map.get(d.name)
+            if (t != undefined && t.length) {
+                console.log(t.length)
+                d.price0 = t[0].price
             }
-            d.change = d.cap - d.cap0
+            d.change = d.price - d.price0
+            
+            // d.change = d.cap - d.cap0
+            console.log(d.change)
             return d;
         })
-        // this._data = _data
-
-        // let map_from_name = d3.group(final_data, d => d.name);
 
         this.root = d3.stratify()
             .id(d => d.name)
-            .parentId(d => d.name === "a" ? null : "a")
+            .parentId(d => d.name === "invalid date" ? null : "invalid date")
             (final_data)
             .sum(d => d.cap)//create value properties in each node
             .sort((a, b) => b.height - a.height || b.value - a.value)
@@ -144,10 +147,12 @@ class Treemap {
         this.hidden_rects = []
 
         let changes = final_data.map(d => d.change)
-        this.max_changes = d3.max(changes)
-        this.min_changes = d3.min(changes)
+        let max_changes = d3.max(changes)
+        let min_changes = d3.min(changes)
+        let t = d3.max([Math.abs(max_changes), Math.abs(min_changes)])
         this.scale_change = d3.scaleDiverging()
-            .domain([this.min_changes, 0, this.max_changes])
+            .domain([-t, 0, t])
+            // .domain([min_changes, 0, max_changes])
             .interpolator(d3.interpolateRdYlGn)
 
         this.rectangles = this.cell.selectAll("rect")
