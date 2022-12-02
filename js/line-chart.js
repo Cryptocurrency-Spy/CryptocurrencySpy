@@ -174,8 +174,11 @@ class LineChart {
         }
 
         // update y-axis
-        this.max_price = d3.max(this.selectedData, d => parseFloat(d.price))
-        this.min_price = d3.min(this.selectedData, d => parseFloat(d.price))
+        let selectedData = this.selectedData
+            .filter(d => globalObj.selectedNames.length === 0 ? false : globalObj.selectedNames.includes(d.name))
+
+        this.max_price = d3.max(selectedData, d => parseFloat(d.price))
+        this.min_price = d3.min(selectedData, d => parseFloat(d.price))
         this.yScale = d3.scaleLinear()  // change it to scaleLog
             .domain([this.min_price, this.max_price])
             .range([this.vizHeight - this.margin.bottom - this.margin.top, 0])
@@ -222,6 +225,7 @@ class LineChart {
                         let xs = d3.scaleTime()
                             .domain([this.start_times[i], this.final_times[i]])
                             .range(this.r0r1s[i])
+                        console.log(i, this.start_times, this.final_times)
                         let pG = d3.line()
                             .x(d => xs(d3.timeParse("%Y/%m/%d")(d.date)))
                             .y(d => this.yScale(d.price))
@@ -236,7 +240,10 @@ class LineChart {
                             .attr('class', 'lines')
                             .attr('id', name)
                             .attr('transform', 'translate(' + this.margin.left + ',' + this.margin.top + ')')
-                            .attr('d', pG(data))
+                            .attr('d', () => {
+                                console.log(data)
+                                return pG(data)
+                            })
                             .attr('fill', 'none')
                             .attr('stroke', this.colorScale(name))
 
@@ -293,7 +300,7 @@ class LineChart {
 
         this.selectedData = this.parsedData
             .filter(d => globalObj.selectedTime.length === 0 ? false : globalObj.selectedTime.includes(d.month))
-            .filter(d => globalObj.selectedNames.length === 0 ? false : globalObj.selectedNames.includes(d.name))
+            // .filter(d => globalObj.selectedNames.length === 0 ? false : globalObj.selectedNames.includes(d.name))
 
         // this.groupedData = d3.group(this.selectedData, d => d.name);
         // if (globalObj.selectedTime.length === 0 || globalObj.selectedNames.length === 0) {
