@@ -20,7 +20,20 @@ function radial(__data__) {
         .classed("invisible", true)
     traversed.add(sucker)
     let queue = [sucker]
-    let map = d3.group(__data__.slice(0, 300), d => d.source)
+    let _data = JSON.parse(JSON.stringify(__data__))
+
+    {
+        let target_count = 300;
+        _data.sort((a, b) => a.value - b.value)
+        // FIXME: ascending
+        _data = _data.slice(-target_count)
+        let min_filtered = d3.min(_data.map(d => d.value))
+        console.log(min_filtered)
+        // FIXME: disable range inputs here
+
+    }
+
+    let map = d3.group(_data, d => d.source)
     function Node(c) {
         return {
             id: c.target,
@@ -63,13 +76,13 @@ function radial(__data__) {
         function transformed_x
         (x, y){
             // transform", d => `rotate(${d.x * 180 / Math.PI - 90}) translate(${d.y},0)
-            let r = x - Math.PI / 2
+            let r = x
             let _x = y * Math.cos(r)
             let _y = y * Math.sin(r)
             return _x
         }
         function transformed_y(x, y) {
-            let r = x - Math.PI / 2
+            let r = x
             let _x = y * Math.cos(r)
             let _y = y * Math.sin(r)
             return _y
@@ -84,9 +97,21 @@ function radial(__data__) {
     extra_edges = extra_edges.map(d => {
         let t = helping_map.get(d.source)
         let s = helping_map.get(d.target)
+        if (t != undefined && s != undefined) {
+            t = t[0]
+            s = s[0]
+        }
+        else {
+            console.log("Error")
+            return [{ x: 0.0, y: 0.0 }, { x: 0.0, y: 0.0 }]
+        }
+        console.log(t, s)
         d.source = {x: t.x, y: t.y}
         d.target = {x: s.x, y: s.y}
-        return d;
+        let data = [{ x: t.x, y: t.y },
+        { x: s.x, y: s.y }]
+        return data;
+        // return d;
     })
     g.selectAll("line")
         .data(extra_edges)
@@ -170,7 +195,7 @@ function Tree(data, { // data is either tabular (array of objects) or hierarchy 
     root.y0 = root.y
 
     const times = root.descendants().slice(1).map(d => d.data.time)
-    let max_opa = 0.8, min_opa = 0.1,
+    let max_opa = 0.8, min_opa = 0.3,
         max_time = d3.max(times), min_time = d3.min(times)
     console.log(max_time, min_time)
     let time_scale = d3.scaleTime()
