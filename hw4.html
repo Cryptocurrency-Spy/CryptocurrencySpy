@@ -59,8 +59,41 @@
         <div class="view1">
             <div>
                 <g id="button_group">
-                    <button class="btn" id="preset1">preset 1</button>
-                    <button class="btn" id="preset2">preset 2</button>
+                    <div class="popover popover-right">
+                        <button class="btn btn-primary" id="preset1">preset 1</button>
+                        <div class="popover-container">
+                            <div class="card">
+                                <div class="card-header">
+                                    ...
+                                </div>
+                                <div class="card-body">
+                                    ...
+                                </div>
+                                <div class="card-footer">
+                                    ...
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="popover popover-right">
+                        <button class="btn" id="preset2">preset 1</button>
+                        <div class="popover-container">
+                            <div class="card">
+                                <div class="card-header">
+                                    ...
+                                </div>
+                                <div class="card-body">
+                                    ...
+                                </div>
+                                <div class="card-footer">
+                                    ...
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- <button class="btn" id="preset1">preset 1</button> -->
+
+                    <!-- <button class="btn" id="preset2">preset 2</button> -->
                     <label class="form-switch form-inline">
                         <input type="checkbox" id="logButton">
                         <i class="form-icon"></i> Log Scale
@@ -83,7 +116,7 @@
 
                 <div class="column col-2">
                     <label for="data_slider">Dataset Size</label>
-                </br>
+                    </br>
 
                     1<input type="range" id="data_slider" min="1" max="10" step="1">10
                 </div>
@@ -98,14 +131,14 @@
                 <div class="column col-2 invisible" id="count_label">
                     <label for="count">Count
                     </label>
-                </br>
+                    </br>
 
                     300<input type="range" id="count" min="300" max="1000" step="1">1000
                 </div>
 
                 <div class="column col-2" id="value_span">
                     <label for="value_slider" id="value_label">Value</label>
-                </br>
+                    </br>
                     0<input type="range" id="value_slider" min="0" max="1000" step="any">1000
                 </div>
 
@@ -117,7 +150,7 @@
 
                 <div class="column col-2">
                     <label for="strength_slider">Strength</label>
-                </br>
+                    </br>
 
                     1<input type="range" id="strength_slider" min="1" max="4" step="1">4
                 </div>
@@ -130,9 +163,9 @@
             <div id="svg-div">
 
                 <svg id="network" width="800" height="600"></svg>
-                
+
             </div>
-            
+
         </div>
 
         <div class="view2">
