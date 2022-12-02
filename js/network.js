@@ -12,20 +12,36 @@ class Network {
     }
 
     draw(_data) {
+        const offset = 30
         let width = 1600;
         let height = 1080;
         let svg = d3.select("#network")
-        let value_filter = d3.select("#value")
-        let value_lower = value_filter.property("valueAsNumber")
 
-        console.log(value_lower)
-        let data = _data.filter(d => d.value * 1.0 > value_lower);
-        // console.log(data)
+        let value_filter = d3.select("#value_slider")
+        let value_lower = value_filter.property("valueAsNumber")
+        let time_filter = d3.select("#time_slider")
+        let _time_lower = time_filter.property("valueAsNumber")
+        let strength_filter = d3.select("#strength_slider")
+        let _strength = strength_filter.property("valueAsNumber")
+        let strength = Math.pow(4, _strength)
+        const times = _data.map(d => d.time)
+        let max_opa = 0.8, min_opa = 0.1,
+            max_time = d3.max(times), min_time = d3.min(times)
+
+        let time_scale = d3.scaleTime()
+            .domain([min_time, max_time])
+            .range([min_opa, max_opa])
+        let time_lower = d3.scaleTime()
+            .domain([0,10])
+            .range([min_time, max_time])
+            (_time_lower)
+        let data = _data.filter(d => d.value * 1.0 > value_lower)
+            .filter(d => d.time < time_lower)
         let values = data.map(d => d.value * 1.0)
         let min_value = d3.min(values), max_value = d3.max(values)
         let scale = d3.scaleLog()
             .domain([min_value, max_value])
-            .range([1.0, 15.0])
+            .range([1, strength])
 
         // Here we create our simulation, and give it some forces to apply
         //  to all the nodes:
@@ -171,14 +187,14 @@ class Network {
             ]
 
             step1
-                .style("left", tooltip_pos[0] + "px")
-                .style("top", tooltip_pos[1] + 80 + "px")
+                .style("left", tooltip_pos[0] + offset + "px")
+                .style("top", tooltip_pos[1] + 80 + offset + "px")
             step2
-                .style("left", tooltip_pos[0] + "px")
-                .style("top", tooltip_pos[1] + 80 + "px")
+                .style("left", tooltip_pos[0] + offset + "px")
+                .style("top", tooltip_pos[1] + 80 + offset + "px")
             step3
-                .style("left", tooltip3_pos[0] + "px")
-                .style("top", tooltip3_pos[1] + 80 + "px")
+                .style("left", tooltip3_pos[0] + offset + "px")
+                .style("top", tooltip3_pos[1] + 80 + offset + "px")
 
         }
         let step1 = d3.select(`#tips1`)
@@ -186,13 +202,6 @@ class Network {
         let step3 = d3.select("#tips3")
         let trans = {x: 0.0, y: 0.0, k: 1.0}
 
-        const times = data.map(d => d.time)
-        let max_opa = 0.8, min_opa = 0.1,
-            max_time = d3.max(times), min_time = d3.min(times)
-
-        let time_scale = d3.scaleTime()
-            .domain([min_time, max_time])
-            .range([min_opa, max_opa])
 
         links
             .style("opacity", d => time_scale(d.time))

@@ -93,12 +93,16 @@
                     <option value="chunk8">chunk8</option>
                     <option value="chunk9">chunk9</option>
                 </select>
-                0<input type="range" id="value" min="0" max="1000" step="any">1000
+                
                 <label for="value">Value</label>
-                <input type="range" id="time" min="0" max="11">
+                0<input type="range" id="value_slider" min="0" max="1000" step="any">1000
+
                 <label for="time">Time</label>
-                0.01<input type="range" id="strength" min="0" max="11">1
+                earliest<input type="range" id="time_slider" min="0" max="10" step="any">latest
+
                 <label for="strength">Strength</label>
+                min<input type="range" id="strength_slider" min="1" max="4" step="1">max
+
                 <label id="ns" class="switch">
                     <input type="checkbox" id="network_switch" checked>
                     <span class="slider round"></span>
