@@ -165,6 +165,7 @@ class Network {
         const interested = links.filter(d => {
             return d.value == 1e4 && d.source == payer && d.target == sucker
         })
+        const interested_date = data.filter(d => d.value == 1e4 && d.source == payer && d.target == sucker)[0].time
         const interested3 = links.filter(d => {
             return d.source == sucker && d.target == receiver
         })
@@ -172,6 +173,10 @@ class Network {
             let t = svg.select("#_" + node_id).datum()
             return [t.x, t.y]
         }
+        let step1 = d3.select(`#tips1`)
+        let step2 = d3.select("#tips2")
+        let step3 = d3.select("#tips3")
+        let trans = {x: 0.0, y: 0.0, k: 1.0}
         function update_tooltips_pos(trans){
             let pos_sucker = pos(sucker)
             let pos_payer = pos(payer)
@@ -189,18 +194,14 @@ class Network {
             step1
                 .style("left", tooltip_pos[0] + offset + "px")
                 .style("top", tooltip_pos[1] + 80 + offset + "px")
-            step2
-                .style("left", tooltip_pos[0] + offset + "px")
-                .style("top", tooltip_pos[1] + 80 + offset + "px")
+            // step2
+            //     .style("left", tooltip_pos[0] + offset + "px")
+            //     .style("top", tooltip_pos[1] + 80 + offset + "px")
             step3
                 .style("left", tooltip3_pos[0] + offset + "px")
                 .style("top", tooltip3_pos[1] + 80 + offset + "px")
 
         }
-        let step1 = d3.select(`#tips1`)
-        let step2 = d3.select("#tips2")
-        let step3 = d3.select("#tips3")
-        let trans = {x: 0.0, y: 0.0, k: 1.0}
 
 
         links
@@ -340,8 +341,7 @@ class Network {
             .on("mouseover", tips1_edge_highlight)
             .on("mouseleave", tips1_edge_recover)
         step2.select("button")
-            .on("mouseover", tips1_edge_highlight)
-            .on("mouseleave", tips1_edge_recover)
+            .on("mouseover", tips2_callback)
         step3.select("button")
             .on("mouseover", tips3_edge_highlight)
             .on("mouseleave", tips3_edge_recover)
@@ -356,6 +356,15 @@ class Network {
             .style('opacity', "1.0")
                 .style('stroke', "green")
         }
+
+        function tips2_callback(){
+            value_filter.property("value", 1000)
+            let inv = time_scale.invert(interested_date)
+            time_filter.property("value", inv)
+            let copy = JSON.parse(JSON.stringify(globalObj.parsedTransData))
+            globalObj.network.draw(copy)
+        }
+
         function tips3_edge_highlight(){
             let d = all_nodes.filter(t => t.id == sucker)[0]    
             let outs = d3.selectAll(d.outs)

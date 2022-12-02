@@ -80,7 +80,7 @@
         </div>
         <div id="network-div" class="invisible">
             <span>
-                <label>Dataset:</label>
+                <!-- <label>Dataset:</label>
                 <select id="dataset">
                     <option selected value="chunk0">chunk0</option>
                     <option value="chunk1">chunk1</option>
@@ -92,8 +92,11 @@
                     <option value="chunk7">chunk7</option>
                     <option value="chunk8">chunk8</option>
                     <option value="chunk9">chunk9</option>
-                </select>
+                </select> -->
                 
+                <label for="value">Dataset Size</label>
+                1<input type="range" id="data_slider" min="1" max="10" step="1">10
+
                 <label for="value">Value</label>
                 0<input type="range" id="value_slider" min="0" max="1000" step="any">1000
 

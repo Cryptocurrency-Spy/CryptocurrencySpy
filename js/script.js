@@ -47,6 +47,14 @@ d3.select("#value_slider").on("change", change_filter)
 d3.select("#strength_slider").on("change", change_filter)
 d3.select("#time_slider").on("change", change_filter)
 d3.select("#network_switch").on("change", change_switch)
+
+{
+    // default values
+    d3.select("#data_slider").property("value", 1)
+    d3.select("#value_slider").property("value", 0.0)
+    d3.select("#time_slider").property("value", 10.0)
+}
+
 d3.select("#tip1")
     .style("left", "100px")
     .style("top", "1000px")
@@ -90,7 +98,7 @@ function show_second() {
     let story = [
         {
             pid: "#network-div",
-            caption: "In May 2010, California student Jeremy Sturdivant, then 19, noticed a bizarre request on a cryptocurrency internet forum: He could receive 10,000 bitcoins, at the time reportedly valued at $41, in exchange for the delivery of two large pizzas to Florida resident Laszlo Hanyecz.",
+            caption: "In May 2010, California student <b>Jeremy Sturdivant</b>, noticed a bizarre request on a cryptocurrency internet forum: He could receive <b>10,000 bitcoins</b>, at the time reportedly valued at $41, in exchange for the delivery of two large pizzas to Florida resident Laszlo Hanyecz. Sturdivant filled the order, sending him two large pizzas from Papa John's — a transaction that would become the first physical purchase made with bitcoin in history, marked by the annual Bitcoin Pizza Day on <b>May 22</b>.",
             left: 500,
             top: 500,
             step: 1,
@@ -98,16 +106,16 @@ function show_second() {
         },
         {
             pid: "#network-div",
-            caption: "         Sturdivant filled the order, sending him two large pizzas from Papa John's — atransaction that would become the first physical purchase made with bitcoin in history, marked by the annual Bitcoin Pizza Day on May 22.",
-            left: 550,
-            top: 500,
+            caption: "Before that, people just squander the bitcoins around. There are more than 40 transactions over 1,000 bitcoins of worth.",
+            left: 750,
+            top: 80,
             step: 2,
             direction: "right"
 
         },
         {
             pid: "#network-div",
-            caption: "But Sturdivant didn't save the bitcoins for the future; instead, he spent them all on travel. Today, that lowly 10,000 bitcoin haul would be worth a pie-in-the-sky $365 million.",
+            caption: "Sturdivant didn't save the bitcoins for the future; instead, he spent them all on travel. Today, that lowly 10,000 bitcoin haul would be worth a pie-in-the-sky $170 million.",
             left: 600,
             top: 500,
             step: 3,
@@ -253,8 +261,9 @@ function changeData() {
                 target: d["output_key"],
                 value: d["satoshis"] / 1e8,
             }));
-            globalObj.parsedTransData = dataResult
-            globalObj.network.draw(dataResult)
+            globalObj.parsedTransData = globalObj.parsedTransData.concat(dataResult)
+            let copy = JSON.parse(JSON.stringify(globalObj.parsedTransData))
+            globalObj.network.draw(copy)
         }).catch(e => {
             console.log(e);
             alert('Error!');
