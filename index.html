@@ -6,23 +6,65 @@
     <title>Cryptocurrency Spy</title>
     <link rel="stylesheet" href="styles.css" />
     <script src="https://d3js.org/d3.v7.min.js"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Caveat">
+    <link rel="stylesheet" href="https://unpkg.com/spectre.css/dist/spectre.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/spectre.css/dist/spectre-exp.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/spectre.css/dist/spectre-icons.min.css">
 </head>
 
 <body>
+    <header class="navbar text-bold text-large font-serif px-2 py-0">
+        <section class="navbar-section">
+            <a href="" class="btn btn-link text-dark">Project Proposal</a>
+            <a href="" class="btn btn-link text-dark">Video Walkthrough</a>
+        </section>
+        <section class="navbar-center">
+            <!-- centered logo or brand -->
+            <a id="title" href="#" class="text-dark text-large">Cryptocurrency Spy</a>
+        </section>
+        <section class="navbar-section">
+            <a href="https://docs.google.com/document/d/1JbXymtiiotoVQZYsW-98GvW79KWOF6nGqgNGV5mN4sQ/edit"
+                class="btn btn-link text-dark">Process Book</a>
+            <a href="https://github.com/Cryptocurrency-Spy/CryptocurrencySpy" class="btn btn-link text-dark">GitHub</a>
+        </section>
+    </header>
+    <div class="columns font-serif">
+        <div class="column col-3"></div>
+        <div class="column col-6">
+            <ul id="menu" class="tab tab-block">
+                <li class="">
+                    <button id="menu-back" class="btn btn-link btn-lg icon icon-back"></button>
+                </li>
+                <li class="tab-item">
+                    <a href="#dashboard" class="active" id="a1">Dashboard</a>
+                </li>
+                <li class="tab-item">
+                    <a href="#pizza" class="" id="a2">Tracing the 10,000 bitcoin pizza</a>
+                </li>
+                <li class="">
+                    <button id="menu-forward" class="btn btn-link btn-lg icon icon-forward"></button>
+                </li>
+
+            </ul>
+
+        </div>
+        <div class="column col-3"></div>
+    </div>
+
+
+
+
     <div class="wrapper">
-        <nav>
-            <div class="header">
-                Cryptocurrency Spy
-                Name: Yintong Shang; E-Mail: u1431623@utah.edu; UID: u1431623;
-                Name: Haoyang Shi; E-Mail: u1431587@umail.utah.edu; UID: u1431587
-            </div>
-        </nav>
 
         <div class="view1">
             <div>
                 <g id="button_group">
                     <button id="preset1">preset 1</button>
                     <button id="preset2">preset 2</button>
+                    <label id="toggle_input" class="switch">
+                        <input type="checkbox" id="logButton">
+                        <span class="slider round"></span>
+                    </label>
                 </g>
             </div>
             <div>
@@ -30,20 +72,58 @@
                     <g id="x-axis"></g>
                     <g id="y-axis"></g>
                     <g id="lines"></g>
-                    <g id="overlay"><line id="overlay_line"></line></g>
+                    <g id="overlay">
+                        <line id="overlay_line"></line>
+                    </g>
                 </svg>
             </div>
-<!--            <div id="name-select">-->
-<!--                <g id="checkbox_group"></g>-->
-<!--            </div>-->
-            <div id="network-div">
-                <svg id="network" width="800" height="600"></svg>
-            </div>
+        </div>
+        <div id="network-div" class="invisible">
+            <span>
+                
+                <label for="data_slider">Dataset Size</label>
+                1<input type="range" id="data_slider" min="1" max="10" step="1">10
+
+                <label for="value_slider" id="value_label">Value</label>
+                0<input type="range" id="value_slider" min="0" max="1000" step="any">1000
+
+                <label for="time_slider" id="time_label">Time</label>
+                -<input type="range" id="time_slider" min="0" max="10" step="any">+
+
+                <label for="strength_slider">Strength</label>
+                -<input type="range" id="strength_slider" min="1" max="4" step="1">+
+
+                <!-- <label id="ns" class="switch">
+                    <input type="checkbox" id="network_switch" checked>
+                    <span class="slider round"></span>
+
+                </label> -->
+            </span>
+            <svg id="network" width="800" height="600"></svg>
         </div>
 
         <div class="view2">
+            <div id="legend_div">
+                <svg id="legend" width="300" height="30">
+                    <rect id="gradient_rect"></rect>
+                    <defs>
+                        <linearGradient id="color-gradient">
+                            <stop id="color1" offset="0%" style="stop-color: #fedbcc; stop-opacity: 1"></stop>
+                            <stop id="color2" offset="100%" style="stop-color: #dd2a25; stop-opacity: 1"></stop>
+                        </linearGradient>
+                    </defs>
+                    <text id="label_1"></text>
+                    <text id="label_2"></text>
+                </svg>
+            </div>
             <div id="tree-map">
-                 <svg id="treemap" width="550" height="500"></svg>
+                <div id="treemap_tooltip"></div>
+                <svg id="treemap" width="550" height="500">
+                    <g id="cell_group"><a>
+                            <g></g>
+                        </a></g>
+                    <g id="tree_brush_group"></g>
+                </svg>
             </div>
             <div id="grid-brush">
                 <svg>
@@ -53,15 +133,16 @@
                 <button id="clear_time">unselect time</button>
             </div>
         </div>
-        <!-- <footer>Footer</footer> -->
     </div>
 
 
-
-
+    <!-- <svg id="s"></svg>
+    <svg id="t"></svg> -->
+    <script src="js/radial.js"></script>
+    <!-- <script src="js/collapse.js"></script> -->
     <script src="js/line-chart.js"></script>
     <script src="js/name-select.js"></script>
-    <script src="js/grid-brush.js" ></script>
+    <script src="js/grid-brush.js"></script>
     <script src="js/script.js"></script>
     <script src="js/treemap.js"></script>
     <script src="js/network.js"></script>

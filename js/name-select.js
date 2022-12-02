@@ -8,7 +8,6 @@ class NameSelect {
         this.div = d3.select("#name-select")
             .style('width', this.divWidth)
             .style('height', this.divHeight)
-            // .style('background-color', 'black')
 
         this.parsedData = globalObj.parsedData;
         this.allNames = globalObj.allNames
@@ -39,11 +38,7 @@ class NameSelect {
 
     }
 
-
-
     updateCheckboxStatus() {
-        // this.checkboxes
-        //     .attr("checked", false)
         this.checkboxes
             .attr("checked", d => (globalObj.selectedNames.includes(d)))
     }

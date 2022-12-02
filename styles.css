@@ -1,3 +1,14 @@
+.nice-font {
+    font-family: 'Caveat', serif;
+}
+
+.fatpath {
+    stroke: gray;
+    stroke-width: 15;
+    fill: none;
+    opacity:0;
+}
+
 .wrapper {
     display: grid;
     grid-template-columns: 2fr 2fr 1fr;
@@ -302,4 +313,83 @@ input:checked + .slider:before {
 }
 .nodes:hover {
     fill: #000;
+}
+
+
+/*toggle button*/
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 40px;
+    height: 26px;
+}
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    -webkit-transition: .4s;
+    transition: .4s;
+}
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 16px;
+    width: 16px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    -webkit-transition: .4s;
+    transition: .4s;
+}
+input:checked + .slider {
+    background-color: #2196F3;
+}
+input:focus + .slider {
+    box-shadow: 0 0 1px #2196F3;
+}
+input:checked + .slider:before {
+    -webkit-transform: translateX(16px);
+    -ms-transform: translateX(16px);
+    transform: translateX(16px);
+}
+.slider.round {
+    border-radius: 34px;
+}
+.slider.round:before {
+    border-radius: 50%;
+}
+.node circle {
+    fill: #fff;
+    stroke: steelblue;
+    stroke-width: 3px;
+  }
+  
+  .node text {
+    font: 12px sans-serif;
+  }
+  
+  .link {
+    fill: none;
+    stroke: #ccc;
+    stroke-width: 2px;
+  }
+  
+.tooltip2{
+    /* width: 50;
+    height: 30; */
+    position: absolute;
+    /* border-radius: 5px;
+    padding: 5px; */
+}
+.invisible{
+    display: none;
 }
