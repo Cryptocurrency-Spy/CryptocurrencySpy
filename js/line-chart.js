@@ -49,12 +49,11 @@ class LineChart {
         //     .y1(d => this.yScale(d.high))
         //     .y0(d => this.yScale(d.low));
 
-
         this.svg.append('text')
             .attr('id', 'y-text')
             .text('market price')
             .attr('x', -140)
-            .attr('y', 12)
+            .attr('y', 32)
             .attr('transform', 'rotate(-90)');
 
         this.logButton = d3.select("#logButton")
@@ -95,15 +94,6 @@ class LineChart {
         // this.xAxisGroup.append('g')
         //     .call(this.xAxis)
 
-
-        // this.years = []
-        // for (let time of globalObj.selectedTime) {
-        //     let tmp = time.slice(0, 4)
-        //     if (!this.years.includes(tmp)){
-        //         this.years.push(tmp)
-        //     }
-        // }
-        // this.years.sort((a,b) => (a-b)) //
         this.groupedYearData = d3.group(this.selectedData, d => d.month.slice(0, 4));
         this.start_times = []
         this.final_times = []
@@ -279,6 +269,9 @@ class LineChart {
             .filter(d => globalObj.selectedNames.length === 0 ? false : globalObj.selectedNames.includes(d.name))
 
         // this.groupedData = d3.group(this.selectedData, d => d.name);
+        // if (globalObj.selectedTime.length === 0 || globalObj.selectedNames.length === 0) {
+        //     this.groupedData = globalObj.groupedData
+        // }
 
         this.years = []
         for (let time of globalObj.selectedTime) {

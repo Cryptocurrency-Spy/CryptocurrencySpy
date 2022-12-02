@@ -94,6 +94,11 @@ class Treemap {
         this.final_time = d3.max(globalObj.selectedTime)
         this.start_time = d3.min(globalObj.selectedTime)
 
+        if (globalObj.selectedTime.length === 0){
+            this.final_time = d3.max(globalObj.allTime)
+            this.start_time = d3.min(globalObj.allTime)
+        }
+
         let final_data = this.parsedData.filter(d => d.month === `${this.final_time}`)
         let start_data = this.parsedData.filter(d => d.month === `${this.start_time}`)
 
