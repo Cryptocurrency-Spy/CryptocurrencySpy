@@ -115,7 +115,7 @@ function show_second() {
         },
         {
             pid: "#network-div",
-            caption: "Before that, there are only a handful bitcoin transactions.",
+            caption: "Before that, there are only a handful bitcoin transactions.</br></br> <p>Tip: Use the sliders to filter by transaction value and date.</p>",
             left: 1000,
             top: 80,
             step: 2,
@@ -169,6 +169,14 @@ function show_second() {
             // .node()
             // .click()
             console.log("callback", i)
+            if (i == 3 || i == 1) {
+
+                d3.select("#value_slider").property("value", 3)
+                d3.select("#value_label").text("Value: > 3");
+                d3.select("#time_slider").property("value", 10.0)
+                globalObj._tchange_filter()
+                change_filter()                    
+            }
         };
     }
     let step_callbacks = story.map(d => gen(d.step))
