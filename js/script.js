@@ -47,6 +47,14 @@ d3.select("#data_slider").on("change", changeData)
 d3.select("#value_slider").on("change", vchange_filter)
 d3.select("#strength_slider").on("change", change_filter)
 // d3.select("#network_switch").on("change", change_switch)
+d3.select("#auto-filter").on("change", change_auto)
+d3.select("#count").on("change", change_filter)
+function change_auto() {
+    let auto_on = d3.select("#auto-filter").property("checked")
+    d3.select("#count_label").classed("invisible", !auto_on)
+    d3.select("#value_span").classed("invisible", auto_on)
+    change_filter()
+}
 
 {
     // default values
