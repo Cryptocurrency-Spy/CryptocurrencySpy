@@ -80,34 +80,48 @@
         </div>
         <div id="network-div" class="invisible">
             <span>
-                <label>Dataset:</label>
-                <select id="dataset">
-                    <option selected value="chunk0">chunk0</option>
-                    <option value="chunk1">chunk1</option>
-                    <option value="chunk2">chunk2</option>
-                    <option value="chunk3">chunk3</option>
-                    <option value="chunk4">chunk4</option>
-                    <option value="chunk5">chunk5</option>
-                    <option value="chunk6">chunk6</option>
-                    <option value="chunk7">chunk7</option>
-                    <option value="chunk8">chunk8</option>
-                    <option value="chunk9">chunk9</option>
-                </select>
                 
-                <label for="value">Value</label>
-                0<input type="range" id="value_slider" min="0" max="1000" step="any">1000
+                <div class="columns">
+                    <div class="column col-1">
+                        <label>Dataset:</label>
+                        <select id="dataset">
+                            <option selected value="chunk0">chunk0</option>
+                            <option value="chunk1">chunk1</option>
+                            <option value="chunk2">chunk2</option>
+                            <option value="chunk3">chunk3</option>
+                            <option value="chunk4">chunk4</option>
+                            <option value="chunk5">chunk5</option>
+                            <option value="chunk6">chunk6</option>
+                            <option value="chunk7">chunk7</option>
+                            <option value="chunk8">chunk8</option>
+                            <option value="chunk9">chunk9</option>
+                        </select>
 
-                <label for="time">Time</label>
-                earliest<input type="range" id="time_slider" min="0" max="10" step="any">latest
+                    </div>
+                    <div class="column col-1">
+                        <!-- column content -->
+                        <label for="value" id="value_value">Value: over</label>
+                        <input type="range" id="value_slider" min="0" max="1000" step="any">
+                    </div>
+                    <div class="column col-1">
+                        <label for="time" id="time_value">Time: before</label>
+                        <input type="range" id="time_slider" min="0" max="10" step="any">
+                      <!-- column content -->
+                    </div>
+                    <div class="column col-1">
+                        <label for="strength" id="strength_value">Strength</label>
+                        <input type="range" id="strength_slider" min="1" max="4" step="1">
 
-                <label for="strength">Strength</label>
-                min<input type="range" id="strength_slider" min="1" max="4" step="1">max
+                    </div>
+                    <div class="column col-1">
+                        <label class="form-switch form-inline" id="ns">
+                          <input type="checkbox" id="network_switch">
+                          <i class="form-icon"></i>force layout
+                        </label>
 
-                <label id="ns" class="switch">
-                    <input type="checkbox" id="network_switch" checked>
-                    <span class="slider round"></span>
+                    </div>
+                  </div>
 
-                </label>
             </span>
             <svg id="network" width="800" height="600"></svg>
         </div>
@@ -143,8 +157,6 @@
                 <button id="clear_time">unselect time</button>
             </div>
         </div>
-        <!--        <aside>Aside</aside>-->
-        <footer>Footer</footer>
     </div>
 
 

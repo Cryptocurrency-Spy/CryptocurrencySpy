@@ -43,9 +43,9 @@ const globalObj = {
 pricesFile = d3.csv('./data/consolidated_coin_data.csv');
 transFile = d3.csv('./data/chunk0.csv');
 d3.select("#dataset").on("change", changeData)
-d3.select("#value_slider").on("change", change_filter)
-d3.select("#strength_slider").on("change", change_filter)
-d3.select("#time_slider").on("change", change_filter)
+d3.select("#value_slider").on("change", vchange_filter)
+d3.select("#strength_slider").on("change", schange_filter)
+d3.select("#time_slider").on("change", tchange_filter)
 d3.select("#network_switch").on("change", change_switch)
 d3.select("#tip1")
     .style("left", "100px")
@@ -264,6 +264,24 @@ show_second()
 function change_filter() {
     let copy = JSON.parse(JSON.stringify(globalObj.parsedTransData))
     globalObj.network.draw(copy)
+}
+function set_value(id, text){
+    let t = d3.select("#" + id +"_slider")
+        .property("value")
+    d3.select("#"+id +"_value")
+        .text(`${text}${t}`)
+}
+function vchange_filter() {
+    let t = set_value("value", "Value: over ")
+    change_filter()
+}
+function schange_filter() {
+    // let t = set_value("strength", "Strength")
+    change_filter()
+}
+function tchange_filter() {
+    let t = set_value("time", "Time: before ")
+    change_filter()
 }
 function change_switch() {
     let checked = d3.select("#network_switch").property("checked");
