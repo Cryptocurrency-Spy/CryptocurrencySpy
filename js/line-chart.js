@@ -80,11 +80,8 @@ class LineChart {
                     .filter(d => (d[1]===4))
                     .attr('class', 'selectedRect')
 
-                // this.svg.append('g')
-                //     .attr('id', 'aaaaaaaaaaaaaaaaaaaa')
-                //     .attr('transform', 'translate(' + 100 + ',' + 100 + ')')
-                //     .append('text')
-                //     .text("aaaaaaaaaaaaaaaaaa\naaaaaaaaaaaa")
+                globalObj.treemap.draw_treemap()
+                globalObj.treemap.updateTreeRectStatus()
 
             })
 
@@ -103,6 +100,10 @@ class LineChart {
                     .attr('class', 'gridRect')
                     .filter(d => (d[1]===5))
                     .attr('class', 'selectedRect')
+
+                globalObj.treemap.draw_treemap()
+                globalObj.treemap.updateTreeRectStatus()
+
             })
     }
 
