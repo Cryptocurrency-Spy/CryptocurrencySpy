@@ -56,6 +56,15 @@ function change_auto() {
     change_filter()
 }
 
+d3.select("#contain2")
+    .classed("tooltip2", true)
+    .style("left", "400px")
+    .style("top", "200px")
+d3.select("#contain1")
+    .classed("tooltip2", true)
+    .style("left", "400px")
+    .style("top", "200px")
+
 {
     // default values
     d3.select("#data_slider").property("value", 1)
