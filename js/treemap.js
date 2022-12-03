@@ -94,6 +94,11 @@ class Treemap {
         this.final_time = d3.max(globalObj.selectedTime)
         this.start_time = d3.min(globalObj.selectedTime)
 
+        if (globalObj.selectedTime.length === 0){
+            this.final_time = d3.max(globalObj.allTime)
+            this.start_time = d3.min(globalObj.allTime)
+        }
+
         let final_data = this.parsedData.filter(d => d.month === `${this.final_time}`)
         let start_data = this.parsedData.filter(d => d.month === `${this.start_time}`)
 
@@ -103,29 +108,33 @@ class Treemap {
         final_data = final_data.filter(d => (d.date === this.final_date))
         start_data = start_data.filter(d => (d.date === this.start_date))
 
+        let cap_map = d3.group(start_data, d => d.name)
         final_data.push({
-            name: "a",
-            cap: "",
+            name: "invalid date",
+            cap: "0",
+            change: 0, 
+            price: "1",
+            price0: "1"
         })
+
         final_data = final_data.map(d => {
-            d.cap = d.cap * 1.0;
-            d.cap0 = 0;
-            for (let data of start_data) {
-                if (data.name === d.name) {
-                    // console.log(d.name)
-                    d.cap0 = data.cap * 1.0;
-                }
+            // d.cap0 = 0;
+            d.price0 = 0.
+            let t = cap_map.get(d.name)
+            d.change = 0.0
+            if (t != undefined && t.length) {
+                d.price0 = t[0].price
+                d.change = (d.price - d.price0) / d.price0
             }
-            d.change = d.cap - d.cap0
+            
+            // d.change = d.cap - d.cap0
+            console.log(d.change)
             return d;
         })
-        // this._data = _data
-
-        let map_from_name = d3.group(final_data, d => d.name);
 
         this.root = d3.stratify()
             .id(d => d.name)
-            .parentId(d => d.name === "a" ? null : "a")
+            .parentId(d => d.name === "invalid date" ? null : "invalid date")
             (final_data)
             .sum(d => d.cap)//create value properties in each node
             .sort((a, b) => b.height - a.height || b.value - a.value)
@@ -143,6 +152,18 @@ class Treemap {
 
         this.hidden_rects = []
 
+        let changes = final_data.map(d => d.change)
+        let max_changes = d3.max(changes)
+        let min_changes = d3.min(changes)
+        let range = d3.max([Math.abs(max_changes), Math.abs(min_changes)])
+        // console.log(range)
+        this.scale_change = d3.scaleDiverging()
+            .domain([-range, 0, range])
+            // .domain([min_changes, 0, max_changes])
+            .interpolator(d3.interpolateRdYlGn)
+
+        let f = d3.format("+.2%");
+
         this.rectangles = this.cell.selectAll("rect")
             .data(d => {
                 let _d = d;
@@ -159,40 +180,37 @@ class Treemap {
             .attr("width", d => d.x1 - d.x0)
             .attr("height", d => d.y1 - d.y0)
 
-            .attr("fill", d => {
-                let a = d.ancestors();
-                // console.log(globalObj.colorScale(a[0].id))//a: "bitcoin", "a"
-                return globalObj.colorScale(d.id);
-            })
+            .attr("fill", d => this.scale_change(d.data.change))
             .style("stroke-width", "5px")
             .attr('checked', false)
             .on('click', e => {
-                globalObj.updateGlobalNameSelection(e)
+                globalObj.updateGlobalNameSelection(e);
                 // globalObj.name_select.checkboxes.attr("checked", false)
             })
-            .on("mouseover", e => {this.tooltip.style("visibility", "visible");})
-            .on("mousemove", e => {
+            .on("mouseover", e => {
+                this.tooltip.style("visibility", "visible");
+                let et = e.target
+                d3.select(et)
+                    .attr('fill', d => globalObj.colorScale(d.id))
+            })
+            .on("mousemove", (e, d) => {
                 // console.log(e.clientX, e.clientY)
                 let et = e.target
                 this.tooltip
                     .style("top", (e.clientY-5)+"px")
                     .style("left",(e.clientX+5)+"px")
                     .style('color', globalObj.colorScale(et.id))
-                    .text(et.id + " " + this.format(et.__data__.value))
-
+                    .text(et.id + " " + this.format(et.__data__.value) + ` ${f(d.data.change)}`)
             })
-            .on("mouseout", e => {this.tooltip.style("visibility", "hidden")});
+            .on("mouseout", e => {
+                this.tooltip.style("visibility", "hidden")
+                let et = e.target
+                d3.select(et)
+                    .attr("fill", d => this.scale_change(d.data.change))
+            });
 
 
-        // texts (their color encode changes in prices)
-        let changes = final_data.map(d => d.change)
-        this.max_changes = d3.max(changes)
-        this.min_changes = d3.min(changes)
-
-        this.scale_change = d3.scaleDiverging()
-            .domain([this.min_changes, 0, this.max_changes])
-            .interpolator(d3.interpolateRdYlGn)
-
+        // texts
         this.texts = this.cell.selectAll('text')
             .data(d => [d])
             .join("text")
@@ -200,39 +218,37 @@ class Treemap {
             .attr("y", d => 0.50 * (d.y1 - d.y0))
             .style('font-size', "32px")
             .attr('class', 'nice-font')
-
-            // .text(d => d.id + "\n" + this.format(d.value))
             .text(d => d.id)
-            .style('fill', d => {
-                let t = map_from_name.get(d.id)[0]
-                return this.scale_change(t.change);
-            })
+            .style('fill', 'black')
+            // hide texts in too-small rectangle
             .attr('visibility', d => this.hidden_rects.includes(d.id)? 'hidden': 'visible')
 
-        d3.select('#color1').style('stop-color', this.scale_change(this.min_changes))
-        d3.select('#color2').style('stop-color', this.scale_change(this.max_changes))
 
-        this.drawLegend()
+        d3.select('#color1').style('stop-color', this.scale_change(-range))
+        d3.select('#color2').style('stop-color', this.scale_change(range))
+
+        this.drawLegend(-range, range)
     }
 
-    drawLegend() {
+    drawLegend(max_changes, min_changes) {
         let legend = d3.select('#gradient_rect')
             .attr('width', '40%')
             .attr('height', '100%')
             .attr('fill', 'url(#color-gradient)')
             .attr('transform', 'translate(' + 60 + ', 0)')
-        const f = d3.format(".2s");
+        const f = d3.format("+.2s");
         d3.select('#label_1')
             .attr('class', 'label')
             .attr('transform', 'translate(' + 30 + ', ' + 20 + ')')
-            .text(f(this.max_changes))
+            .text(f(max_changes * 100) + "%")
         d3.select('#label_2')
             .attr('class', 'label')
             .attr('transform', 'translate(' + 210 + ', ' + 20 + ')')
-            .text(f(this.min_changes))
+            .text(f(min_changes * 100) + "%")
     }
 
     updateTreeRectStatus() {
+        // console.log(globalObj.selectedNames)
         this.rectangles
             .style("stroke", d => (globalObj.selectedNames.includes(d.id))? "black": "none")
     }

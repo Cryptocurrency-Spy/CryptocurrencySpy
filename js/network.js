@@ -20,8 +20,15 @@ class Network {
         let width = 1600;
         let height = 1080;
         let svg = d3.select("#network")
+
+        let auto_on = d3.select("#auto-filter").property("checked")
+
+        if(auto_on)
         {
-            let target_count = 300;
+            let target_count_input = d3.select("#count").property("value")
+            // let target_count = 300;
+            let target_count = target_count_input
+            console.log(target_count)
             _data.sort((a, b) => a.value - b.value)
             // FIXME: ascending
             _data = _data.slice(-target_count)
@@ -204,6 +211,12 @@ class Network {
         let step2 = d3.select("#tips2")
         let step3 = d3.select("#tips3")
         let trans = {x: 0.0, y: 0.0, k: 1.0}
+
+        if (time_lower * 1 <= globalObj.interested_date * 1) {
+            step3.classed("invisible", true)
+            step1.classed("invisible", true)
+        }
+
         function update_tooltips_pos(trans){
             if (time_lower * 1 <= globalObj.interested_date * 1) {
                 return;

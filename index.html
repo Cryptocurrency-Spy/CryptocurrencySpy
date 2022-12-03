@@ -59,11 +59,32 @@
         <div class="view1">
             <div>
                 <g id="button_group">
-                    <button id="preset1">preset 1</button>
-                    <button id="preset2">preset 2</button>
-                    <label id="toggle_input" class="switch">
+                    <div class="popover popover-right">
+                        <button class="btn" id="preset1">preset 1</button>
+                        <div class="popover-container" id="contain1">
+                            <div class="card">
+                                <div class="card-body">
+                                    What caused the crypto boom in 2017? In 2017, the cryptocurrency ecosystem was dominated by individual retail investors, many of whom were attracted to bitcoin's scarcity and the fact that it stood outside the global financial system.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="popover popover-right">
+                        <button class="btn" id="preset2">preset 2</button>
+                        <div class="popover-container" id="contain2">
+                            <div class="card">
+                                <div class="card-body">
+                                    The 2018 cryptocurrency crash was the sell-off of most cryptocurrencies starting in January 2018. After the boom in 2017, the price of Bitcoin fell by about 65% from 6 January to 6 February 2018. Other cryptocurrencies followed.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- <button class="btn" id="preset1">preset 1</button> -->
+
+                    <!-- <button class="btn" id="preset2">preset 2</button> -->
+                    <label class="form-switch form-inline">
                         <input type="checkbox" id="logButton">
-                        <span class="slider round"></span>
+                        <i class="form-icon"></i> Log Scale
                     </label>
                 </g>
             </div>
@@ -79,27 +100,60 @@
             </div>
         </div>
         <div id="network-div" class="invisible">
-            <span>
-                
-                <label for="data_slider">Dataset Size</label>
-                1<input type="range" id="data_slider" min="1" max="10" step="1">10
+            <div class="columns font-serif">
 
-                <label for="value_slider" id="value_label">Value</label>
-                0<input type="range" id="value_slider" min="0" max="1000" step="any">1000
+                <div class="column col-2">
+                    <label for="data_slider">Dataset Size</label>
+                    </br>
 
-                <label for="time_slider" id="time_label">Time</label>
-                -<input type="range" id="time_slider" min="0" max="10" step="any">+
+                    1<input type="range" id="data_slider" min="1" max="10" step="1">10
+                </div>
 
-                <label for="strength_slider">Strength</label>
-                -<input type="range" id="strength_slider" min="1" max="4" step="1">+
+                <div class="column col-2">
+                    <label class="form-switch">
+                        <input type="checkbox" id="auto-filter">
+                        <i class="form-icon"></i>
+                        Filter by transaction count
+                    </label>
+                </div>
+                <div class="column col-2 invisible" id="count_label">
+                    <label for="count">Count
+                    </label>
+                    </br>
 
+                    300<input type="range" id="count" min="300" max="1000" step="1">1000
+                </div>
+
+                <div class="column col-2" id="value_span">
+                    <label for="value_slider" id="value_label">Value</label>
+                    </br>
+                    0<input type="range" id="value_slider" min="0" max="1000" step="any">1000
+                </div>
+
+
+                <div class="column col-2">
+                    <label for="time_slider" id="time_label">Time</label>
+                    <input type="range" id="time_slider" min="0" max="10" step="any">
+                </div>
+
+                <div class="column col-2">
+                    <label for="strength_slider">Strength</label>
+                    </br>
+
+                    1<input type="range" id="strength_slider" min="1" max="4" step="1">4
+                </div>
                 <!-- <label id="ns" class="switch">
                     <input type="checkbox" id="network_switch" checked>
                     <span class="slider round"></span>
 
                 </label> -->
-            </span>
-            <svg id="network" width="800" height="600"></svg>
+            </div>
+            <div id="svg-div">
+
+                <svg id="network" width="800" height="600"></svg>
+
+            </div>
+
         </div>
 
         <div class="view2">
@@ -130,7 +184,7 @@
                     <g id="rect_group"></g>
                     <g id="brush_group"></g>
                 </svg>
-                <button id="clear_time">unselect time</button>
+                <button class="btn" id="clear_time">unselect time</button>
             </div>
         </div>
     </div>

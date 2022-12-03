@@ -47,6 +47,23 @@ d3.select("#data_slider").on("change", changeData)
 d3.select("#value_slider").on("change", vchange_filter)
 d3.select("#strength_slider").on("change", change_filter)
 // d3.select("#network_switch").on("change", change_switch)
+d3.select("#auto-filter").on("change", change_auto)
+d3.select("#count").on("change", change_filter)
+function change_auto() {
+    let auto_on = d3.select("#auto-filter").property("checked")
+    d3.select("#count_label").classed("invisible", !auto_on)
+    d3.select("#value_span").classed("invisible", auto_on)
+    change_filter()
+}
+
+d3.select("#contain2")
+    .classed("tooltip2", true)
+    .style("left", "400px")
+    .style("top", "200px")
+d3.select("#contain1")
+    .classed("tooltip2", true)
+    .style("left", "400px")
+    .style("top", "200px")
 
 {
     // default values
@@ -98,7 +115,7 @@ function show_second() {
 {
     let story = [
         {
-            pid: "#network-div",
+            pid: "#svg-div",
             caption: "In May 2010, California student <b>Jeremy Sturdivant</b>, noticed a bizarre request on a cryptocurrency internet forum: He could receive <b>10,000 bitcoins</b>, at the time reportedly valued at $41, in exchange for the delivery of two large pizzas to Florida resident Laszlo Hanyecz. Sturdivant filled the order, sending him two large pizzas from Papa John's — a transaction that would become the first physical purchase made with bitcoin in history, marked by the annual Bitcoin Pizza Day on <b>May 22</b>.",
             left: 500,
             top: 500,
@@ -107,8 +124,8 @@ function show_second() {
         },
         {
             pid: "#network-div",
-            caption: "Before that, there are only a handful bitcoin transactions.",
-            left: 750,
+            caption: "Before that, there are only a handful bitcoin transactions.</br></br> <p>Tip: Use the sliders to filter by transaction value and date.</p>",
+            left: 1000,
             top: 80,
             step: 2,
             direction: "right"
@@ -128,7 +145,7 @@ function show_second() {
         .data(story)
         .enter().insert("div")
         // .join("div")
-        .classed("invisible", d => d.step != 1)
+        .classed("invisible", d => d.step !== 1)
         .classed("tooltip2", true)
         .attr("id", d => "tips" + d.step)
         .style("left", d => d.left + "px")
@@ -138,14 +155,9 @@ function show_second() {
         <button class="btn btn-primary s-circle"><i class="icon icon-search"></i></button>
             <div class="popover-container">
                 <div class="card">
-                    <div class="card-header">
-                        
-                    </div>
-                    <div class="card-body">${d.caption}
-                    </div>
-                    <div class="card-footer" id="footer${d.step}">
-
-                    </div>
+                    <div class="card-header"></div>
+                    <div class="card-body">${d.caption}</div>
+                    <div class="card-footer" id="footer${d.step}"></div>
                 </div>
             </div>
         </div>
@@ -166,11 +178,19 @@ function show_second() {
             // .node()
             // .click()
             console.log("callback", i)
+            if (i == 3 || i == 1) {
+
+                d3.select("#value_slider").property("value", 3)
+                d3.select("#value_label").text("Value: > 3");
+                d3.select("#time_slider").property("value", 10.0)
+                globalObj._tchange_filter()
+                change_filter()                    
+            }
         };
     }
     let step_callbacks = story.map(d => gen(d.step))
     _steps.classed("step-item", true)
-        .classed("active", (d, i) => d == i + 1)
+        .classed("active", (d, i) => d === i + 1)
         .html((d, i) => `<a href="#${i + 1}" class="tooltip" data-tooltip="Step ${i + 1}" id="_${d}_${i + 1}">Step ${i + 1}</a>`)
     for (let i = 0; i < story.length; i++)
         for (let j = 0; j < story.length; j++) {
@@ -305,42 +325,21 @@ function changeData() {
         }
         else {
             globalObj.network.draw(globalObj.parsedTransData)
-
         }
     }).catch(e => {
         console.log(e);
         alert('Error!');
     });
-
-
-
-    // d3.csv(`data/chunk${dataFile}.csv`)
-    //     .then(dataOutput => {
-
-    //         let parse = d3.timeParse("%Q");
-    //         const dataResult = dataOutput.map((d) => ({
-    //             time: parse(d["timestamp"]),
-    //             source: d["input_key"],
-    //             target: d["output_key"],
-    //             value: d["satoshis"] / 1e8,
-    //         }));
-
-    //         globalObj.parsedTransData = globalObj.parsedTransData.concat(dataResult)
-    //         if (dataFile >= 3) {
-    //             radial(globalObj.parsedTransData)
-    //         }
-    //         else {
-    //             globalObj.network.draw(globalObj.parsedTransData)
-
-    //         }
-    //     }).catch(e => {
-    //         console.log(e);
-    //         alert('Error!');
-    //     });
 }
-show_second()
+// show_second()
 function change_filter() {
-    globalObj.network.draw(globalObj.parsedTransData)
+    const dataFile = d3.select('#data_slider').property('value') - 1;
+    if (dataFile >= 3) {
+        radial(globalObj.parsedTransData)
+    }
+    else {
+        globalObj.network.draw(globalObj.parsedTransData)
+    }
 }
 function _vchange_filter() {
     let v =

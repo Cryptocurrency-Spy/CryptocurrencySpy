@@ -24,7 +24,21 @@ class LineChart {
         this.pathGenerators = []
         this.areaGenerators = []
 
+        // this.update()
+        this.years = []
+        for (let time of globalObj.selectedTime) {
+            let tmp = time.slice(0, 4)
+            if (!this.years.includes(tmp)){
+                this.years.push(tmp)
+            }
+        }
+        this.years.sort((a,b) => (a-b))
+
+        this.colorScale = globalObj.colorScale;
+        this.colorScaleFade = globalObj.colorScaleFade;
+
         this.updateAxes()
+        this.updatePaths()
 
         // this.pathGenerator = d3.line()
         //     .x(d => this.xScale(d3.timeParse("%Y/%m/%d")(d.date)))
@@ -35,16 +49,11 @@ class LineChart {
         //     .y1(d => this.yScale(d.high))
         //     .y0(d => this.yScale(d.low));
 
-        this.colorScale = globalObj.colorScale;
-        this.colorScaleFade = globalObj.colorScaleFade;
-
-        this.updatePaths()
-
         this.svg.append('text')
             .attr('id', 'y-text')
             .text('market price')
             .attr('x', -140)
-            .attr('y', 12)
+            .attr('y', 32)
             .attr('transform', 'rotate(-90)');
 
         this.logButton = d3.select("#logButton")
@@ -56,17 +65,45 @@ class LineChart {
             })
 
         this.preset1Button = d3.select("#preset1")
-            .on('click', e => {
+            .on('mouseover', e => {
                 globalObj.selectedTime = ["2017/01", "2017/02", "2017/03", "2017/04", "2017/05", "2017/06",
                     "2017/07", "2017/08", "2017/09", "2017/10", "2017/11", "2017/12", ]
+                globalObj.selectedNames = ["ripple", "stellar"]
+                if (this.logOn){
+                    this.logButton.node()
+                        .click()
+                }
+
                 this.update()
+                globalObj.grid_brush.rects
+                    .attr('class', 'gridRect')
+                    .filter(d => (d[1]===4))
+                    .attr('class', 'selectedRect')
+
+                globalObj.treemap.draw_treemap()
+                globalObj.treemap.updateTreeRectStatus()
+
             })
 
         this.preset2Button = d3.select("#preset2")
-            .on('click', e => {
+            .on('mouseover', e => {
                 globalObj.selectedTime = ["2018/01", "2018/02", "2018/03", "2018/04", "2018/05", "2018/06",
                     "2018/07", "2018/08", "2018/09", "2018/10", "2018/11", "2018/12", ]
+                globalObj.selectedNames = ["ripple", "stellar"]
+                if (this.logOn){
+                    this.logButton.node()
+                        .click()
+                }
+
                 this.update()
+                globalObj.grid_brush.rects
+                    .attr('class', 'gridRect')
+                    .filter(d => (d[1]===5))
+                    .attr('class', 'selectedRect')
+
+                globalObj.treemap.draw_treemap()
+                globalObj.treemap.updateTreeRectStatus()
+
             })
     }
 
@@ -85,34 +122,30 @@ class LineChart {
         // this.xAxisGroup.append('g')
         //     .call(this.xAxis)
 
-
-        this.years = []
-        for (let time of globalObj.selectedTime) {
-            let tmp = time.slice(0, 4)
-            if (!this.years.includes(tmp)){
-                this.years.push(tmp)
-            }
-        }
-        this.years.sort((a,b) => (a-b)) //
         this.groupedYearData = d3.group(this.selectedData, d => d.month.slice(0, 4));
         this.start_times = []
         this.final_times = []
         this.time_intervals = []
         let tmp = ""
         for (let year of this.years) {
-            let data = this.groupedYearData.get(year)
-            this.st = d3.min(data, d => Date.parse(d.date)) // start time of the year
-            this.ft = d3.max(data, d => Date.parse(d.date)) // final time of the year
-            // console.log("...")
-            this.start_times.push(this.st)
-            this.final_times.push(this.ft)
-            if (tmp === ""){
-                this.time_intervals.push(0)
+            if ((Array.from(this.groupedYearData.keys())).includes(year)){
+                let data = this.groupedYearData.get(year)
+                // if (data.length !== 0){
+                    this.st = d3.min(data, d => Date.parse(d.date)) // start time of the year
+                    this.ft = d3.max(data, d => Date.parse(d.date)) // final time of the year
+                    // console.log("...")
+                    this.start_times.push(this.st)
+                    this.final_times.push(this.ft)
+                    if (tmp === ""){
+                        this.time_intervals.push(0)
+                    }
+                    else {
+                        this.time_intervals.push(d3.timeDay.count(tmp, this.st))
+                    }
+                    tmp = this.ft
+                // }
             }
-            else {
-                this.time_intervals.push(d3.timeDay.count(tmp, this.st))
-            }
-            tmp = this.ft
+
         }
         this.time_intervals.push(0)
         // console.log(this.time_intervals)//
@@ -142,8 +175,11 @@ class LineChart {
         }
 
         // update y-axis
-        this.max_price = d3.max(this.selectedData, d => parseFloat(d.price))
-        this.min_price = d3.min(this.selectedData, d => parseFloat(d.price))
+        let selectedData = this.selectedData
+            .filter(d => globalObj.selectedNames.length === 0 ? false : globalObj.selectedNames.includes(d.name))
+
+        this.max_price = d3.max(selectedData, d => parseFloat(d.price))
+        this.min_price = d3.min(selectedData, d => parseFloat(d.price))
         this.yScale = d3.scaleLinear()  // change it to scaleLog
             .domain([this.min_price, this.max_price])
             .range([this.vizHeight - this.margin.bottom - this.margin.top, 0])
@@ -160,96 +196,103 @@ class LineChart {
 
         this.yAxis = d3.axisLeft(this.yScale);
 
-        this.svg.select('#y-axis')
-            .attr('transform', 'translate(' + this.margin.left + ',' + this.margin.bottom + ')')
-            .call(this.yAxis)
+
+        if(selectedData.length !== 0){
+            this.svg.select('#y-axis')
+                .attr('transform', 'translate(' + this.margin.left + ',' + this.margin.bottom + ')')
+                .call(this.yAxis)
+        }
+
 
     }
 
     updatePaths(){
         let names = globalObj.selectedNames;
+
         for (let name of names){ // for each cryptocurrency
             let Data = this.groupedData.get(name)
                 .filter(d => globalObj.selectedTime.length === 0 ? false : globalObj.selectedTime.includes(d.month))
+                .filter(d => globalObj.selectedNames.length === 0 ? false : globalObj.selectedNames.includes(d.name))
 
             let groupedData = d3.group(Data, d => d.month.slice(0, 4));// group by year
 
             for (let i of [...Array(this.years.length).keys()]) { // for each year
-            // for (let i of [...Array(1).keys()]) { // for each year
 
                 if (Array.from(groupedData.keys()).includes(this.years[i])){
                     let data = groupedData.get(this.years[i])
 
-                    let cgroup = this.svg.append('g')
-                        .datum(name)
-                        .attr('id', name + i.toString())
-                        .attr('class', 'path_group')
+                    // if (data.length !== 0) {
+                        let cgroup = this.svg.append('g')
+                            .datum(name)
+                            .attr('id', name + i.toString())
+                            .attr('class', 'path_group')
 
-                    let xs = d3.scaleTime()
-                        .domain([this.start_times[i], this.final_times[i]])
-                        .range(this.r0r1s[i])
-                    let pG = d3.line()
-                        .x(d => xs(d3.timeParse("%Y/%m/%d")(d.date)))
-                        .y(d => this.yScale(d.price))
+                        let xs = d3.scaleTime()
+                            .domain([this.start_times[i], this.final_times[i]])
+                            .range(this.r0r1s[i])
+                        console.log(i, this.start_times, this.final_times)
+                        let pG = d3.line()
+                            .x(d => xs(d3.timeParse("%Y/%m/%d")(d.date)))
+                            .y(d => this.yScale(d.price))
 
-                    let aG = d3.area()
-                        .x(d => xs(d3.timeParse("%Y/%m/%d")(d.date)))
-                        .y1(d => this.yScale(d.high))
-                        .y0(d => this.yScale(d.low));
-        
-                    cgroup.append('path')
-                        .datum(name)
-                        .attr('class', 'lines')
-                        .attr('id', name)
-                        .attr('transform', 'translate(' + this.margin.left + ',' + this.margin.top + ')')
-                        .attr('d', pG(data))
-                        .attr('fill', 'none')
-                        .attr('stroke', this.colorScale(name))
-                    
-                    cgroup.append('path')// price range area
-                        .datum(name)
-                        .attr('id', name)
-                        .attr('class', 'areas')
-                        .attr('transform', 'translate(' + this.margin.left + ',' + this.margin.top + ')')
-                        .attr('d', aG(data))
-                        .attr('fill', this.colorScale(name))
-                        .attr('opacity', 0.5)
+                        let aG = d3.area()
+                            .x(d => xs(d3.timeParse("%Y/%m/%d")(d.date)))
+                            .y1(d => this.yScale(d.high))
+                            .y0(d => this.yScale(d.low));
 
-                    cgroup.append("path")// draw a wider path for easier hovering
-                        .datum(name)
-                        .attr('id', name)
-                        .attr('transform', 'translate(' + this.margin.left + ',' + this.margin.top + ')')
-                        .attr('d', pG(data))
-                        .attr("class", "fatpath")
-                        .on("mouseover", e => {
-                            this.svg.selectAll(".lines")
-                                .attr("stroke", d => this.colorScaleFade(d))//fade
-                                .filter(d => d===name)
-                                .attr("stroke", this.colorScale(name))
-                            this.svg.selectAll(".areas")
-                                .attr("fill", d => this.colorScaleFade(d))//fade
-                                .filter(d => d===name)
-                                .attr("fill", this.colorScale(name))
-                            this.svg.selectAll("#"+(e.target).id)
-                                .attr("stroke-width", 3)//highlight
+                        cgroup.append('path')
+                            .datum(name)
+                            .attr('class', 'lines')
+                            .attr('id', name)
+                            .attr('transform', 'translate(' + this.margin.left + ',' + this.margin.top + ')')
+                            .attr('d', () => {
+                                console.log(data)
+                                return pG(data)
+                            })
+                            .attr('fill', 'none')
+                            .attr('stroke', this.colorScale(name))
 
-                            this.svg.selectAll(".path_group")
-                                .sort((a, b) => a === (e.target).id? 1: -1)
-                        })
-                        .on("mouseout", e => {//restore
-                            this.svg.selectAll(".lines")
-                                .attr("stroke", d => this.colorScale(d))
-                            this.svg.selectAll(".areas")
-                                .attr("fill", d => this.colorScale(d))
-                            this.svg.selectAll("#"+(e.target).id)
-                                .attr("stroke-width", 1)
-                        })
+                        cgroup.append('path')// price range area
+                            .datum(name)
+                            .attr('id', name)
+                            .attr('class', 'areas')
+                            .attr('transform', 'translate(' + this.margin.left + ',' + this.margin.top + ')')
+                            .attr('d', aG(data))
+                            .attr('fill', this.colorScale(name))
+                            .attr('opacity', 0.5)
+
+                        cgroup.append("path")// draw a wider path for easier hovering
+                            .datum(name)
+                            .attr('id', name)
+                            .attr('transform', 'translate(' + this.margin.left + ',' + this.margin.top + ')')
+                            .attr('d', pG(data))
+                            .attr("class", "fatpath")
+                            .on("mouseover", e => {
+                                this.svg.selectAll(".lines")
+                                    .attr("stroke", d => this.colorScaleFade(d))//fade
+                                    .filter(d => d === name)
+                                    .attr("stroke", this.colorScale(name))
+                                this.svg.selectAll(".areas")
+                                    .attr("fill", d => this.colorScaleFade(d))//fade
+                                    .filter(d => d === name)
+                                    .attr("fill", this.colorScale(name))
+                                this.svg.selectAll("#" + (e.target).id)
+                                    .attr("stroke-width", 3)//highlight
+
+                                this.svg.selectAll(".path_group")
+                                    .sort((a, b) => a === (e.target).id ? 1 : -1)
+                            })
+                            .on("mouseout", e => {//restore
+                                this.svg.selectAll(".lines")
+                                    .attr("stroke", d => this.colorScale(d))
+                                this.svg.selectAll(".areas")
+                                    .attr("fill", d => this.colorScale(d))
+                                this.svg.selectAll("#" + (e.target).id)
+                                    .attr("stroke-width", 1)
+                            })
+                    // }
                 }
             }
-
-
-
-
         }
     }
 
@@ -257,9 +300,26 @@ class LineChart {
         this.svg.selectAll('.path_group').remove();
         this.xAxisGroup.selectAll('g').remove()
 
-        this.selectedData = this.parsedData//
+        console.log(globalObj.selectedTime[0], globalObj.selectedTime[globalObj.selectedTime.length-1],)
+        // console.log(globalObj.selectedNames)
+
+        this.selectedData = this.parsedData
             .filter(d => globalObj.selectedTime.length === 0 ? false : globalObj.selectedTime.includes(d.month))
-            .filter(d => globalObj.selectedNames.length === 0 ? false : globalObj.selectedNames.includes(d.name))//
+            // .filter(d => globalObj.selectedNames.length === 0 ? false : globalObj.selectedNames.includes(d.name))
+
+        // this.groupedData = d3.group(this.selectedData, d => d.name);
+        // if (globalObj.selectedTime.length === 0 || globalObj.selectedNames.length === 0) {
+        //     this.groupedData = globalObj.groupedData
+        // }
+
+        this.years = []
+        for (let time of globalObj.selectedTime) {
+            let tmp = time.slice(0, 4)
+            if (!this.years.includes(tmp)){
+                this.years.push(tmp)
+            }
+        }
+        this.years.sort((a,b) => (a-b))
 
         this.updateAxes()
         this.updatePaths()
