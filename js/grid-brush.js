@@ -33,7 +33,7 @@ class GridBrush {//Bubble
         });
 
         this.divWidth = 900;
-        this.divHeight = 900;
+        this.divHeight = 300;
         this.svgHeight = 270;
         this.margin = 10;
         this.dx = 70
@@ -42,8 +42,8 @@ class GridBrush {//Bubble
         this.h = 30
 
         this.div = d3.select('#grid-brush')
-            .style('width', this.divWidth + 'px')
-            .style('height', this.divHeight + 'px')
+            // .style('width', this.divWidth + 'px')
+            // .style('height', this.divHeight + 'px')
 
         this.svg = this.div.select('svg')
             .attr('overflow', 'visible')

@@ -2,7 +2,7 @@ class Network {
 
     constructor() {
         let width = 1600;
-        let height = 1080;
+        let height = 800;
         let svg = d3.select("#network")
             .attr('width', width)
             .attr('height', height);
@@ -18,7 +18,7 @@ class Network {
         });
         const offset = 30
         let width = 1600;
-        let height = 1080;
+        let height = 800;
         let svg = d3.select("#network")
 
         let auto_on = d3.select("#auto-filter").property("checked")
