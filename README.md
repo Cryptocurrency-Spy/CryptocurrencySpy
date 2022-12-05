@@ -7,7 +7,7 @@ Group member: [Yintong Shang](https://github.com/ShaYito), [Haoyang Shi](https:/
 
 
 
-**Project website** :[cryptocurrency-spy.github.io](cryptocurrency-spy.github.io)
+**Project website** :[cryptocurrency-spy.github.io](https://cryptocurrency-spy.github.io/)
 
 **Video walkthrough** :
 [https://youtu.be/sIBWIZL9ViA](https://youtu.be/sIBWIZL9ViA)
